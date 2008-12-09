@@ -1,0 +1,82 @@
+Mål
+===
+
+1.0
+---
+ * Ett generellt broadcatchingbibliotek
+   + Det ska gå att ladda ner videofiler från webben, bittorrent, och (vissa) flashspelare.
+   + Det ska gå att plocka filer från diverse former av feeds - Atom, RSS1, RSS2, OPML.
+ * Det ska passa bra i GNOME-miljön
+   + Externa beroenden ska i största möjliga utsträckning vara sådana som är vanliga i GNOME-miljöer.
+ * Det ska vara portabelt
+   + Målet är att få det att fungera på alla platformar där Glib fungerar. Hårdvarubrist gör det målet
+     svårt att uppnå, men x86 Linux och win32 bör iaf gå att garantera.
+ * Det ska vara skrivet så att bindningar till andra språk blir så enkla som möjligt att producera
+   + Därmed är C praktiskt taget ett måste - Glib-verktygen för att automatiskt generera bindningar 
+     arbetar såvitt jag vet bara mot C.
+ * Det ska vara kraftfullt
+   + Mitt huvudmål är att det ska kunna driva den broadcatchingklient jag tänkt utveckla.
+ * Det ska vara flexibelt
+   + Jag vill att det ska vara enkelt för tredjepartsutvecklare att t ex använda biblioteket i existerande
+     feedreaders.
+ * Det ska vara lättanvänt
+   + De små Python-skript jag har idag för att ladda ner podcasts och youtube-feeds ska kunna förenklas
+     genom att portas till det här biblioteket.
+   + Hur fina GUI-applikationer som än skrivs finns det alltid specialfall - det ska vara lätt att hacka
+     ihop något som hanterar det.
+ * Det ska varken vara för kraftfullt eller för flexibelt
+   + För att kunna uppnå lättanvändning får det inte ha för många inställningsmöjligheter. Att utveckla
+     en full-featured bittorrentklient med biblioteket är inte lämpligt, då biblioteket är tänkt att
+     dölja så många bittorrentspecifika inställningar som möjligt: allt ska designas för att Bara Fungera.
+ * Det får aldrig krasha
+   + Feeds är ickevaliderande. Webbservrar är otillförlitliga. Så ser verkligheten ut, och det får inte
+     leda till att klienten krashar.
+ * Väldokumenterat
+   + All publik API ska dokumenteras.
+
+0.1
+---
+ * Ett pod-/vidcastbibliotek
+   + Det ska gå att ladda ner videofiler från webben
+   + Det ska gå att plocka filer från "RSS-liknande feeds" (RSS1, RSS2 och Atom)
+   + Bittorrent, flashspelare, OPML och liknande får vänta
+ * Flexibelt, lättanvänt
+ * Troligen inte tillräckligt kraftfullt
+   + När jag börjar skriva en broadcatchingklient kommer jag upptäcka att saker jag inte tänkt på saknas,
+     och bli tvungen att lägga till de funktionerna då.
+ * Inga språkbindningar
+   + Små, smidiga Python-skript kommer därmed inte gå att skriva än.
+ * Funktionalitet före stabilitet
+   + Mitt mål är att utveckla en API jag är nöjd med - implementationstekniska misstag är lättare att
+     åtgärda än API-misstag. Stabilitet får högsta prioritet i nästa version.
+ * Portabilitet ej prioriterad
+ * Kommer att misslyckas i massor olika fall
+   + En feedparser som enbart parsar efter standarden är lika användbar som en webbläsare som tror att
+     webben är skriven i SGML: inte alls.
+   + Feeds kan se ut på alla möjliga giltiga och ogiltiga sätt, och jag kan omöjligt testa alla. Somliga
+     feeds kommer inte att hanteras korrekt.
+
+Design
+======
+
+0.1
+---
+ * Basklasser för nerladdare, och feednerladdare
+ * Subklasser för webbnerladdare och rssfeednerladdare
+ * En webb-backend för all HTTP-trafik.
+   + Används av både webbnerladdaren och rssfeednerladdaren
+   + Ska använda libsoup, som har en trevlig API, men inte är så portabelt som jag skulle önska - libsoup
+     måste därför isoleras helt för att kunna bytas ut enkelt.
+ * En XML-hanteringsbackend för alla former av XML-filer
+   + Används av rssfeednerladdaren, och ska användas av den framtida opmlfeednerladdaren
+   + Ska använda libxml2. Libxml2 är såvitt jag vet portabelt och har oöverträffad prestanda. Jag tror
+     därför inte att jag kommer behöva ersätta det under överskådlig tid, och därför bryr jag mig inte om
+     att totalt isolera det från resten av bibiloteket.
+ * Factory-funktioner för att skapa en nerladdare eller feednerladdare
+ * "Fulklasser" (structs och funktioner för initiering och destruktering, som dock inte använder GObjects
+   objektsystem) för resultat från nerladdare respektive feednerladdare. Dessa är fulklasser för att
+   spara prestanda - jag kan inte se att jag behöver den flexibilitet GObject erbjuder för dessa typer.
+   + Jag anser att de ändå bör räknas till antalet klasser, eftersom de i ett språk med klasser hade
+     implementerats som klasser.
+ * Subklasserna ska behöva initieras individuellt av biblioteksklienten. Detta för att framtida subklasser
+   (bittorrentnerladdaren, t ex) kommer behöva kunna ta emot extra argument.

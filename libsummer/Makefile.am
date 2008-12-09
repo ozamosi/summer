@@ -1,0 +1,40 @@
+include $(top_srcdir)/gtest.mk
+
+SUBDIR = tests
+
+AM_CFLAGS = \
+	$(SUMMER_CFLAGS) \
+	$(LIB_CFLAGS) \
+	$(WARN_CFLAGS) \
+	$(DISABLE_DEPRECATED) \
+	-include $(CONFIG_HEADER)
+
+lib_LTLIBRARIES = libsummer.la
+
+libsummer_la_LDFLAGS = -export-dynamic
+libsummer_la_LIBADD = $(LIB_LIBS)
+
+NOINST_H_FILES =
+
+INST_H_FILES = \
+	summer.h \
+	summer-download.h \
+	summer-download-web.h \
+	summer-feed.h \
+	summer-feed-rss.h \
+	summer-web-backend.h \
+	summer-xml-backend.h
+
+headerdir = $(includedir)/libsummer-1.0/libsummer
+header_DATA = $(INST_H_FILES)
+
+libsummer_la_SOURCES = \
+	summer.c \
+	summer-download.c \
+	summer-download-web.c \
+	summer-feed.c \
+	summer-feed-rss.c \
+	summer-web-backend.c \
+	summer-xml-backend.c \
+	$(NOINST_H_FILES) \
+	$(INST_H_FILES)
