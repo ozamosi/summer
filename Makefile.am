@@ -1,8 +1,11 @@
 include $(top_srcdir)/gtest.mk
 
+DISTCHECK_CONFIGURE_FLAGS=--enable-gtk-doc
+
 SUBDIRS = \
 	libsummer \
-	tests
+	tests \
+	reference
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libsummer-1.0.pc
