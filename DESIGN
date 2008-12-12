@@ -33,6 +33,10 @@ Mål
      leda till att klienten krashar.
  * Väldokumenterat
    + All publik API ska dokumenteras.
+ * Asynkront
+   + Ingen fjärrdata får hanteras synkront.
+   + API:n ska vara pushande, av ingen bättre anledning än att jag tycker det är
+     bekvämare att arbeta mot
 
 0.1
 ---

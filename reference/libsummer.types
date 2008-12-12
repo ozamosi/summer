@@ -1,3 +1,5 @@
+#include <libsummer/summer.h>
+
 summer_download_web_get_type
 summer_xml_backend_get_type
 summer_download_get_type

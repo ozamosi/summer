@@ -1,10 +1,27 @@
 include $(top_srcdir)/gtest.mk
 
-SUBDIR = tests
+SUBDIRS = . tests
 
-AM_CFLAGS = \
+MARSHAL_GENERATED = summer-marshal.c summer-marshal.h
+
+summer-marshal.h: summer-marshal.list
+	( $(GLIB_GENMARSHAL) --prefix=summer_marshal $(srcdir)/summer-marshal.list --header > summer-marshal.tmp \
+	&& mv summer-marshal.tmp summer-marshal.h ) \
+	|| ( rm -f summer-marshal.tmp && exit 1 )
+
+summer-marshal.c: summer-marshal.h
+	( (echo '#include "summer-marshal.h"'; $(GLIB_GENMARSHAL) --prefix=summer_marshal $(srcdir)/summer-marshal.list --body) > summer-marshal.tmp \
+	&& mv summer-marshal.tmp summer-marshal.c ) \
+	|| ( rm -f summer-marshal.tmp && exit 1 )
+
+BUILT_SOURCES = $(MARSHAL_GENERATED)
+
+CLEANFILES = $(MARSHAL_GENERATED)
+
+INCLUDES = \
 	$(SUMMER_CFLAGS) \
-	$(LIB_CFLAGS) \
+	$(GLIB_CFLAGS) \
+	$(SOUP_CFLAGS) \
 	$(WARN_CFLAGS) \
 	$(DISABLE_DEPRECATED) \
 	-include $(CONFIG_HEADER)
@@ -29,6 +46,7 @@ headerdir = $(includedir)/libsummer-1.0/libsummer
 header_DATA = $(INST_H_FILES)
 
 libsummer_la_SOURCES = \
+	$(BUILT_SOURCES) \
 	summer.c \
 	summer-download.c \
 	summer-download-web.c \
@@ -38,3 +56,5 @@ libsummer_la_SOURCES = \
 	summer-xml-backend.c \
 	$(NOINST_H_FILES) \
 	$(INST_H_FILES)
+
+EXTRA_DIST = soup-marshal.list

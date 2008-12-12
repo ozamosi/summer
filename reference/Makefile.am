@@ -67,8 +67,8 @@ expand_content_files=
 # signals and properties.
 # e.g. INCLUDES=-I$(top_srcdir) -I$(top_builddir) $(GTK_DEBUG_FLAGS)
 # e.g. GTKDOC_LIBS=$(top_builddir)/gtk/$(gtktargetlib)
-INCLUDES=-I$(top_srcdir) $(SUMMER_CFLAGS) -include $(CONFIG_HEADER)
-GTKDOC_LIBS=$(top_builddir)/libsummer/libsummer.la $(SUMMER_LIBS)
+INCLUDES=-I$(top_srcdir) $(GLIB_CFLAGS) $(SOUP_CFLAGS) -include $(CONFIG_HEADER)
+GTKDOC_LIBS=$(top_builddir)/libsummer/libsummer.la $(GLIB_LIBS) $(SOUP_LIBS)
 
 # This includes the standard gtk-doc make rules, copied by gtkdocize.
 include $(top_srcdir)/gtk-doc.make
@@ -83,5 +83,5 @@ EXTRA_DIST +=
 #DISTCLEANFILES +=
 
 # Comment this out if you want your docs-status tested during 'make check'
-#TESTS = $(GTKDOC_CHECK)
+TESTS = $(GTKDOC_CHECK)
 

@@ -1,6 +1,6 @@
 /* summer-web-backend.h */
 
-/* This file is part of summer_web_backend.
+/* This file is part of libsummer.
  * Copyright © 2008 Robin Sonefors <ozamosi@flukkost.nu>
  * 
  * Libsummer is free software: you can redistribute it and/or
@@ -23,11 +23,9 @@
 #define __SUMMER_WEB_BACKEND_H__
 
 #include <glib-object.h>
-/* other include files */
 
 G_BEGIN_DECLS
 
-/* convenience macros */
 #define SUMMER_TYPE_WEB_BACKEND             (summer_web_backend_get_type())
 #define SUMMER_WEB_BACKEND(obj)             (G_TYPE_CHECK_INSTANCE_CAST((obj),SUMMER_TYPE_WEB_BACKEND,SummerWebBackend))
 #define SUMMER_WEB_BACKEND_CLASS(klass)     (G_TYPE_CHECK_CLASS_CAST((klass),SUMMER_TYPE_WEB_BACKEND,SummerWebBackendClass))
@@ -40,26 +38,19 @@ typedef struct _SummerWebBackendClass SummerWebBackendClass;
 
 struct _SummerWebBackend {
 	 GObject parent;
-	/* insert public members, if any */
 };
 
 struct _SummerWebBackendClass {
 	GObjectClass parent_class;
-	/* insert signal callback declarations, eg. */
-	/* void (* my_event) (SummerWebBackend* obj); */
+	void (* download_complete) (SummerWebBackend* obj, gchar *save_path, gchar *save_data, gpointer user_data);
+	void (* download_chunk) (SummerWebBackend* obj, gint received, gint length, gpointer user_data);
 };
 
-/* member functions */
 GType        summer_web_backend_get_type    (void) G_GNUC_CONST;
 
-/* typical parameter-less _new function */
-/* if this is a kind of GtkWidget, it should probably return at GtkWidget* */
-SummerWebBackend*    summer_web_backend_new         (void);
+SummerWebBackend*    summer_web_backend_new         (gchar *save_dir, gchar *url);
 
-/* fill in other public functions, eg.: */
-/* 	void       summer_web_backend_do_something (SummerWebBackend *self, const gchar* param); */
-/* 	gboolean   summer_web_backend_has_foo      (SummerWebBackend *self, gint value); */
-
+void summer_web_backend_fetch (SummerWebBackend *self);
 
 G_END_DECLS
 

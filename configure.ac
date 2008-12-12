@@ -24,17 +24,20 @@ AC_SUBST(LDFLAGS)
 GLIB_REQUIRED=2.18.0
 LIBSOUP_REQUIRED=2.4
 
-PKG_CHECK_MODULES(SUMMER, 
-	glib-2.0 >= $GLIB_REQUIRED 
-	gobject-2.0 >= $GLIB_REQUIRED 
-	gmodule-2.0 >= $GLIB_REQUIRED
-	libsoup-2.4 >= $LIBSOUP_REQUIRED
-	)
+AM_PATH_GLIB_2_0($GLIB_REQUIRED,,,gobject gio gmodule)
+if test "$GLIB_LIBS" = ""; then
+	   AC_MSG_ERROR(GLIB $GLIB_REQUIRED or later is required to build libsoup)
+fi
+GLIB_CFLAGS="$GLIB_CFLAGS -DG_DISABLE_SINGLE_INCLUDES"
+
+PKG_CHECK_MODULES(SOUP, libsoup-2.4 >= $LIBSOUP_REQUIRED)
+
 AC_SUBST(SUMMER_CFLAGS)
 AC_SUBST(SUMMER_LIBS)
 
 AC_CONFIG_FILES([Makefile
 	libsummer/Makefile
+	libsummer/tests/Makefile
 	libsummer-1.0.pc
 	reference/Makefile
 	tests/Makefile])

@@ -78,6 +78,7 @@ SUMMER_FEED_RSS_GET_CLASS
 <TITLE>SummerWebBackend</TITLE>
 SummerWebBackend
 summer_web_backend_new
+summer_web_backend_fetch
 <SUBSECTION Standard>
 SUMMER_WEB_BACKEND
 SUMMER_IS_WEB_BACKEND
