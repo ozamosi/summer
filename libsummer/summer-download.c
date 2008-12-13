@@ -1,6 +1,6 @@
 /* summer-download.c */
 
-/* This file is part of summer_download.
+/* This file is part of libsummer.
  * Copyright © 2008 Robin Sonefors <ozamosi@flukkost.nu>
  * 
  * Libsummer is free software: you can redistribute it and/or
@@ -20,32 +20,47 @@
  */
 
 #include "summer-download.h"
-/* include other impl specific header files */
+#include "summer-marshal.h"
+/**
+ * SECTION:summer-download
+ * @short_description: Base class for downloaders.
+ * @stability: Unstable
+ * @see_also: %SummerDownloadWeb
+ *
+ * This section contains the base class for downloaders.
+ */
 
-/* 'private'/'protected' functions */
+/**
+ * SummerDownload:
+ *
+ * The base class for all downloaders - that is, classes that implement a 
+ * certain way to fetch media files from remote sources. You should not create
+ * instances of this class.
+ *
+ * Look at %summer_create_download if you want to create downloader instances.
+ */
 static void summer_download_class_init (SummerDownloadClass *klass);
 static void summer_download_init       (SummerDownload *obj);
 static void summer_download_finalize   (GObject *obj);
-/* list my signals  */
-enum {
-	/* MY_SIGNAL_1, */
-	/* MY_SIGNAL_2, */
-	LAST_SIGNAL
-};
 
 typedef struct _SummerDownloadPrivate SummerDownloadPrivate;
 struct _SummerDownloadPrivate {
-	/* my private members go here, eg. */
-	/* gboolean frobnicate_mode; */
+	gchar *tmp_dir;
+	gchar *save_dir;
 };
-#define SUMMER_DOWNLOAD_GET_PRIVATE(o)      (G_TYPE_INSTANCE_GET_PRIVATE((o), \
-                                             SUMMER_TYPE_DOWNLOAD, \
-                                             SummerDownloadPrivate))
-/* globals */
-static GObjectClass *parent_class = NULL;
+#define SUMMER_DOWNLOAD_GET_PRIVATE(o)   (G_TYPE_INSTANCE_GET_PRIVATE((o), \
+                                          SUMMER_TYPE_DOWNLOAD, \
+										  SummerDownloadPrivate))
 
-/* uncomment the following if you have defined any signals */
-/* static guint signals[LAST_SIGNAL] = {0}; */
+static GObjectClass *parent_class = NULL;
+static gchar *tmp_dir = NULL;
+static gchar *save_dir = NULL;
+
+enum {
+	PROP_0,
+	PROP_TMP_DIR,
+	PROP_SAVE_DIR
+};
 
 GType
 summer_download_get_type (void)
@@ -72,6 +87,46 @@ summer_download_get_type (void)
 }
 
 static void
+set_property (GObject *object, guint property_id, const GValue *value,
+	GParamSpec *pspec)
+{
+	SummerDownloadPrivate *priv;
+	priv = SUMMER_DOWNLOAD_GET_PRIVATE (object);
+	switch (property_id) {
+	case PROP_SAVE_DIR:
+		if (priv->save_dir)
+			g_free (priv->save_dir);
+		priv->save_dir = g_value_dup_string (value);
+		break;
+	case PROP_TMP_DIR:
+		if (priv->tmp_dir)
+			g_free (priv->tmp_dir);
+		priv->tmp_dir = g_value_dup_string (value);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+		break;
+	}
+}
+
+static void
+get_property (GObject *object, guint property_id, GValue *value,
+	GParamSpec *pspec)
+{
+	SummerDownloadPrivate *priv;
+	priv = SUMMER_DOWNLOAD_GET_PRIVATE (object);
+
+	switch (property_id) {
+	case PROP_SAVE_DIR:
+		g_value_set_string (value, priv->save_dir);
+		break;
+	case PROP_TMP_DIR:
+		g_value_set_string (value, priv->tmp_dir);
+		break;
+	}
+}
+
+static void
 summer_download_class_init (SummerDownloadClass *klass)
 {
 	GObjectClass *gobject_class;
@@ -79,40 +134,132 @@ summer_download_class_init (SummerDownloadClass *klass)
 
 	parent_class            = g_type_class_peek_parent (klass);
 	gobject_class->finalize = summer_download_finalize;
+	gobject_class->set_property = set_property;
+	gobject_class->get_property = get_property;
 
 	g_type_class_add_private (gobject_class, sizeof(SummerDownloadPrivate));
 
-	/* signal definitions go here, e.g.: */
-/* 	signals[MY_SIGNAL_1] = */
-/* 		g_signal_new ("my_signal_1",....); */
-/* 	signals[MY_SIGNAL_2] = */
-/* 		g_signal_new ("my_signal_2",....); */
-/* 	etc. */
+	GParamSpec *pspec;
+	/**
+	 * SummerDownload:save-dir:
+	 *
+	 * The directory to store completed downloads in. This will be initialized
+	 * from the value set by %summer_set on construction.
+	 */
+	pspec = g_param_spec_string ("save-dir",
+		"Save directory",
+		"The directory completed download should be stored in",
+		"/",
+		G_PARAM_READWRITE);
+	g_object_class_install_property (gobject_class, PROP_SAVE_DIR, pspec);
+	
+	/**
+	 * SummerDownload:tmp-dir:
+	 *
+	 * The directory to store incomplete downloads in. This will be initialized
+	 * from the value set by %summer_set on construction.
+	 */
+	pspec = g_param_spec_string ("tmp-dir",
+		"Temp directory",
+		"The directory where incomplete downloads should be stored",
+		"/",
+		G_PARAM_READWRITE);
+	g_object_class_install_property (gobject_class, PROP_TMP_DIR, pspec);
+
+	/**
+	 * SummerDownload::download-complete:
+	 * @obj: the %SummerDownload object that emitted the signal
+	 * @save_path: the file system path where the file was saved. %NULL if there
+	 * was an error
+	 *
+	 * Signal that is emitted when the whole file has been downloaded and moved
+	 * to it's final destination.
+	 */
+	g_signal_new (
+		"download-complete",
+		SUMMER_TYPE_DOWNLOAD,
+		G_SIGNAL_RUN_FIRST,
+		G_STRUCT_OFFSET (SummerDownloadClass, download_complete),
+		NULL, NULL,
+		g_cclosure_marshal_VOID__STRING,
+		G_TYPE_NONE,
+		1,
+		G_TYPE_STRING);
+	/**
+	 * SummerDownload::download-update:
+	 * @obj: the %SummerDownload object that emitted the signal
+	 * @received: the number of bytes of the file that has been downloaded
+	 * @length: the total number of bytes to be downloaded. %-1 if this is not
+	 * known.
+	 *
+	 * ::download-chunk is emitted every time a new block of the file has been
+	 * retrieved.
+	 */
+	g_signal_new (
+		"download-update",
+		SUMMER_TYPE_DOWNLOAD,
+		G_SIGNAL_RUN_FIRST,
+		G_STRUCT_OFFSET (SummerDownloadClass, download_update),
+		NULL, NULL,
+		summer_marshal_VOID__INT_INT,
+		G_TYPE_NONE,
+		2,
+		G_TYPE_INT, G_TYPE_INT);
 }
 
 static void
-summer_download_init (SummerDownload *obj)
+summer_download_init (SummerDownload *self)
 {
-/* uncomment the following if you init any of the private data */
-/* 	SummerDownloadPrivate *priv = SUMMER_DOWNLOAD_GET_PRIVATE(obj); */
-
-/* 	initialize this object, eg.: */
-/* 	priv->frobnicate_mode = FALSE; */
+	g_object_set (self, "save-dir", save_dir, "tmp-dir", tmp_dir, NULL);
 }
 
 static void
-summer_download_finalize (GObject *obj)
+summer_download_finalize (GObject *self)
 {
-/* 	free/unref instance resources here */
-	G_OBJECT_CLASS(parent_class)->finalize (obj);
+	SummerDownloadPrivate *priv;
+	priv = SUMMER_DOWNLOAD_GET_PRIVATE (self);
+	if (priv->save_dir)
+		g_free (priv->save_dir);
+	if (priv->tmp_dir)
+		g_free (priv->tmp_dir);
+	G_OBJECT_CLASS(parent_class)->finalize (self);
 }
 
-SummerDownload*
-summer_download_new (void)
+/**
+ * summer_download_set
+ * @first_property_name: the first property name.
+ * @var_args: the first property value, optionally followed by more property
+ * names and values.
+ *
+ * Not meant to be used directly - see %summer_set.
+ */
+void
+summer_download_set (gchar *first_property_name, va_list var_args)
 {
-	return SUMMER_DOWNLOAD(g_object_new(SUMMER_TYPE_DOWNLOAD, NULL));
+	const gchar *name;
+	name = first_property_name;
+	while (name) {
+		if (!g_strcmp0 (name, "tmp-dir")) {
+			if (tmp_dir)
+				g_free (tmp_dir);
+			tmp_dir = g_strdup (va_arg (var_args, gchar*));
+		} else if (!g_strcmp0 (name, "save-dir")) {
+			if (save_dir)
+				g_free (save_dir);
+			save_dir = g_strdup (va_arg (var_args, gchar*));
+		}
+		name = va_arg (var_args, gchar*);
+	}
 }
 
-/* insert many other interesting function implementations */
-/* such as summer_download_do_something, or summer_download_has_foo */
-
+/**
+ * summer_download_start:
+ * @obj: a %SummerDownload instance
+ *
+ * Start the file transfer
+ */
+void
+summer_download_start (SummerDownload *obj)
+{
+	SUMMER_DOWNLOAD_GET_CLASS (obj)->start (obj);
+}

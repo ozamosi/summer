@@ -4,3 +4,5 @@
 #include "summer-download-web.h"
 
 void summer_set (gchar* module_name, gchar* first_property_name, ...);
+
+SummerDownload* summer_create_download (gchar *mime, gchar *url);

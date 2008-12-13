@@ -5,15 +5,26 @@
 
 static GMainLoop *loop;
 
-static gfloat last_received = 0.0;
+static gint last_received = 0;
 
 static void
 chunk_cb (SummerWebBackend *web, gint received, gint length, gpointer user_data)
 {
-	g_assert_cmpfloat (received, >, 0);
-	g_assert_cmpfloat (received, >=, last_received);
-	g_assert_cmpfloat (received, <=, length);
+	g_assert_cmpint (received, >, 0);
+	g_assert_cmpint (received, >=, last_received);
+	g_assert_cmpint (received, <=, length);
 	last_received = received;
+}
+
+static void
+disk_chunk_cb (SummerWebBackend *web, gint received, gint length, gpointer user_data)
+{
+	gchar *contents = NULL;
+	gsize file_length;
+	gchar *filename = g_build_filename (g_get_tmp_dir (), "epicfu", NULL);
+	g_file_get_contents (filename, &contents, &file_length, NULL);
+	g_free (filename);
+	g_assert_cmpint (received, <=, file_length);
 }
 
 static void
@@ -46,6 +57,7 @@ to_disk (WebFixture *fix, gconstpointer data)
 	g_assert_cmpstr (path, ==, orig_path);
 
 	g_signal_connect (web, "download-chunk", G_CALLBACK (chunk_cb), NULL);
+	g_signal_connect (web, "download-chunk", G_CALLBACK (disk_chunk_cb), NULL);
 	g_signal_connect (web, "download-complete", G_CALLBACK (disk_downloaded_cb), NULL);
 	summer_web_backend_fetch (g_object_ref (web));
 	g_main_loop_run (loop);
@@ -105,6 +117,20 @@ response404 (WebFixture *fix, gconstpointer data)
 	g_main_loop_unref (loop);
 }
 
+static void
+serverdown (WebFixture *fix, gconstpointer data)
+{
+	loop = g_main_loop_new (NULL, TRUE);
+	gchar *url =  "http://localhost:52854";
+	SummerWebBackend *web = summer_web_backend_new (NULL, url);
+	g_signal_connect (web, "download-chunk", G_CALLBACK (chunk_cb), NULL);
+	g_signal_connect (web, "download-complete", G_CALLBACK (r404_response_cb), NULL);
+	summer_web_backend_fetch (g_object_ref (web));
+	g_object_unref (web);
+	g_main_loop_run (loop);
+	g_main_loop_unref (loop);
+}
+
 int main (int argc, char *argv[]) {
 	g_type_init ();
 	g_thread_init (NULL);
@@ -113,6 +139,7 @@ int main (int argc, char *argv[]) {
 	g_test_add ("/web-backend/to-ram", WebFixture, 0, web_setup, to_ram, web_teardown);
 	g_test_add ("/web-backend/to-disk", WebFixture, 0, web_setup, to_disk, web_teardown);
 	g_test_add ("/web-backend/response404", WebFixture, 0, web_setup, response404, web_teardown);
+	g_test_add ("/web-backend/serverdown", WebFixture, 0, web_setup, serverdown, web_teardown);
 
 	return g_test_run ();
 }

@@ -1,0 +1,85 @@
+#include <glib.h>
+#include <libsummer/summer.h>
+#include "server.h"
+
+static GMainLoop *loop;
+static gint last_received = 0;
+
+static void
+update_cb (SummerDownload *obj, gint received, gint length, gpointer user_data)
+{
+	g_assert_cmpint (received, >, 0);
+    g_assert_cmpint (received, >=, last_received);
+    g_assert_cmpint (received, <=, length);
+	last_received = received;
+
+	gchar *contents;
+	gsize file_length;
+	gchar *tmp_filename = g_build_filename (g_get_tmp_dir (), "epicfu", NULL);
+	g_file_get_contents (tmp_filename, &contents, &file_length, NULL);
+	g_free (tmp_filename);
+	g_assert_cmpint (received, <=, file_length);
+}
+
+static void
+complete_cb (SummerDownload *obj, gchar *save_path, gpointer user_data)
+{
+	g_assert_cmpstr (save_path, !=, NULL);
+	gchar *filename = g_build_filename (g_get_home_dir (), "epicfu", NULL);
+	g_assert_cmpstr (save_path, ==, filename);
+	g_free (filename);
+	gchar *rec_contents = NULL, *orig_contents = NULL;
+	gsize rec_length, orig_length;
+	g_file_get_contents ("../../tests/epicfu", &orig_contents, &orig_length, NULL);
+    g_file_get_contents (save_path, &rec_contents, &rec_length, NULL);
+	g_assert_cmpstr (orig_contents, ==, rec_contents);
+	g_remove (save_path);
+
+	gchar *tmp_filename = g_build_filename (g_get_tmp_dir (), "epicfu", NULL);
+	g_assert (!g_file_test (tmp_filename, G_FILE_TEST_EXISTS));
+	g_free (tmp_filename);
+
+	g_main_loop_quit (loop);
+}
+
+static void
+basic (WebFixture *fix, gconstpointer data)
+{
+	summer_set ("download", 
+		"save-dir", g_get_home_dir (), 
+		"tmp-dir", g_get_tmp_dir (),
+		NULL);
+	loop = g_main_loop_new (NULL, TRUE);
+	SummerDownload *dl;
+	dl = summer_create_download ("video/mp4", "http://localhost:52853/feeds/epicfu");
+	g_signal_connect (dl, "download-complete", G_CALLBACK (complete_cb), NULL);
+	g_signal_connect (dl, "download-update", G_CALLBACK (update_cb), NULL);
+	summer_download_start (dl);
+	g_main_loop_run (loop);
+	g_main_loop_unref (loop);
+	g_object_unref (dl);
+}
+
+
+static void
+mimes ()
+{
+	SummerDownload *dl;
+	dl = summer_create_download ("application/xml", "http://localhost:52853/");
+	g_assert (!SUMMER_IS_DOWNLOAD_WEB (dl));
+	dl = summer_create_download ("application/flac", "http://localhost:52853/");
+	g_assert (SUMMER_IS_DOWNLOAD_WEB (dl));
+	g_object_unref (dl);
+	dl = summer_create_download ("video/mp4", "http://localhost:52853/video/dummy_mp4");
+	g_assert (SUMMER_IS_DOWNLOAD_WEB (dl));
+	g_object_unref (dl);
+}
+
+int main (int argc, char *argv[]) {
+	g_type_init ();
+	g_thread_init (NULL);
+	g_test_init (&argc, &argv, NULL);
+	g_test_add_func ("/download-web/mimes", mimes);
+	g_test_add ("/download-web/basic", WebFixture, 0, web_setup, basic, web_teardown);
+	return g_test_run ();
+}

@@ -160,29 +160,29 @@ summer_web_backend_class_init (SummerWebBackendClass *klass)
 	g_type_class_add_private (gobject_class, sizeof(SummerWebBackendPrivate));
 
 	GParamSpec *pspec;
-	pspec = g_param_spec_string ("save-dir",
-		"Save directory",
-		"The directory to save the file to. NULL to keep the file in memory",
-		NULL,
-		G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 	/**
 	 * SummerWebBackend:save-dir:
 	 *
 	 * Specifies a directory to save the file to. If it is %NULL, the file will
 	 * not be saved to disk, but only to RAM.
 	 */
+	pspec = g_param_spec_string ("save-dir",
+		"Save directory",
+		"The directory to save the file to. NULL to keep the file in memory",
+		NULL,
+		G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
 	g_object_class_install_property (gobject_class, PROP_SAVE_DIR, pspec);
 
-	pspec = g_param_spec_string ("url",
-		"URL",
-		"The URL to download",
-		NULL,
-		G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 	/**
 	 * SummerWebBackend:url:
 	 *
 	 * Specifies a URL to download from.
 	 */
+	pspec = g_param_spec_string ("url",
+		"URL",
+		"The URL to download",
+		NULL,
+		G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
 	g_object_class_install_property (gobject_class, PROP_URL, pspec);
 
 	/**
@@ -214,8 +214,9 @@ summer_web_backend_class_init (SummerWebBackendClass *klass)
 	  * @received: the number of bytes of the file that has been downloaded. 
 	  * @length: the total number of bytes to be downloaded. %-1 if this is not
 	  * known.
+	  * @user_data: user provided data
 	  *
-	  * ::download-chunk is emitted every time a new block of the file have been
+	  * ::download-chunk is emitted every time a new block of the file has been
 	  * retrieved.
 	  */
 	 g_signal_new (
@@ -233,10 +234,10 @@ summer_web_backend_class_init (SummerWebBackendClass *klass)
 static void
 summer_web_backend_init (SummerWebBackend *self)
 {
-	if (session == NULL)
-		session = soup_session_async_new ();
-	else
+	if (G_IS_OBJECT (session))
 		g_object_ref (session);
+	else
+		session = soup_session_async_new ();
 	SummerWebBackendPrivate *priv = SUMMER_WEB_BACKEND_GET_PRIVATE (self);
 	priv->filename = NULL;
 	priv->outfile = NULL;
@@ -265,7 +266,7 @@ summer_web_backend_finalize (GObject *self)
  *
  * Creates a new #SummerWebBackend.
  *
- * Returns: the newly created #SummerWebBackend object
+ * Returns: a newly created #SummerWebBackend object
  */
 SummerWebBackend*
 summer_web_backend_new (gchar *save_dir, gchar *url)
@@ -337,8 +338,6 @@ on_got_headers (SoupMessage *msg, gpointer user_data)
  * Starts a file transfer from #SummerWebBackend:url. Since the transfer is asynchronous, the
  * function will not return anything - instead, connect to the 
  * #SummerWebBackend::download-complete signal.
- *
- * Returns: void
  */
 void
 summer_web_backend_fetch (SummerWebBackend *self)

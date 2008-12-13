@@ -22,12 +22,10 @@
 #ifndef __SUMMER_DOWNLOAD_WEB_H__
 #define __SUMMER_DOWNLOAD_WEB_H__
 
-#include <glib-object.h>
-/* other include files */
+#include "summer-download.h"
 
 G_BEGIN_DECLS
 
-/* convenience macros */
 #define SUMMER_TYPE_DOWNLOAD_WEB             (summer_download_web_get_type())
 #define SUMMER_DOWNLOAD_WEB(obj)             (G_TYPE_CHECK_INSTANCE_CAST((obj),SUMMER_TYPE_DOWNLOAD_WEB,SummerDownloadWeb))
 #define SUMMER_DOWNLOAD_WEB_CLASS(klass)     (G_TYPE_CHECK_CLASS_CAST((klass),SUMMER_TYPE_DOWNLOAD_WEB,SummerDownloadWebClass))
@@ -39,27 +37,17 @@ typedef struct _SummerDownloadWeb      SummerDownloadWeb;
 typedef struct _SummerDownloadWebClass SummerDownloadWebClass;
 
 struct _SummerDownloadWeb {
-	 GObject parent;
-	/* insert public members, if any */
+	 SummerDownload parent;
 };
 
 struct _SummerDownloadWebClass {
-	GObjectClass parent_class;
-	/* insert signal callback declarations, eg. */
+	SummerDownloadClass parent_class;
 	/* void (* my_event) (SummerDownloadWeb* obj); */
 };
 
-/* member functions */
 GType        summer_download_web_get_type    (void) G_GNUC_CONST;
 
-/* typical parameter-less _new function */
-/* if this is a kind of GtkWidget, it should probably return at GtkWidget* */
-SummerDownloadWeb*    summer_download_web_new         (void);
-
-/* fill in other public functions, eg.: */
-/* 	void       summer_download_web_do_something (SummerDownloadWeb *self, const gchar* param); */
-/* 	gboolean   summer_download_web_has_foo      (SummerDownloadWeb *self, gint value); */
-
+SummerDownload* summer_download_web_new (gchar *url, gchar *mime);
 
 G_END_DECLS
 

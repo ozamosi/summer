@@ -1,9 +1,12 @@
+<INCLUDE>libsummer/summer.h</INCLUDE>
+
 <SECTION>
 <FILE>summer-download-web</FILE>
 <TITLE>SummerDownloadWeb</TITLE>
 SummerDownloadWeb
 summer_download_web_new
 <SUBSECTION Standard>
+SummerDownloadWebClass
 SUMMER_DOWNLOAD_WEB
 SUMMER_IS_DOWNLOAD_WEB
 SUMMER_TYPE_DOWNLOAD_WEB
@@ -17,8 +20,9 @@ SUMMER_DOWNLOAD_WEB_GET_CLASS
 <FILE>summer-xml-backend</FILE>
 <TITLE>SummerXmlBackend</TITLE>
 SummerXmlBackend
-summer_xml_backend_new
 <SUBSECTION Standard>
+SummerXmlBackendClass
+summer_xml_backend_new
 SUMMER_XML_BACKEND
 SUMMER_IS_XML_BACKEND
 SUMMER_TYPE_XML_BACKEND
@@ -32,8 +36,10 @@ SUMMER_XML_BACKEND_GET_CLASS
 <FILE>summer-download</FILE>
 <TITLE>SummerDownload</TITLE>
 SummerDownload
-summer_download_new
+summer_download_set
+summer_download_start
 <SUBSECTION Standard>
+SummerDownloadClass
 SUMMER_DOWNLOAD
 SUMMER_IS_DOWNLOAD
 SUMMER_TYPE_DOWNLOAD
@@ -49,6 +55,7 @@ SUMMER_DOWNLOAD_GET_CLASS
 SummerFeed
 summer_feed_new
 <SUBSECTION Standard>
+SummerFeedClass
 SUMMER_FEED
 SUMMER_IS_FEED
 SUMMER_TYPE_FEED
@@ -64,6 +71,7 @@ SUMMER_FEED_GET_CLASS
 SummerFeedRss
 summer_feed_rss_new
 <SUBSECTION Standard>
+SummerFeedRssClass
 SUMMER_FEED_RSS
 SUMMER_IS_FEED_RSS
 SUMMER_TYPE_FEED_RSS
@@ -80,6 +88,7 @@ SummerWebBackend
 summer_web_backend_new
 summer_web_backend_fetch
 <SUBSECTION Standard>
+SummerWebBackendClass
 SUMMER_WEB_BACKEND
 SUMMER_IS_WEB_BACKEND
 SUMMER_TYPE_WEB_BACKEND
@@ -90,15 +99,8 @@ SUMMER_WEB_BACKEND_GET_CLASS
 </SECTION>
 
 <SECTION>
+<TITLE>Summer</TITLE>
 <FILE>summer</FILE>
 summer_set
+summer_create_download
 </SECTION>
-
-<SECTION>
-<FILE>server</FILE>
-WebFixture
-feed_server
-web_setup
-web_teardown
-</SECTION>
-

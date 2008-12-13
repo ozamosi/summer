@@ -17,5 +17,7 @@ AM_LDFLAGS = \
 
 check-local: test
 
-TEST_PROGS += test_web_backend
+TEST_PROGS += test_web_backend test_download test_download_web
 test_web_backend_SOURCES = test-web-backend.c server.c server.h
+test_download_SOURCES = test-download.c server.c server.h
+test_download_web_SOURCES = test-download-web.c server.c server.h
