@@ -27,6 +27,7 @@
  * SECTION:summer-web-backend
  * @short_description: Provides a class for communicating with web servers
  * @stability: Private
+ * @include: libsummer/summer-web-backend.h
  *
  * This component is only meant to be used by the downloaders and the feed
  * fetchers. It contains %SummerWebBackend - a class for communicating with
@@ -67,7 +68,6 @@ struct _SummerWebBackendPrivate {
 #define SUMMER_WEB_BACKEND_GET_PRIVATE(o)      (G_TYPE_INSTANCE_GET_PRIVATE((o), \
                                                 SUMMER_TYPE_WEB_BACKEND, \
                                                 SummerWebBackendPrivate))
-static GObjectClass *parent_class = NULL;
 static SoupSession *session = NULL;
 
 enum {
@@ -75,41 +75,17 @@ enum {
 	PROP_SAVE_DIR,
 	PROP_URL
 };
-/* uncomment the following if you have defined any signals */
-/* static guint signals[LAST_SIGNAL] = {0}; */
 
-GType
-summer_web_backend_get_type (void)
-{
-	static GType my_type = 0;
-	if (!my_type) {
-		static const GTypeInfo my_info = {
-			sizeof(SummerWebBackendClass),
-			NULL,		/* base init */
-			NULL,		/* base finalize */
-			(GClassInitFunc) summer_web_backend_class_init,
-			NULL,		/* class finalize */
-			NULL,		/* class data */
-			sizeof(SummerWebBackend),
-			1,		/* n_preallocs */
-			(GInstanceInitFunc) summer_web_backend_init,
-			NULL
-		};
-		my_type = g_type_register_static (G_TYPE_OBJECT,
-		                                  "SummerWebBackend",
-		                                  &my_info, 0);
-	}
-	return my_type;
-}
+G_DEFINE_TYPE (SummerWebBackend, summer_web_backend, G_TYPE_OBJECT);
 
 static void
-set_property (GObject *object, guint property_id, const GValue *value,
+set_property (GObject *object, guint prop_id, const GValue *value,
 	GParamSpec *pspec)
 {
 	SummerWebBackendPrivate *priv;
 	priv = SUMMER_WEB_BACKEND_GET_PRIVATE (object);
 
-	switch (property_id) {
+	switch (prop_id) {
 	case PROP_SAVE_DIR:
 		if (priv->save_dir)
 			g_free (priv->save_dir);
@@ -121,19 +97,18 @@ set_property (GObject *object, guint property_id, const GValue *value,
 		priv->url = g_value_dup_string (value);
 		break;
 	default:
-		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
 	}
 }
 
 static void
-get_property (GObject *object, guint property_id, GValue *value, 
-	GParamSpec *pspec)
+get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 {
 	SummerWebBackendPrivate *priv;
 	priv = SUMMER_WEB_BACKEND_GET_PRIVATE (object);
 
-	switch (property_id) {
+	switch (prop_id) {
 	case PROP_SAVE_DIR:
 		g_value_set_string (value, priv->save_dir);
 		break;
@@ -141,7 +116,7 @@ get_property (GObject *object, guint property_id, GValue *value,
 		g_value_set_string (value, priv->url);
 		break;
 	default:
-		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
 	}
 }
@@ -152,7 +127,6 @@ summer_web_backend_class_init (SummerWebBackendClass *klass)
 	GObjectClass *gobject_class;
 	gobject_class = (GObjectClass*) klass;
 
-	parent_class            = g_type_class_peek_parent (klass);
 	gobject_class->finalize = summer_web_backend_finalize;
 	gobject_class->set_property = set_property;
 	gobject_class->get_property = get_property;
@@ -256,7 +230,7 @@ summer_web_backend_finalize (GObject *self)
 		g_free (priv->filename);
 	if (priv->outfile != NULL)
 		g_object_unref (priv->outfile);
-	G_OBJECT_CLASS (parent_class)->finalize (self);
+	G_OBJECT_CLASS (summer_web_backend_parent_class)->finalize (self);
 }
 
 /**

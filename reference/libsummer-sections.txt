@@ -17,22 +17,6 @@ SUMMER_DOWNLOAD_WEB_GET_CLASS
 </SECTION>
 
 <SECTION>
-<FILE>summer-xml-backend</FILE>
-<TITLE>SummerXmlBackend</TITLE>
-SummerXmlBackend
-<SUBSECTION Standard>
-SummerXmlBackendClass
-summer_xml_backend_new
-SUMMER_XML_BACKEND
-SUMMER_IS_XML_BACKEND
-SUMMER_TYPE_XML_BACKEND
-summer_xml_backend_get_type
-SUMMER_XML_BACKEND_CLASS
-SUMMER_IS_XML_BACKEND_CLASS
-SUMMER_XML_BACKEND_GET_CLASS
-</SECTION>
-
-<SECTION>
 <FILE>summer-download</FILE>
 <TITLE>SummerDownload</TITLE>
 SummerDownload
@@ -66,19 +50,56 @@ SUMMER_FEED_GET_CLASS
 </SECTION>
 
 <SECTION>
-<FILE>summer-feed-rss</FILE>
-<TITLE>SummerFeedRss</TITLE>
-SummerFeedRss
-summer_feed_rss_new
+<FILE>summer-feed-parser</FILE>
+<TITLE>SummerFeedParser</TITLE>
+SummerFeedParser
+SummerFeedData
+SummerItemData
+summer_feed_data_free
+summer_feed_data_new
+summer_feed_parser_handle_feed_node
+summer_feed_parser_handle_item_node
+summer_item_data_free
+summer_item_data_new
 <SUBSECTION Standard>
-SummerFeedRssClass
-SUMMER_FEED_RSS
-SUMMER_IS_FEED_RSS
-SUMMER_TYPE_FEED_RSS
-summer_feed_rss_get_type
-SUMMER_FEED_RSS_CLASS
-SUMMER_IS_FEED_RSS_CLASS
-SUMMER_FEED_RSS_GET_CLASS
+SummerFeedParserInterface
+SUMMER_FEED_PARSER
+SUMMER_IS_FEED_PARSER
+SUMMER_TYPE_FEED_PARSER
+summer_feed_parser_get_type
+SUMMER_FEED_PARSER_GET_INTERFACE
+</SECTION>
+
+<SECTION>
+<FILE>summer-atom-parser</FILE>
+<TITLE>SummerAtomParser</TITLE>
+SummerAtomParser
+summer_atom_parser_new
+<SUBSECTION Standard>
+SummerAtomParserClass
+SUMMER_ATOM_PARSER
+SUMMER_IS_ATOM_PARSER
+SUMMER_TYPE_ATOM_PARSER
+summer_atom_parser_get_type
+SUMMER_ATOM_PARSER_CLASS
+SUMMER_IS_ATOM_PARSER_CLASS
+SUMMER_ATOM_PARSER_GET_CLASS
+</SECTION>
+
+<SECTION>
+<FILE>summer-rss2-parser</FILE>
+<TITLE>SummerRss2Parser</TITLE>
+SummerRss2Parser
+summer_rss2_parser_new
+<SUBSECTION Standard>
+SummerRss2ParserClass
+SUMMER_RSS2_PARSER
+SUMMER_IS_RSS2_PARSER
+SUMMER_TYPE_RSS2_PARSER
+summer_rss2_parser_get_type
+SUMMER_RSS2_PARSER_CLASS
+SUMMER_IS_RSS2_PARSER_CLASS
+SUMMER_RSS2_PARSER_GET_CLASS
 </SECTION>
 
 <SECTION>

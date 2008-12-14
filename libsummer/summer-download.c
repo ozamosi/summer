@@ -52,7 +52,6 @@ struct _SummerDownloadPrivate {
                                           SUMMER_TYPE_DOWNLOAD, \
 										  SummerDownloadPrivate))
 
-static GObjectClass *parent_class = NULL;
 static gchar *tmp_dir = NULL;
 static gchar *save_dir = NULL;
 
@@ -62,29 +61,7 @@ enum {
 	PROP_SAVE_DIR
 };
 
-GType
-summer_download_get_type (void)
-{
-	static GType my_type = 0;
-	if (!my_type) {
-		static const GTypeInfo my_info = {
-			sizeof(SummerDownloadClass),
-			NULL,		/* base init */
-			NULL,		/* base finalize */
-			(GClassInitFunc) summer_download_class_init,
-			NULL,		/* class finalize */
-			NULL,		/* class data */
-			sizeof(SummerDownload),
-			1,		/* n_preallocs */
-			(GInstanceInitFunc) summer_download_init,
-			NULL
-		};
-		my_type = g_type_register_static (G_TYPE_OBJECT,
-		                                  "SummerDownload",
-		                                  &my_info, 0);
-	}
-	return my_type;
-}
+G_DEFINE_TYPE (SummerDownload, summer_download, G_TYPE_OBJECT);
 
 static void
 set_property (GObject *object, guint property_id, const GValue *value,
@@ -132,7 +109,6 @@ summer_download_class_init (SummerDownloadClass *klass)
 	GObjectClass *gobject_class;
 	gobject_class = (GObjectClass*) klass;
 
-	parent_class            = g_type_class_peek_parent (klass);
 	gobject_class->finalize = summer_download_finalize;
 	gobject_class->set_property = set_property;
 	gobject_class->get_property = get_property;
@@ -222,7 +198,7 @@ summer_download_finalize (GObject *self)
 		g_free (priv->save_dir);
 	if (priv->tmp_dir)
 		g_free (priv->tmp_dir);
-	G_OBJECT_CLASS(parent_class)->finalize (self);
+	G_OBJECT_CLASS(summer_download_parent_class)->finalize (self);
 }
 
 /**

@@ -1,8 +1,9 @@
 #include <libsummer/summer.h>
 
 summer_download_web_get_type
-summer_xml_backend_get_type
 summer_download_get_type
 summer_feed_get_type
-summer_feed_rss_get_type
+summer_feed_parser_get_type
+summer_atom_parser_get_type
+summer_rss2_parser_get_type
 summer_web_backend_get_type

@@ -37,6 +37,17 @@ feed_server (SoupServer *server, SoupMessage *msg, const char *path,
 		soup_message_set_response (msg, mime_type, SOUP_MEMORY_COPY, contents, length);
 		return;
 	}
+	if (!g_strcmp0 (path, "/feeds/atom")) {
+		gchar *contents;
+		gsize length;
+		if (!g_file_get_contents ("atom_feed", &contents, &length, NULL)) {
+			g_error ("Couldn't serve feed");
+		}
+		const char *mime_type = "text/xml";
+		soup_message_set_status (msg, SOUP_STATUS_OK);
+		soup_message_set_response (msg, mime_type, SOUP_MEMORY_COPY, contents, length);
+		return;
+	}
 	soup_message_set_status (msg, SOUP_STATUS_NOT_FOUND);
 }
 

@@ -1,4 +1,30 @@
+/* summer.c */
+
+/* This file is part of libsummer.
+ * Copyright © 2008 Robin Sonefors <ozamosi@flukkost.nu>
+ * 
+ * Libsummer is free software: you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the license, or (at your option) any later version.
+ * 
+ * Libsummer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Palace - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
+
 #include "summer.h"
+
+/*
+ * All functions in this file should use gmodule to find available
+ * modules to call. Instead, they use a long list of ugly if conditions.
+ */
 
 /**
  * SECTION:summer
@@ -26,7 +52,6 @@ void
 summer_set (gchar *module_name, gchar *first_property_name, ...)
 {
 	va_list var_args;
-	// This should be replaced by fancy GModule logic
 	if (!g_strcmp0 (module_name, "feed")) {
 		va_start (var_args, first_property_name);
 //		summer_feed_downloader_set (first_property_name, var_args);
@@ -55,7 +80,6 @@ summer_set (gchar *module_name, gchar *first_property_name, ...)
 SummerDownload*
 summer_create_download (gchar *mime, gchar *url) {
 	SummerDownload *dl;
-	// This should be replaced by fancy GModule logic
 	if ((dl = summer_download_web_new (mime, url)))
 		return dl;
 	return NULL;
