@@ -25,7 +25,7 @@
  * SECTION:summer-feed-parser
  * @short_description: Provides utilities for parsing web feeds
  * @stability: Unstable
- * @include: libsummer/feed-parser.h
+ * @include: libsummer/summer-feed-parser.h
  *
  * This component provides an interface for parsing different types of web feeds
  * as well as a couple of datatypes to store the results.
@@ -37,53 +37,47 @@
  * An interface for parsing feeds.
  */
 
-static void summer_feed_parser_base_init (gpointer g_class);
+static void summer_feed_parser_class_init (SummerFeedParserClass *klass);
+static void summer_feed_parser_init       (SummerFeedParser *obj);
 
-GType
-summer_feed_parser_get_type (void)
+enum {
+	PROP_0,
+	PROP_HANDLED_NAMESPACES
+};
+
+G_DEFINE_ABSTRACT_TYPE (SummerFeedParser, summer_feed_parser, G_TYPE_OBJECT);
+
+static void
+get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 {
-	static GType my_type = 0;
-	if (!my_type) {
-		static const GTypeInfo my_info = {
-			sizeof(SummerFeedParserInterface),
-			summer_feed_parser_base_init,		/* base init */
-			NULL,		/* base finalize */
-			NULL,		/* class_init */
-			NULL,		/* class finalize */
-			NULL,		/* class data */
-			0,
-			0,		/* n_preallocs */
-			NULL,		/* instance init */
-		};
-		my_type = g_type_register_static (G_TYPE_INTERFACE,
-		                                  "SummerFeedParser",
-		                                  &my_info, 0);
-		g_type_interface_add_prerequisite (my_type, G_TYPE_OBJECT);
-	}
-	return my_type;
+	G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 }
 
 static void
-summer_feed_parser_base_init (gpointer g_iface)
+summer_feed_parser_class_init (SummerFeedParserClass *klass)
 {
-	static gboolean initialized = FALSE;
-	if (!initialized) {
-		GParamSpec *pspec;
-		pspec = g_param_spec_string ("handled-namespace", 
-			"Handled namespace",
-			"A namespace that this object can handle",
-			NULL, 
-			G_PARAM_READABLE);
-		pspec = g_param_spec_value_array ("handled-namespaces",
-			"Handled namespaces",
-			"An array of the namespaces that this object handles",
-			pspec,
-			G_PARAM_READABLE);
-		g_object_interface_install_property (g_iface, pspec);
+	GObjectClass *gobject_class;
+	gobject_class = (GObjectClass*) klass;
 
-		initialized = TRUE;
-	}
+	gobject_class->get_property = get_property;
+
+	GParamSpec *pspec;
+	pspec = g_param_spec_string ("handled-namespace", 
+		"Handled namespace",
+		"A namespace that this object can handle",
+		NULL, 
+		G_PARAM_READABLE);
+	pspec = g_param_spec_value_array ("handled-namespaces",
+		"Handled namespaces",
+		"An array of the namespaces that this object handles",
+		pspec,
+		G_PARAM_READABLE);
+	g_object_class_install_property (gobject_class, PROP_HANDLED_NAMESPACES, pspec);
 }
+
+static void
+summer_feed_parser_init (SummerFeedParser *obj)
+{}
 
 /**
  * summer_feed_parser_handle_feed_node ():
@@ -91,7 +85,7 @@ summer_feed_parser_base_init (gpointer g_iface)
  * @node: A xmlTextReader instance. This must be a element start tag 
  * (%XML_READER_TYPE_ELEMENT).
  * @feed: A %SummerFeedData to store the results in.
- * @start_item: A boolean that will be set to %TRUE if the tag is the start of an item.
+ * @is_item: A boolean that will be set to %TRUE if the tag is the start of an item.
  *
  * Handle a feed node. A feed node is a node that is not part of a post - that
  * is, a node that describes the global scope in a feed. If the node was
@@ -102,23 +96,15 @@ summer_feed_parser_base_init (gpointer g_iface)
  */
 gint 
 summer_feed_parser_handle_feed_node (SummerFeedParser* self, 
-	xmlTextReaderPtr node, SummerFeedData *feed, gboolean *start_item)
+	xmlTextReaderPtr node, SummerFeedData *feed, gboolean *is_item)
 {
 	g_return_val_if_fail (SUMMER_IS_FEED_PARSER (self), -1);
 	g_return_val_if_fail (xmlTextReaderNodeType (node) == XML_READER_TYPE_ELEMENT, -1);
 	gint ret;
-	*start_item = FALSE;
+	*is_item = FALSE;
 
-	ret = SUMMER_FEED_PARSER_GET_INTERFACE (self)->handle_feed_node (self, node, feed, start_item);
+	ret = SUMMER_FEED_PARSER_GET_CLASS (self)->handle_feed_node (self, node, feed, is_item);
 	
-	if (ret <= 0)
-		return ret;
-
-	while (xmlTextReaderNodeType (node) != XML_READER_TYPE_ELEMENT) {
-		int r = xmlTextReaderRead (node);
-		if (r <= 0)
-			return -1;
-	}
 	return ret;
 }
 
@@ -142,16 +128,8 @@ summer_feed_parser_handle_item_node (SummerFeedParser* self,
 	g_return_val_if_fail (SUMMER_IS_FEED_PARSER (self), -1);
 	g_return_val_if_fail (xmlTextReaderNodeType (node) == XML_READER_TYPE_ELEMENT, -1);
 	gint ret;
-	ret = SUMMER_FEED_PARSER_GET_INTERFACE (self)->handle_item_node (self, node, item);
+	ret = SUMMER_FEED_PARSER_GET_CLASS (self)->handle_item_node (self, node, item);
 	
-	if (ret <= 0)
-		return ret;
-
-	while (xmlTextReaderNodeType (node) != XML_READER_TYPE_ELEMENT) {
-		int r = xmlTextReaderRead (node);
-		if (r <= 0)
-			return -1;
-	}
 	return ret;
 }
 

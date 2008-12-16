@@ -37,11 +37,11 @@ typedef struct _SummerAtomParser      SummerAtomParser;
 typedef struct _SummerAtomParserClass SummerAtomParserClass;
 
 struct _SummerAtomParser {
-	 GObject parent;
+	 SummerFeedParser parent;
 };
 
 struct _SummerAtomParserClass {
-	 GObjectClass parent_class;
+	 SummerFeedParserClass parent_class;
 };
 
 GType        summer_atom_parser_get_type    (void) G_GNUC_CONST;

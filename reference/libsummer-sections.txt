@@ -61,13 +61,18 @@ summer_feed_parser_handle_feed_node
 summer_feed_parser_handle_item_node
 summer_item_data_free
 summer_item_data_new
+DO_WITH_TEXT_CONTENTS
+SAVE_ATTRIBUTE
+SAVE_TEXT_CONTENTS
 <SUBSECTION Standard>
-SummerFeedParserInterface
+SUMMER_FEED_PARSER_CLASS
+SUMMER_FEED_PARSER_GET_CLASS
+SUMMRE_IS_FEED_PARSER_CLASS
+SummerFeedParserClass
 SUMMER_FEED_PARSER
 SUMMER_IS_FEED_PARSER
 SUMMER_TYPE_FEED_PARSER
 summer_feed_parser_get_type
-SUMMER_FEED_PARSER_GET_INTERFACE
 </SECTION>
 
 <SECTION>

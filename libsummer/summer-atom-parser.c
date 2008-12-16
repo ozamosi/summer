@@ -24,7 +24,7 @@
 /**
  * SECTION:summer-atom-parser
  * @short_description: A %summer-feed-parser that parses Atom feeds
- * @stability: Private
+ * @stability: Unstable
  * @include: libsummer/summer-atom-parser.h
  *
  * A %summer-feed-parser that implements an Atom Syndication Format (RFC 4287)
@@ -44,16 +44,16 @@ static gchar* handled_namespaces[] = {
 static void summer_atom_parser_class_init (SummerAtomParserClass *klass);
 static void summer_atom_parser_init       (SummerAtomParser *obj);
 static void summer_atom_parser_finalize   (GObject *obj);
-static void summer_feed_parser_interface_init (SummerFeedParserInterface *iface);
+
+static gint handle_feed_node (SummerFeedParser *self, xmlTextReaderPtr node, SummerFeedData *feed, gboolean *is_item);
+static gint handle_item_node (SummerFeedParser *self, xmlTextReaderPtr node, SummerItemData *item);
 
 enum {
-	PROP_,
+	PROP_0,
 	PROP_HANDLED_NAMESPACES
 };
 
-G_DEFINE_TYPE_WITH_CODE (SummerAtomParser, summer_atom_parser, G_TYPE_OBJECT,
-	G_IMPLEMENT_INTERFACE (SUMMER_TYPE_FEED_PARSER, 
-		summer_feed_parser_interface_init));
+G_DEFINE_TYPE (SummerAtomParser, summer_atom_parser, SUMMER_TYPE_FEED_PARSER);
 
 static void
 get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
@@ -89,6 +89,11 @@ summer_atom_parser_class_init (SummerAtomParserClass *klass)
 	gobject_class->get_property = get_property;
 
 	g_object_class_override_property (gobject_class, PROP_HANDLED_NAMESPACES, "handled-namespaces");
+
+	SummerFeedParserClass *feed_parser_class;
+	feed_parser_class = SUMMER_FEED_PARSER_CLASS (klass);
+	feed_parser_class->handle_feed_node = handle_feed_node;
+	feed_parser_class->handle_item_node = handle_item_node;
 }
 
 static void
@@ -114,50 +119,13 @@ summer_atom_parser_new (void)
 	return SUMMER_ATOM_PARSER(g_object_new(SUMMER_TYPE_ATOM_PARSER, NULL));
 }
 
-#define SAVE_TEXT_CONTENTS(element_name, node, result) \
-	if (!g_strcmp0 (xmlTextReaderConstLocalName (node), BAD_CAST (element_name))) { \
-		while (xmlTextReaderNodeType (node) != XML_READER_TYPE_TEXT) { \
-			gint ret; \
-			ret = xmlTextReaderRead (node); \
-			if (ret <= 0) \
-				return -1; \
-			result = xmlTextReaderValue (node); \
-			return 1; \
-		} \
-	}
-
-#define SAVE_ATTRIBUTE(element_name, attribute_name, node, result) \
-	if (!g_strcmp0 (xmlTextReaderConstLocalName (node), BAD_CAST (element_name))) { \
-		while (xmlTextReaderMoveToNextAttribute (node) > 0) { \
-			if (!g_strcmp0 (xmlTextReaderConstLocalName (node), BAD_CAST (attribute_name))) { \
-				result = xmlTextReaderValue (node); \
-				return 1; \
-			} \
-		} \
-		return -1; \
-	}
-
-#define DO_WITH_TEXT_CONTENTS(element_name, node, code) \
-	if (!g_strcmp0 (xmlTextReaderConstLocalName (node), BAD_CAST (element_name))) { \
-		while (xmlTextReaderNodeType (node) != XML_READER_TYPE_TEXT) { \
-			gint ret; \
-			ret = xmlTextReaderRead (node); \
-			if (ret <= 0) \
-				return -1; \
-			gchar *text = xmlTextReaderValue (node); \
-			code; \
-			g_free (text); \
-			return 1; \
-		} \
-	}
-
 static gint
-handle_feed_node (SummerFeedParser *self, xmlTextReaderPtr node, SummerFeedData *feed, gboolean *start_item)
+handle_feed_node (SummerFeedParser *self, xmlTextReaderPtr node, SummerFeedData *feed, gboolean *is_item)
 {
 	gboolean valid_ns = FALSE;
 	gchar **ns;
 	for (ns = handled_namespaces; *ns != NULL; ns++) {
-		if (!g_strcmp0 (xmlTextReaderConstNamespaceUri (node), *ns)) {
+		if (xmlStrEqual (xmlTextReaderConstNamespaceUri (node), BAD_CAST (*ns))) {
 			valid_ns = TRUE;
 			break;
 		}
@@ -165,18 +133,27 @@ handle_feed_node (SummerFeedParser *self, xmlTextReaderPtr node, SummerFeedData 
 	if (!valid_ns)
 		return 0;
 	
-	SAVE_TEXT_CONTENTS ("title", node, feed->title);
-	SAVE_TEXT_CONTENTS ("subtitle", node, feed->description);
-	SAVE_TEXT_CONTENTS ("id", node, feed->id);
-	SAVE_TEXT_CONTENTS ("name", node, feed->author);
-	DO_WITH_TEXT_CONTENTS ("updated", node, g_time_val_from_iso8601 (text, &feed->updated));
-	SAVE_ATTRIBUTE ("link", "href", node, feed->web_url);
+	gint ret = 0;
 
-	if (!g_strcmp0 (xmlTextReaderConstLocalName (node), BAD_CAST ("entry"))) {
-		*start_item = TRUE;
+	SAVE_TEXT_CONTENTS ("title", node, feed->title, ret);
+	SAVE_TEXT_CONTENTS ("subtitle", node, feed->description, ret);
+	SAVE_TEXT_CONTENTS ("id", node, feed->id, ret);
+	SAVE_TEXT_CONTENTS ("name", node, feed->author, ret);
+	DO_WITH_TEXT_CONTENTS ("updated", node, ret, g_time_val_from_iso8601 (text, &feed->updated));
+	SAVE_ATTRIBUTE ("link", "href", node, feed->web_url, ret);
+
+	if (xmlStrEqual (xmlTextReaderConstLocalName (node), BAD_CAST ("entry"))) {
+		*is_item = TRUE;
+	}
+	if (ret > 0) {
+		while (xmlTextReaderNodeType (node) != XML_READER_TYPE_ELEMENT) {
+			int r = xmlTextReaderRead (node);
+			if (r <= 0)
+				return -1;
+		}
 	}
 
-	return 0;
+	return ret;
 }
 
 static gint
@@ -185,7 +162,7 @@ handle_item_node (SummerFeedParser *self, xmlTextReaderPtr node, SummerItemData 
 	gboolean valid_ns = FALSE;
 	gchar **ns;
 	for (ns = handled_namespaces; *ns != NULL; ns++) {
-		if (!g_strcmp0 (xmlTextReaderConstNamespaceUri (node), *ns)) {
+		if (xmlStrEqual (xmlTextReaderConstNamespaceUri (node), BAD_CAST (*ns))) {
 			valid_ns = TRUE;
 			break;
 		}
@@ -193,20 +170,22 @@ handle_item_node (SummerFeedParser *self, xmlTextReaderPtr node, SummerItemData 
 	if (!valid_ns) {
 		return 0;
 	}
+
+	gint ret = 0;
 	
-	SAVE_TEXT_CONTENTS ("title", node, item->title);
-	SAVE_TEXT_CONTENTS ("summary", node, item->description);
-	SAVE_TEXT_CONTENTS ("id", node, item->id);
-	DO_WITH_TEXT_CONTENTS ("updated", node, g_time_val_from_iso8601 (text, &item->updated));
-	SAVE_ATTRIBUTE ("link", "href", node, item->web_url);
+	SAVE_TEXT_CONTENTS ("title", node, item->title, ret);
+	SAVE_TEXT_CONTENTS ("summary", node, item->description, ret);
+	SAVE_TEXT_CONTENTS ("id", node, item->id, ret);
+	DO_WITH_TEXT_CONTENTS ("updated", node, ret, g_time_val_from_iso8601 (text, &item->updated));
+	SAVE_ATTRIBUTE ("link", "href", node, item->web_url, ret);
 
+	if (ret > 0) {
+		while (xmlTextReaderNodeType (node) != XML_READER_TYPE_ELEMENT) {
+			int r = xmlTextReaderRead (node);
+			if (r <= 0)
+				return -1;
+		}
+	}
 
-	return 0;
-}
-
-static void
-summer_feed_parser_interface_init (SummerFeedParserInterface *iface)
-{
-	iface->handle_feed_node = handle_feed_node;
-	iface->handle_item_node = handle_item_node;
+	return ret;
 }

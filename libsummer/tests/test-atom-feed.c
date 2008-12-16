@@ -30,7 +30,7 @@ parse ()
 			ret = summer_feed_parser_handle_feed_node (parser, reader, feed_data, &item);
 			if (item) {
 				SummerItemData *item_data = summer_item_data_new ();
-				int depth = xmlTextReaderDepth (reader) -1;
+				int depth = xmlTextReaderDepth (reader);
 				do {
 					ret = summer_feed_parser_handle_item_node (parser, reader, item_data);
 					if (ret == 0) {
@@ -43,9 +43,9 @@ parse ()
 				items = g_list_append (items, item_data);
 			}
 			if (ret == 0) {
-				ret = xmlTextReaderRead (reader);
-				while (ret > 0 && xmlTextReaderNodeType (reader) != XML_READER_TYPE_ELEMENT) {
-					ret = xmlTextReaderRead (reader);
+				ret = xmlTextReaderRead (reader) - 1;
+				while (ret >= 0 && xmlTextReaderNodeType (reader) != XML_READER_TYPE_ELEMENT) {
+					ret = xmlTextReaderRead (reader) - 1;
 				}
 			}
 		}
@@ -70,6 +70,54 @@ parse ()
 	g_assert_cmpint (item_data->updated.tv_sec, ==, time.tv_sec);
 	g_assert_cmpint (item_data->updated.tv_usec, ==, time.tv_usec);
 	summer_feed_data_free (feed_data);
+	summer_item_data_free (item_data);
+}
+
+static void
+broken_title ()
+{
+	SummerFeedParser *parser = SUMMER_FEED_PARSER (summer_atom_parser_new ());
+	xmlTextReaderPtr reader = xmlNewTextReaderFilename ("atom_feed_nolink");
+	SummerFeedData *feed_data = summer_feed_data_new ();
+	gboolean item = FALSE;
+	GList *items = NULL;
+	if (reader != NULL) {
+		while (xmlTextReaderNodeType (reader) != XML_READER_TYPE_ELEMENT) {
+			xmlTextReaderRead (reader);
+		}
+		int ret;
+		while (ret >= 0) {
+			ret = summer_feed_parser_handle_feed_node (parser, reader, feed_data, &item);
+			if (item) {
+				SummerItemData *item_data = summer_item_data_new ();
+				int depth = xmlTextReaderDepth (reader);
+				do {
+					ret = summer_feed_parser_handle_item_node (parser, reader, item_data);
+					if (ret == 0) {
+						ret =xmlTextReaderRead (reader);
+						while (ret > 0 && xmlTextReaderNodeType (reader) != XML_READER_TYPE_ELEMENT) {
+							ret =xmlTextReaderRead (reader);
+						}
+					}
+				} while (item && ret >= 0 && xmlTextReaderDepth (reader) > depth);
+				items = g_list_append (items, item_data);
+			}
+			if (ret == 0) {
+				ret = xmlTextReaderRead (reader) - 1;
+				while (ret >= 0 && xmlTextReaderNodeType (reader) != XML_READER_TYPE_ELEMENT) {
+					ret = xmlTextReaderRead (reader) - 1;
+				}
+			}
+		}
+	}
+	g_assert_cmpstr (feed_data->title, ==, "Example Feed");
+	GTimeVal time;
+	g_time_val_from_iso8601 ("2003-12-13T18:30:02Z", &time);
+	g_assert_cmpint (feed_data->updated.tv_sec, ==, time.tv_sec);
+	g_assert_cmpint (feed_data->updated.tv_usec, ==, time.tv_usec);
+	g_assert (feed_data->web_url == NULL);
+
+	summer_feed_data_free (feed_data);
 }
 
 int main (int argc, char *argv[]) {
@@ -78,6 +126,7 @@ int main (int argc, char *argv[]) {
 	g_test_init (&argc, &argv, NULL);
 	g_test_add_func ("/atom-feed/property", property);
 	g_test_add_func ("/atom-feed/parse", parse);
+	g_test_add_func ("/atom-feed/broken-title", broken_title);
 	
 	return g_test_run ();
 }

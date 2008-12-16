@@ -22,7 +22,8 @@
 #ifndef __SUMMER_RSS2_PARSER_H__
 #define __SUMMER_RSS2_PARSER_H__
 
-#include "summer.h"
+//#include "summer.h"
+#include "summer-feed-parser.h"
 /* other include files */
 
 G_BEGIN_DECLS
@@ -39,29 +40,17 @@ typedef struct _SummerRss2Parser      SummerRss2Parser;
 typedef struct _SummerRss2ParserClass SummerRss2ParserClass;
 
 struct _SummerRss2Parser {
-	 GObject parent;
-	/* insert public members, if any */
+	 SummerFeedParser parent;
 };
 
 struct _SummerRss2ParserClass {
-	GObjectClass parent_class;
-	/* insert signal callback declarations, eg. */
-	/* void (* my_event) (SummerRss2Parser* obj); */
+	SummerFeedParserClass parent_class;
 };
 
-/* member functions */
 GType        summer_rss2_parser_get_type    (void) G_GNUC_CONST;
 
-/* typical parameter-less _new function */
-/* if this is a kind of GtkWidget, it should probably return at GtkWidget* */
 SummerRss2Parser*    summer_rss2_parser_new         (void);
-
-/* fill in other public functions, eg.: */
-/* 	void       summer_rss2_parser_do_something (SummerRss2Parser *self, const gchar* param); */
-/* 	gboolean   summer_rss2_parser_has_foo      (SummerRss2Parser *self, gint value); */
-
 
 G_END_DECLS
 
 #endif /* __SUMMER_RSS2_PARSER_H__ */
-

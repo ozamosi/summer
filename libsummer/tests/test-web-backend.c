@@ -24,6 +24,7 @@ disk_chunk_cb (SummerWebBackend *web, gint received, gint length, gpointer user_
 	gchar *filename = g_build_filename (g_get_tmp_dir (), "epicfu", NULL);
 	g_file_get_contents (filename, &contents, &file_length, NULL);
 	g_free (filename);
+	g_free (contents);
 	g_assert_cmpint (received, <=, file_length);
 }
 
