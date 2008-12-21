@@ -24,34 +24,25 @@
 /**
  * SECTION:summer-feed-parser
  * @short_description: Provides utilities for parsing web feeds
- * @stability: Unstable
+ * @stability: Private
  * @include: libsummer/summer-feed-parser.h
  *
- * This component provides an interface for parsing different types of web feeds
+ * This component provides a base class for parsing different types of web feeds
  * as well as a couple of datatypes to store the results.
  */
 
 /**
  * SummerFeedParser:
  * 
- * An interface for parsing feeds.
+ * A base class for parsing feeds. You should not use this class directly - look
+ * at %SummerFeed instead.
  */
 
 static void summer_feed_parser_class_init (SummerFeedParserClass *klass);
 static void summer_feed_parser_init       (SummerFeedParser *obj);
-
-enum {
-	PROP_0,
-	PROP_HANDLED_NAMESPACES
-};
+static void summer_feed_parser_finalize   (GObject *self);
 
 G_DEFINE_ABSTRACT_TYPE (SummerFeedParser, summer_feed_parser, G_TYPE_OBJECT);
-
-static void
-get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
-{
-	G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-}
 
 static void
 summer_feed_parser_class_init (SummerFeedParserClass *klass)
@@ -59,28 +50,21 @@ summer_feed_parser_class_init (SummerFeedParserClass *klass)
 	GObjectClass *gobject_class;
 	gobject_class = (GObjectClass*) klass;
 
-	gobject_class->get_property = get_property;
-
-	GParamSpec *pspec;
-	pspec = g_param_spec_string ("handled-namespace", 
-		"Handled namespace",
-		"A namespace that this object can handle",
-		NULL, 
-		G_PARAM_READABLE);
-	pspec = g_param_spec_value_array ("handled-namespaces",
-		"Handled namespaces",
-		"An array of the namespaces that this object handles",
-		pspec,
-		G_PARAM_READABLE);
-	g_object_class_install_property (gobject_class, PROP_HANDLED_NAMESPACES, pspec);
+	gobject_class->finalize = summer_feed_parser_finalize;
 }
 
 static void
 summer_feed_parser_init (SummerFeedParser *obj)
 {}
 
+static void
+summer_feed_parser_finalize (GObject *self)
+{
+	G_OBJECT_CLASS (summer_feed_parser_parent_class)->finalize (self);
+}
+
 /**
- * summer_feed_parser_handle_feed_node ():
+ * summer_feed_parser_handle_node ():
  * @self: A SummerFeedParser instance.
  * @node: A xmlTextReader instance. This must be a element start tag 
  * (%XML_READER_TYPE_ELEMENT).
@@ -91,130 +75,52 @@ summer_feed_parser_init (SummerFeedParser *obj)
  * is, a node that describes the global scope in a feed. If the node was
  * handled, @node will be pointing att the next element node upon return.
  *
- * Returns: %0 if the node was unrecognized, %1 if the node was handled, and %-1
- * on error.
+ * Returns: %-1 if there was a XML error, %0 if we've reached the end of the 
+ * XML node, %1 if the node wasn't handled, and %2 if the node was handled.
  */
 gint 
-summer_feed_parser_handle_feed_node (SummerFeedParser* self, 
+summer_feed_parser_handle_node (SummerFeedParser* self, 
 	xmlTextReaderPtr node, SummerFeedData *feed, gboolean *is_item)
 {
 	g_return_val_if_fail (SUMMER_IS_FEED_PARSER (self), -1);
 	g_return_val_if_fail (xmlTextReaderNodeType (node) == XML_READER_TYPE_ELEMENT, -1);
-	gint ret;
-	*is_item = FALSE;
-
-	ret = SUMMER_FEED_PARSER_GET_CLASS (self)->handle_feed_node (self, node, feed, is_item);
-	
-	return ret;
+	return SUMMER_FEED_PARSER_GET_CLASS (self)->handle_node (self, node, feed, is_item);
 }
 
 /**
- * summer_feed_parser_handle_item_node ():
- * @self: A SummerFeedParser instance.
- * @node: A xmlTextReader instance. This must be a element start tag (%XML_READER_TYPE_ELEMENT).
- * @item: A %SummerItemData to store the results in.
+ * summer_feed_parser_parse:
+ * @parsers: an array of SummerFeedParser objects
+ * @num_parsers: the number of elements in @parsers
+ * @reader: the xmlTextReader
  *
- * Handle an item node. An item node is a node that is part of a post. If the 
- * node was handled, @node will be pointing att the next element node upon 
- * return.
+ * Parses a given XML reader stream, with the given parsers.
  *
- * Returns: %0 if the node was unrecognized, %1 if the node was handled, and %-1
- * on error.
- */
-gint
-summer_feed_parser_handle_item_node (SummerFeedParser* self,
-	xmlTextReaderPtr node, SummerItemData *item)
-{
-	g_return_val_if_fail (SUMMER_IS_FEED_PARSER (self), -1);
-	g_return_val_if_fail (xmlTextReaderNodeType (node) == XML_READER_TYPE_ELEMENT, -1);
-	gint ret;
-	ret = SUMMER_FEED_PARSER_GET_CLASS (self)->handle_item_node (self, node, item);
-	
-	return ret;
-}
-
-/**
- * SummerFeedData:
- * @title: The feed title
- * @description: A text string that is longer than the title. Some formats
- * call this a subtitle.
- * @id: A unique identifier for the feed.
- * @web_url: A URL where the same content is available as a web page.
- * @author: The author of the feed.
- * @updated: The last time the feed was updated.
- *
- * A type to store feed global data in.
+ * Returns: a SummerFeedData, representing the parsed feed.
  */
 
-/**
- * summer_feed_data_new ():
- *
- * Create a new %SummerFeedData
- *
- * Returns: the newly created %SummerFeedData object.
- */
 SummerFeedData*
-summer_feed_data_new ()
+summer_feed_parser_parse (SummerFeedParser **parsers, int num_parsers, xmlTextReaderPtr reader)
 {
-	return g_slice_new0 (SummerFeedData);
-}
+	SummerFeedData *feed_data = summer_feed_data_new ();
+	if (reader != NULL) {
+		int ret = 1, depth = -1;
+		gboolean item = FALSE;
+		while (ret > 0) {
+			while (ret > 0 && xmlTextReaderNodeType (reader) != XML_READER_TYPE_ELEMENT)
+				ret = xmlTextReaderRead (reader);
 
-/**
- * SummerItemData:
- * @title: The item title
- * @description: A longer text string. This is the text content of the post.
- * @id: A unique identifier for the post.
- * @web_url: A URL where the same content is available as a web page.
- * @author: The author of the post.
- * @updated: The last time the post was updated.
- *
- * A feed consists of several items. Each item can be represented by a
- * %SummerItemData object.
- */
-
-/**
- * summer_item_data_new ():
- *
- * Create a new %SummerItemData
- *
- * Returns: the newly created %SummerItemData
- */
-SummerItemData*
-summer_item_data_new ()
-{
-	return g_slice_new0 (SummerItemData);
-}
-
-/**
- * summer_feed_data_free ():
- * @data: A %SummerFeedData object.
- *
- * Free a %SummerFeedData object.
- */
-void
-summer_feed_data_free (SummerFeedData *data)
-{
-	g_free (data->title);
-	g_free (data->description);
-	g_free (data->id);
-	g_free (data->web_url);
-	g_free (data->author);
-	g_slice_free (SummerFeedData, data);
-}
-
-/**
- * summer_item_data_free ():
- * @data: A %SummerItemData object.
- *
- * Free a %SummerItemData object.
- */
-void
-summer_item_data_free (SummerItemData *data)
-{
-	g_free (data->title);
-	g_free (data->description);
-	g_free (data->id);
-	g_free (data->web_url);
-	g_free (data->author);
-	g_slice_free (SummerItemData, data);
+			if (depth != -1 && depth >= xmlTextReaderDepth (reader)) {
+				depth = -1;
+				item = FALSE;
+			}
+			int i;
+			for (i = 0; ret == 1 && i < num_parsers; i++)
+				ret = summer_feed_parser_handle_node (parsers[i], reader, feed_data, &item);
+			if (depth == -1 && item)
+				depth = xmlTextReaderDepth (reader);
+			if (ret == 1)
+				ret = xmlTextReaderRead (reader);
+		}
+	}
+	return feed_data;
 }

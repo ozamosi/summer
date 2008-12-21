@@ -38,6 +38,8 @@ SUMMER_DOWNLOAD_GET_CLASS
 <TITLE>SummerFeed</TITLE>
 SummerFeed
 summer_feed_new
+summer_feed_set
+summer_feed_start
 <SUBSECTION Standard>
 SummerFeedClass
 SUMMER_FEED
@@ -57,10 +59,13 @@ SummerFeedData
 SummerItemData
 summer_feed_data_free
 summer_feed_data_new
-summer_feed_parser_handle_feed_node
-summer_feed_parser_handle_item_node
 summer_item_data_free
 summer_item_data_new
+SummerDownloadableData
+summer_downloadable_data_free
+summer_downloadable_data_new
+summer_feed_parser_handle_node
+summer_feed_parser_parse
 DO_WITH_TEXT_CONTENTS
 SAVE_ATTRIBUTE
 SAVE_TEXT_CONTENTS

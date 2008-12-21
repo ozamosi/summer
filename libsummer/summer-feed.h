@@ -1,6 +1,6 @@
 /* summer-feed.h */
 
-/* This file is part of summer_feed.
+/* This file is part of libsummer.
  * Copyright © 2008 Robin Sonefors <ozamosi@flukkost.nu>
  * 
  * Libsummer is free software: you can redistribute it and/or
@@ -23,11 +23,9 @@
 #define __SUMMER_FEED_H__
 
 #include <glib-object.h>
-/* other include files */
 
 G_BEGIN_DECLS
 
-/* convenience macros */
 #define SUMMER_TYPE_FEED             (summer_feed_get_type())
 #define SUMMER_FEED(obj)             (G_TYPE_CHECK_INSTANCE_CAST((obj),SUMMER_TYPE_FEED,SummerFeed))
 #define SUMMER_FEED_CLASS(klass)     (G_TYPE_CHECK_CLASS_CAST((klass),SUMMER_TYPE_FEED,SummerFeedClass))
@@ -40,26 +38,19 @@ typedef struct _SummerFeedClass SummerFeedClass;
 
 struct _SummerFeed {
 	 GObject parent;
-	/* insert public members, if any */
 };
 
 struct _SummerFeedClass {
 	GObjectClass parent_class;
-	/* insert signal callback declarations, eg. */
-	/* void (* my_event) (SummerFeed* obj); */
+	void (*new_entries) (SummerFeed *obj, gpointer user_data);
 };
 
-/* member functions */
 GType        summer_feed_get_type    (void) G_GNUC_CONST;
 
-/* typical parameter-less _new function */
-/* if this is a kind of GtkWidget, it should probably return at GtkWidget* */
 SummerFeed*    summer_feed_new         (void);
 
-/* fill in other public functions, eg.: */
-/* 	void       summer_feed_do_something (SummerFeed *self, const gchar* param); */
-/* 	gboolean   summer_feed_has_foo      (SummerFeed *self, gint value); */
-
+void summer_feed_start (SummerFeed *self, gchar *url);
+void summer_feed_set (gchar *first_property_name, va_list var_args);
 
 G_END_DECLS
 

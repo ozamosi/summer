@@ -26,11 +26,11 @@
 
 /**
  * SECTION:summer-rss2-parser
- * @short_description: A %summer-feed-parser that parses RSS2 feeds
+ * @short_description: A %SummerFeedParser that parses RSS2 feeds
  * @stability: Unstable
  * @include: libsummer/summer-rss2-parser.h
  *
- * A %summer-feed-parser that parses RSS feeds of the RSS2 "format tree". That 
+ * A %SummerFeedParser that parses RSS feeds of the RSS2 "format tree". That 
  * means it's supposed to be able to parse all RSS feeds, except RSS 0.90 and 
  * RSS 1.0 (so it should work with 0.91, 0.92, 0.93, 0.94, 2.0, 2.0.1).
  */
@@ -45,31 +45,9 @@ static void summer_rss2_parser_class_init (SummerRss2ParserClass *klass);
 static void summer_rss2_parser_init       (SummerRss2Parser *obj);
 static void summer_rss2_parser_finalize   (GObject *obj);
 
-static gint handle_feed_node (SummerFeedParser *self, xmlTextReaderPtr node, SummerFeedData *feed, gboolean *is_item);
-static gint handle_item_node (SummerFeedParser *self, xmlTextReaderPtr node, SummerItemData *item);
-
-enum {
-	PROP_0,
-	PROP_HANDLED_NAMESPACES
-};
+static gint handle_node (SummerFeedParser *self, xmlTextReaderPtr node, SummerFeedData *data, gboolean *is_item);
 
 G_DEFINE_TYPE (SummerRss2Parser, summer_rss2_parser, SUMMER_TYPE_FEED_PARSER);
-
-static void
-get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
-{
-	GValueArray *array;
-	switch (prop_id) {
-	case PROP_HANDLED_NAMESPACES:
-		array = g_value_array_new (0);
-		g_value_set_boxed (value, array);
-		g_value_array_free (array);
-		break;
-	default:
-		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-		break;
-	}
-}
 
 static void
 summer_rss2_parser_class_init (SummerRss2ParserClass *klass)
@@ -78,14 +56,10 @@ summer_rss2_parser_class_init (SummerRss2ParserClass *klass)
 	gobject_class = (GObjectClass*) klass;
 
 	gobject_class->finalize = summer_rss2_parser_finalize;
-	gobject_class->get_property = get_property;
-
-	g_object_class_override_property (gobject_class, PROP_HANDLED_NAMESPACES, "handled-namespaces");
 
 	SummerFeedParserClass *feed_parser_class;
 	feed_parser_class = SUMMER_FEED_PARSER_CLASS (klass);
-	feed_parser_class->handle_feed_node = handle_feed_node;
-	feed_parser_class->handle_item_node = handle_item_node;
+	feed_parser_class->handle_node = handle_node;
 }
 
 static void
@@ -105,13 +79,13 @@ summer_rss2_parser_finalize (GObject *obj)
  *
  * Returns: The newly created %SummerRss2Parser.
  */
- SummerRss2Parser*
+SummerRss2Parser*
 summer_rss2_parser_new (void)
 {
 	return SUMMER_RSS2_PARSER(g_object_new(SUMMER_TYPE_RSS2_PARSER, NULL));
 }
 
-static glong
+static time_t
 parse_rfc2822 (gchar *text) {
 	//[day,] dd Mon yyyy hh:mm:ss TZ
 	gchar *months[] = {
@@ -204,55 +178,46 @@ parse_rfc2822 (gchar *text) {
 static gint
 handle_feed_node (SummerFeedParser *self, xmlTextReaderPtr node, SummerFeedData *feed, gboolean *is_item)
 {
-	if (xmlTextReaderConstNamespaceUri (node) != NULL)
-		return 0;
-	
-	gint ret = 0;
-
+	gint ret = 1;
 	SAVE_TEXT_CONTENTS ("title", node, feed->title, ret);
 	SAVE_TEXT_CONTENTS ("description", node, feed->description, ret);
 	SAVE_TEXT_CONTENTS ("link", node, feed->web_url, ret);
 	SAVE_TEXT_CONTENTS ("managingEditor", node, feed->author, ret);
 	DO_WITH_TEXT_CONTENTS ("lastBuildDate", node, ret,
-		feed->updated.tv_sec = parse_rfc2822 (text));
+		feed->updated = parse_rfc2822 (text));
 
 	if (xmlStrEqual (xmlTextReaderConstLocalName (node), BAD_CAST ("item"))) {
 		*is_item = TRUE;
-	}
-
-	if (ret > 0) {
-		while (xmlTextReaderNodeType (node) != XML_READER_TYPE_ELEMENT) {
-			int r = xmlTextReaderRead (node);
-			if (r <= 0)
-				return -1;
-		}
+		feed->items = g_list_prepend (feed->items, summer_item_data_new ());
 	}
 
 	return ret;
 }
 
 static gint
-handle_item_node (SummerFeedParser *self, xmlTextReaderPtr node, SummerItemData *item)
+handle_item_node (SummerFeedParser *self, xmlTextReaderPtr node, SummerFeedData *feed)
 {
-	if (xmlTextReaderConstNamespaceUri (node) != NULL)
-		return 0;
-	
-	gint ret = 0;
+	SummerItemData *item = (SummerItemData *)feed->items->data;
+	gint ret = 1;
 	
 	SAVE_TEXT_CONTENTS ("title", node, item->title, ret);
 	SAVE_TEXT_CONTENTS ("description", node, item->description, ret);
 	SAVE_TEXT_CONTENTS ("guid", node, item->id, ret);
 	DO_WITH_TEXT_CONTENTS ("pubDate", node, ret, 
-		item->updated.tv_sec = parse_rfc2822 (text));
+		item->updated = parse_rfc2822 (text));
 	SAVE_TEXT_CONTENTS ("link", node, item->web_url, ret);
 
-	if (ret > 0) {
-		while (xmlTextReaderNodeType (node) != XML_READER_TYPE_ELEMENT) {
-			int r = xmlTextReaderRead (node);
-			if (r <= 0)
-				return -1;
-		}
-	}
-
 	return ret;
+}
+
+static gint
+handle_node (SummerFeedParser *self, xmlTextReaderPtr node, SummerFeedData *data, gboolean *is_item)
+{
+	if (xmlTextReaderConstNamespaceUri (node) != NULL)
+		return 1;
+	
+	if (*is_item)
+		return handle_item_node (self, node, data);
+	else
+		return handle_feed_node (self, node, data, is_item);
 }

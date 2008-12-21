@@ -24,6 +24,7 @@
 
 #include <libxml/xmlreader.h>
 #include <glib-object.h>
+#include "summer-data-types.h"
 
 G_BEGIN_DECLS
 
@@ -36,8 +37,6 @@ G_BEGIN_DECLS
 
 typedef struct _SummerFeedParser      SummerFeedParser;
 typedef struct _SummerFeedParserClass SummerFeedParserClass;
-typedef struct _SummerFeedData            SummerFeedData;
-typedef struct _SummerItemData            SummerItemData;
 
 struct _SummerFeedParser {
 	GObject parent;
@@ -45,40 +44,13 @@ struct _SummerFeedParser {
 
 struct _SummerFeedParserClass {
 	GObjectClass parent_class;
-
-	gint (*handle_feed_node) (SummerFeedParser* self, xmlTextReaderPtr node, SummerFeedData *feed, gboolean *is_item);
-	gint (*handle_item_node) (SummerFeedParser* self, xmlTextReaderPtr node, SummerItemData *feed);
+	gint (*handle_node) (SummerFeedParser *self, xmlTextReaderPtr node, SummerFeedData *feed, gboolean *is_item);
 };
 
 GType        summer_feed_parser_get_type    (void) G_GNUC_CONST;
 
-gint summer_feed_parser_handle_feed_node (SummerFeedParser* self, xmlTextReaderPtr node, SummerFeedData *feed, gboolean *is_item);
-gint summer_feed_parser_handle_item_node (SummerFeedParser* self, xmlTextReaderPtr node, SummerItemData *item);
-
-struct _SummerFeedData {
-	gchar *title;
-	gchar *description;
-	gchar *id;
-	gchar *web_url;
-	gchar *author;
-	GTimeVal updated;
-};
-
-struct _SummerItemData {
-	gchar *title;
-	gchar *description;
-	gchar *id;
-	gchar *web_url;
-	gchar *author;
-	GTimeVal updated;
-};
-
-SummerFeedData* summer_feed_data_new (void);
-SummerItemData* summer_item_data_new (void);
-
-void summer_feed_data_free (SummerFeedData *data);
-void summer_item_data_free (SummerItemData *data);
-
+gint summer_feed_parser_handle_node (SummerFeedParser *self, xmlTextReaderPtr node, SummerFeedData *feed, gboolean *is_item);
+SummerFeedData* summer_feed_parser_parse (SummerFeedParser **parsers, int num_parsers, xmlTextReaderPtr reader);
 /**
  * SAVE_TEXT_CONTENTS():
  * @element_name: the name of the element you're looking for
@@ -93,12 +65,11 @@ void summer_item_data_free (SummerItemData *data);
 #define SAVE_TEXT_CONTENTS(element_name, node, result, ret) \
 	if (xmlStrEqual (xmlTextReaderConstLocalName (node), BAD_CAST (element_name))) { \
 		while (xmlTextReaderNodeType (node) != XML_READER_TYPE_TEXT) { \
-			int r; \
-			r = xmlTextReaderRead (node); \
-			if (r <= 0) \
-				return -1; \
+			ret = xmlTextReaderRead (node); \
+			if (ret <= 0) \
+				return ret; \
 			result = (gchar*) xmlTextReaderValue (node); \
-			ret = 1; \
+			ret = 2; \
 			break; \
 		} \
 	}
@@ -121,9 +92,10 @@ void summer_item_data_free (SummerItemData *data);
 		int r = 1; \
 		while (r > 0) {\
 			r = xmlTextReaderMoveToNextAttribute (node); \
-			if (r > 0 && xmlStrEqual (xmlTextReaderConstLocalName (node), BAD_CAST (attribute_name))) { \
+			if (r > 0 && xmlStrEqual (xmlTextReaderConstLocalName (node), \
+					BAD_CAST (attribute_name))) { \
 				result = (gchar *) xmlTextReaderValue (node); \
-				ret = 1; \
+				ret = 2; \
 				break; \
 			} \
 		} \
@@ -148,14 +120,13 @@ void summer_item_data_free (SummerItemData *data);
 #define DO_WITH_TEXT_CONTENTS(element_name, node, ret, code) \
 	if (xmlStrEqual (xmlTextReaderConstLocalName (node), BAD_CAST (element_name))) { \
 		while (xmlTextReaderNodeType (node) != XML_READER_TYPE_TEXT) { \
-			int r; \
-			r = xmlTextReaderRead (node); \
-			if (r <= 0) \
-				return -1; \
+			ret = xmlTextReaderRead (node); \
+			if (ret <= 0) \
+				return ret; \
 			gchar *text = (gchar*) xmlTextReaderValue (node); \
 			code; \
 			g_free (text); \
-			ret = 1; \
+			ret = 2; \
 			break; \
 		} \
 	}

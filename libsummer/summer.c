@@ -54,7 +54,7 @@ summer_set (gchar *module_name, gchar *first_property_name, ...)
 	va_list var_args;
 	if (!g_strcmp0 (module_name, "feed")) {
 		va_start (var_args, first_property_name);
-//		summer_feed_downloader_set (first_property_name, var_args);
+//		summer_feed_set (first_property_name, var_args);
 		va_end (var_args);
 	} else if (!g_strcmp0 (module_name, "download")) {
 		va_start (var_args, first_property_name);

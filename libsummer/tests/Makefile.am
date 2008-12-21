@@ -22,11 +22,14 @@ TEST_PROGS += \
 	test_download \
 	test_download_web \
 	test_atom_feed \
-	test_rss2_feed
+	test_rss2_feed \
+	test_feed
+
 test_web_backend_SOURCES = test-web-backend.c server.c server.h
 test_download_SOURCES = test-download.c server.c server.h
 test_download_web_SOURCES = test-download-web.c server.c server.h
 test_atom_feed_SOURCES = test-atom-feed.c
 test_rss2_feed_SOURCES = test-rss2-feed.c
+test_feed_SOURCES = test-feed.c server.c server.h
 
 EXTRA_DIST = atom_feed

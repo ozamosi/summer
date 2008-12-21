@@ -61,15 +61,15 @@ enum {
 	PROP_SAVE_DIR
 };
 
-G_DEFINE_TYPE (SummerDownload, summer_download, G_TYPE_OBJECT);
+G_DEFINE_ABSTRACT_TYPE (SummerDownload, summer_download, G_TYPE_OBJECT);
 
 static void
-set_property (GObject *object, guint property_id, const GValue *value,
+set_property (GObject *object, guint prop_id, const GValue *value,
 	GParamSpec *pspec)
 {
 	SummerDownloadPrivate *priv;
 	priv = SUMMER_DOWNLOAD_GET_PRIVATE (object);
-	switch (property_id) {
+	switch (prop_id) {
 	case PROP_SAVE_DIR:
 		if (priv->save_dir)
 			g_free (priv->save_dir);
@@ -81,24 +81,26 @@ set_property (GObject *object, guint property_id, const GValue *value,
 		priv->tmp_dir = g_value_dup_string (value);
 		break;
 	default:
-		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
 	}
 }
 
 static void
-get_property (GObject *object, guint property_id, GValue *value,
-	GParamSpec *pspec)
+get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 {
 	SummerDownloadPrivate *priv;
 	priv = SUMMER_DOWNLOAD_GET_PRIVATE (object);
 
-	switch (property_id) {
+	switch (prop_id) {
 	case PROP_SAVE_DIR:
 		g_value_set_string (value, priv->save_dir);
 		break;
 	case PROP_TMP_DIR:
 		g_value_set_string (value, priv->tmp_dir);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
 	}
 }
@@ -136,10 +138,10 @@ summer_download_class_init (SummerDownloadClass *klass)
 	 * from the value set by %summer_set on construction.
 	 */
 	pspec = g_param_spec_string ("tmp-dir",
-		"Temp directory",
-		"The directory where incomplete downloads should be stored",
-		"/",
-		G_PARAM_READWRITE);
+			"Temp directory",
+			"The directory where incomplete downloads should be stored",
+			"/",
+			G_PARAM_READWRITE);
 	g_object_class_install_property (gobject_class, PROP_TMP_DIR, pspec);
 
 	/**
@@ -152,15 +154,15 @@ summer_download_class_init (SummerDownloadClass *klass)
 	 * to it's final destination.
 	 */
 	g_signal_new (
-		"download-complete",
-		SUMMER_TYPE_DOWNLOAD,
-		G_SIGNAL_RUN_FIRST,
-		G_STRUCT_OFFSET (SummerDownloadClass, download_complete),
-		NULL, NULL,
-		g_cclosure_marshal_VOID__STRING,
-		G_TYPE_NONE,
-		1,
-		G_TYPE_STRING);
+			"download-complete",
+			SUMMER_TYPE_DOWNLOAD,
+			G_SIGNAL_RUN_FIRST,
+			G_STRUCT_OFFSET (SummerDownloadClass, download_complete),
+			NULL, NULL,
+			g_cclosure_marshal_VOID__STRING,
+			G_TYPE_NONE,
+			1,
+			G_TYPE_STRING);
 	/**
 	 * SummerDownload::download-update:
 	 * @obj: the %SummerDownload object that emitted the signal
@@ -172,18 +174,18 @@ summer_download_class_init (SummerDownloadClass *klass)
 	 * retrieved.
 	 */
 	g_signal_new (
-		"download-update",
-		SUMMER_TYPE_DOWNLOAD,
-		G_SIGNAL_RUN_FIRST,
-		G_STRUCT_OFFSET (SummerDownloadClass, download_update),
-		NULL, NULL,
-		summer_marshal_VOID__INT_INT,
-		G_TYPE_NONE,
-		2,
-		G_TYPE_INT, G_TYPE_INT);
+			"download-update",
+			SUMMER_TYPE_DOWNLOAD,
+			G_SIGNAL_RUN_FIRST,
+			G_STRUCT_OFFSET (SummerDownloadClass, download_update),
+			NULL, NULL,
+			summer_marshal_VOID__INT_INT,
+			G_TYPE_NONE,
+			2,
+			G_TYPE_INT, G_TYPE_INT);
 }
 
-static void
+	static void
 summer_download_init (SummerDownload *self)
 {
 	g_object_set (self, "save-dir", save_dir, "tmp-dir", tmp_dir, NULL);
