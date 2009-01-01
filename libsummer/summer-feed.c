@@ -22,6 +22,7 @@
 #include "summer-feed.h"
 #include <string.h>
 #include <libxml/xmlreader.h>
+#include <gio/gio.h>
 #include "summer-feed-parser.h"
 #include "summer-atom-parser.h"
 #include "summer-rss2-parser.h"

@@ -80,7 +80,14 @@ on_download_complete (SummerWebBackend *web_backend, gchar *save_path, gchar *sa
 	g_object_get (self, "save-dir", &save_dir, NULL);
 	destpath = g_build_filename (save_dir, g_file_get_basename (src), NULL);
 	GFile *dest = g_file_new_for_path (destpath);
+	GFile *destdir = g_file_new_for_path (save_dir);
 	GError *error = NULL;
+	if (!g_file_query_exists (destdir, NULL)) {
+		if (!g_file_make_directory_with_parents (destdir, NULL, &error)) {
+			g_warning ("%s", error->message);
+			g_clear_error (&error);
+		}
+	}
 	if (!g_file_move (src, dest, G_FILE_COPY_NONE, NULL, NULL, NULL, &error)) {
 		g_warning ("%s", error->message);
 		g_clear_error (&error);
