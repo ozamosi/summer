@@ -1,6 +1,6 @@
 /* summer-download-web.h */
 
-/* This file is part of summer_download_web.
+/* This file is part of libsummer.
  * Copyright © 2008 Robin Sonefors <ozamosi@flukkost.nu>
  * 
  * Libsummer is free software: you can redistribute it and/or
@@ -33,11 +33,13 @@ G_BEGIN_DECLS
 #define SUMMER_IS_DOWNLOAD_WEB_CLASS(klass)  (G_TYPE_CHECK_CLASS_TYPE((klass),SUMMER_TYPE_DOWNLOAD_WEB))
 #define SUMMER_DOWNLOAD_WEB_GET_CLASS(obj)   (G_TYPE_INSTANCE_GET_CLASS((obj),SUMMER_TYPE_DOWNLOAD_WEB,SummerDownloadWebClass))
 
-typedef struct _SummerDownloadWeb      SummerDownloadWeb;
-typedef struct _SummerDownloadWebClass SummerDownloadWebClass;
+typedef struct _SummerDownloadWeb        SummerDownloadWeb;
+typedef struct _SummerDownloadWebClass   SummerDownloadWebClass;
+typedef struct _SummerDownloadWebPrivate SummerDownloadWebPrivate;
 
 struct _SummerDownloadWeb {
 	 SummerDownload parent;
+	 SummerDownloadWebPrivate *priv;
 };
 
 struct _SummerDownloadWebClass {

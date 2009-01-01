@@ -43,7 +43,6 @@ static void summer_download_class_init (SummerDownloadClass *klass);
 static void summer_download_init       (SummerDownload *obj);
 static void summer_download_finalize   (GObject *obj);
 
-typedef struct _SummerDownloadPrivate SummerDownloadPrivate;
 struct _SummerDownloadPrivate {
 	gchar *tmp_dir;
 	gchar *save_dir;
@@ -68,7 +67,7 @@ set_property (GObject *object, guint prop_id, const GValue *value,
 	GParamSpec *pspec)
 {
 	SummerDownloadPrivate *priv;
-	priv = SUMMER_DOWNLOAD_GET_PRIVATE (object);
+	priv = SUMMER_DOWNLOAD (object)->priv;
 	switch (prop_id) {
 	case PROP_SAVE_DIR:
 		if (priv->save_dir)
@@ -90,7 +89,7 @@ static void
 get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 {
 	SummerDownloadPrivate *priv;
-	priv = SUMMER_DOWNLOAD_GET_PRIVATE (object);
+	priv = SUMMER_DOWNLOAD (object)->priv;
 
 	switch (prop_id) {
 	case PROP_SAVE_DIR:
@@ -185,9 +184,10 @@ summer_download_class_init (SummerDownloadClass *klass)
 			G_TYPE_INT, G_TYPE_INT);
 }
 
-	static void
+static void
 summer_download_init (SummerDownload *self)
 {
+	self->priv = SUMMER_DOWNLOAD_GET_PRIVATE (self);
 	g_object_set (self, "save-dir", save_dir, "tmp-dir", tmp_dir, NULL);
 }
 
@@ -195,7 +195,7 @@ static void
 summer_download_finalize (GObject *self)
 {
 	SummerDownloadPrivate *priv;
-	priv = SUMMER_DOWNLOAD_GET_PRIVATE (self);
+	priv = SUMMER_DOWNLOAD (self)->priv;
 	if (priv->save_dir)
 		g_free (priv->save_dir);
 	if (priv->tmp_dir)

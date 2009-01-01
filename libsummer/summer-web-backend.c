@@ -56,7 +56,6 @@ static void summer_web_backend_class_init (SummerWebBackendClass *klass);
 static void summer_web_backend_init       (SummerWebBackend *obj);
 static void summer_web_backend_finalize   (GObject *obj);
 
-typedef struct _SummerWebBackendPrivate SummerWebBackendPrivate;
 struct _SummerWebBackendPrivate {
 	gchar *save_dir;
 	gchar *url;
@@ -83,7 +82,7 @@ set_property (GObject *object, guint prop_id, const GValue *value,
 	GParamSpec *pspec)
 {
 	SummerWebBackendPrivate *priv;
-	priv = SUMMER_WEB_BACKEND_GET_PRIVATE (object);
+	priv = SUMMER_WEB_BACKEND (object)->priv;
 
 	switch (prop_id) {
 	case PROP_SAVE_DIR:
@@ -106,7 +105,7 @@ static void
 get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 {
 	SummerWebBackendPrivate *priv;
-	priv = SUMMER_WEB_BACKEND_GET_PRIVATE (object);
+	priv = SUMMER_WEB_BACKEND (object)->priv;
 
 	switch (prop_id) {
 	case PROP_SAVE_DIR:
@@ -212,16 +211,16 @@ summer_web_backend_init (SummerWebBackend *self)
 		g_object_ref (session);
 	else
 		session = soup_session_async_new ();
-	SummerWebBackendPrivate *priv = SUMMER_WEB_BACKEND_GET_PRIVATE (self);
-	priv->filename = NULL;
-	priv->outfile = NULL;
+	self->priv = SUMMER_WEB_BACKEND_GET_PRIVATE (self);
+	self->priv->filename = NULL;
+	self->priv->outfile = NULL;
 }
 
 static void
 summer_web_backend_finalize (GObject *self)
 {
 	g_object_unref (session);
-	SummerWebBackendPrivate *priv = SUMMER_WEB_BACKEND_GET_PRIVATE(self);
+	SummerWebBackendPrivate *priv = SUMMER_WEB_BACKEND (self)->priv;
 	if (priv->save_dir != NULL)
 		g_free (priv->save_dir);
 	if (priv->url != NULL)
@@ -255,7 +254,7 @@ on_downloaded (SoupSession *session, SoupMessage *msg, gpointer user_data)
 	g_return_if_fail (SOUP_IS_SESSION (session));
 	g_return_if_fail (SOUP_IS_MESSAGE (msg));
 	SummerWebBackend *self = SUMMER_WEB_BACKEND (user_data);
-	SummerWebBackendPrivate *priv = SUMMER_WEB_BACKEND_GET_PRIVATE(self);
+	SummerWebBackendPrivate *priv = self->priv;
 	if (priv->outfile) {
 		GError *error = NULL;
 		g_output_stream_close (G_OUTPUT_STREAM (priv->outfile), NULL, &error);
@@ -273,7 +272,7 @@ on_got_chunk (SoupMessage *msg, SoupBuffer *chunk, gpointer user_data)
 	g_return_if_fail (SUMMER_IS_WEB_BACKEND (user_data));
 	g_return_if_fail (SOUP_IS_MESSAGE (msg));
 	SummerWebBackend *self = SUMMER_WEB_BACKEND (user_data);
-	SummerWebBackendPrivate *priv = SUMMER_WEB_BACKEND_GET_PRIVATE(self);
+	SummerWebBackendPrivate *priv = self->priv;
 	
 	if (priv->outfile) {
 		GError *error = NULL;
@@ -294,10 +293,10 @@ on_got_headers (SoupMessage *msg, gpointer user_data)
 	g_return_if_fail (SUMMER_IS_WEB_BACKEND (user_data));
 	g_return_if_fail (SOUP_IS_MESSAGE (msg));
 	SummerWebBackend *self = SUMMER_WEB_BACKEND (user_data);
-	SummerWebBackendPrivate *priv = SUMMER_WEB_BACKEND_GET_PRIVATE (self);
+	SummerWebBackendPrivate *priv = self->priv;
 	if (msg->status_code >= 400) {
 		g_signal_emit_by_name (self, "download-complete", NULL, NULL);
-		g_object_unref (msg); //FIXME: does this properly terminate the connection?
+		g_object_unref (msg);
 	}
 	goffset length;
 	length = soup_message_headers_get_content_length (msg->response_headers);
@@ -317,7 +316,7 @@ void
 summer_web_backend_fetch (SummerWebBackend *self)
 {
 	g_return_if_fail (SUMMER_IS_WEB_BACKEND (self));
-	SummerWebBackendPrivate *priv = SUMMER_WEB_BACKEND_GET_PRIVATE(self);
+	SummerWebBackendPrivate *priv = self->priv;
 
 	if (priv->save_dir != NULL) {
 		gchar** parts = g_strsplit (priv->url, "/", 0);

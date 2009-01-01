@@ -33,11 +33,13 @@ G_BEGIN_DECLS
 #define SUMMER_IS_FEED_CLASS(klass)  (G_TYPE_CHECK_CLASS_TYPE((klass),SUMMER_TYPE_FEED))
 #define SUMMER_FEED_GET_CLASS(obj)   (G_TYPE_INSTANCE_GET_CLASS((obj),SUMMER_TYPE_FEED,SummerFeedClass))
 
-typedef struct _SummerFeed      SummerFeed;
-typedef struct _SummerFeedClass SummerFeedClass;
+typedef struct _SummerFeed        SummerFeed;
+typedef struct _SummerFeedClass   SummerFeedClass;
+typedef struct _SummerFeedPrivate SummerFeedPrivate;
 
 struct _SummerFeed {
 	 GObject parent;
+	 SummerFeedPrivate *priv;
 };
 
 struct _SummerFeedClass {
@@ -50,6 +52,7 @@ GType        summer_feed_get_type    (void) G_GNUC_CONST;
 SummerFeed*    summer_feed_new         (void);
 
 void summer_feed_start (SummerFeed *self, gchar *url);
+
 void summer_feed_set (gchar *first_property_name, va_list var_args);
 
 G_END_DECLS

@@ -24,7 +24,8 @@ INCLUDES = \
 	$(SOUP_CFLAGS) \
 	$(WARN_CFLAGS) \
 	$(DISABLE_DEPRECATED) \
-	-include $(CONFIG_HEADER)
+	-include $(CONFIG_HEADER) \
+	-Wall -Wextra
 
 lib_LTLIBRARIES = libsummer.la
 

@@ -46,7 +46,6 @@ static void summer_download_web_class_init (SummerDownloadWebClass *klass);
 static void summer_download_web_init       (SummerDownloadWeb *obj);
 static void summer_download_web_finalize   (GObject *obj);
 
-typedef struct _SummerDownloadWebPrivate SummerDownloadWebPrivate;
 struct _SummerDownloadWebPrivate {
 	SummerWebBackend *web;
 	gchar *url;
@@ -74,7 +73,7 @@ on_download_complete (SummerWebBackend *web_backend, gchar *save_path, gchar *sa
 {
 	g_return_if_fail (SUMMER_IS_DOWNLOAD_WEB (user_data));
 	SummerDownload *self = SUMMER_DOWNLOAD (user_data);
-	SummerDownloadWebPrivate *priv = SUMMER_DOWNLOAD_WEB_GET_PRIVATE (self);
+	SummerDownloadWebPrivate *priv = SUMMER_DOWNLOAD_WEB (user_data)->priv;
 	g_object_unref (priv->web);
 	GFile *src = g_file_new_for_path (save_path);
 	gchar *destpath, *save_dir;
@@ -97,7 +96,7 @@ static void
 start (SummerDownload *self)
 {
 	g_return_if_fail (SUMMER_IS_DOWNLOAD_WEB (self));
-	SummerDownloadWebPrivate *priv = SUMMER_DOWNLOAD_WEB_GET_PRIVATE (self);
+	SummerDownloadWebPrivate *priv = SUMMER_DOWNLOAD_WEB (self)->priv;
 	g_signal_connect (priv->web, "download-chunk", G_CALLBACK (on_download_chunk), self);
 	g_signal_connect (priv->web, "download-complete", G_CALLBACK (on_download_complete), self);
 	summer_web_backend_fetch (priv->web);
@@ -114,7 +113,7 @@ constructor (GType gtype, guint n_properties, GObjectConstructParam *properties)
 	gchar *url;
 	gchar *save_dir;
 	g_object_get (obj, "tmp-dir", &save_dir, "url", &url, NULL);
-	SummerDownloadWebPrivate *priv = SUMMER_DOWNLOAD_WEB_GET_PRIVATE (obj);
+	SummerDownloadWebPrivate *priv = SUMMER_DOWNLOAD_WEB (obj)->priv;
 	priv->web = summer_web_backend_new (save_dir, url);
 	g_free (save_dir);
 	g_free (url);
@@ -127,7 +126,7 @@ set_property (GObject *object, guint property_id, const GValue *value,
 	GParamSpec *pspec)
 {
 	SummerDownloadWebPrivate *priv;
-	priv = SUMMER_DOWNLOAD_WEB_GET_PRIVATE (object);
+	priv = SUMMER_DOWNLOAD_WEB (object)->priv;
 
 	switch (property_id) {
 	case PROP_URL:
@@ -146,7 +145,7 @@ get_property (GObject *object, guint property_id, GValue *value,
 	GParamSpec *pspec)
 {
 	SummerDownloadWebPrivate *priv;
-	priv = SUMMER_DOWNLOAD_WEB_GET_PRIVATE (object);
+	priv = SUMMER_DOWNLOAD_WEB (object)->priv;
 
 	switch (property_id) {
 	case PROP_URL:
@@ -190,14 +189,15 @@ summer_download_web_class_init (SummerDownloadWebClass *klass)
 }
 
 static void
-summer_download_web_init (SummerDownloadWeb *obj)
+summer_download_web_init (SummerDownloadWeb *self)
 {
+	self->priv = SUMMER_DOWNLOAD_WEB_GET_PRIVATE (self);
 }
 
 static void
 summer_download_web_finalize (GObject *obj)
 {
-	SummerDownloadWebPrivate *priv = SUMMER_DOWNLOAD_WEB_GET_PRIVATE(obj);
+	SummerDownloadWebPrivate *priv = SUMMER_DOWNLOAD_WEB (obj)->priv;
 	if (G_IS_OBJECT (priv->web))
 		g_object_unref (priv->web);
 	if (priv->url)

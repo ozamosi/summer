@@ -89,13 +89,13 @@ summer_feed_parser_handle_node (SummerFeedParser* self,
 
 /**
  * summer_feed_parser_parse:
- * @parsers: an array of SummerFeedParser objects
+ * @parsers: an array of %SummerFeedParser objects
  * @num_parsers: the number of elements in @parsers
  * @reader: the xmlTextReader
  *
  * Parses a given XML reader stream, with the given parsers.
  *
- * Returns: a SummerFeedData, representing the parsed feed.
+ * Returns: a %SummerFeedData, representing the parsed feed.
  */
 
 SummerFeedData*

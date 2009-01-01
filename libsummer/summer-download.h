@@ -33,11 +33,13 @@ G_BEGIN_DECLS
 #define SUMMER_IS_DOWNLOAD_CLASS(klass)  (G_TYPE_CHECK_CLASS_TYPE((klass),SUMMER_TYPE_DOWNLOAD))
 #define SUMMER_DOWNLOAD_GET_CLASS(obj)   (G_TYPE_INSTANCE_GET_CLASS((obj),SUMMER_TYPE_DOWNLOAD,SummerDownloadClass))
 
-typedef struct _SummerDownload      SummerDownload;
-typedef struct _SummerDownloadClass SummerDownloadClass;
+typedef struct _SummerDownload        SummerDownload;
+typedef struct _SummerDownloadClass   SummerDownloadClass;
+typedef struct _SummerDownloadPrivate SummerDownloadPrivate;
 
 struct _SummerDownload {
 	 GObject parent;
+	 SummerDownloadPrivate *priv;
 };
 
 struct _SummerDownloadClass {

@@ -26,7 +26,7 @@ LIBSOUP_REQUIRED=2.4
 
 AM_PATH_GLIB_2_0($GLIB_REQUIRED,,,gobject gio gmodule)
 if test "$GLIB_LIBS" = ""; then
-	   AC_MSG_ERROR(GLIB $GLIB_REQUIRED or later is required to build libsoup)
+	   AC_MSG_ERROR(GLIB $GLIB_REQUIRED or later is required to build libsummer)
 fi
 GLIB_CFLAGS="$GLIB_CFLAGS -DG_DISABLE_SINGLE_INCLUDES"
 

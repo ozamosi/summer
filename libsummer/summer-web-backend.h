@@ -33,11 +33,13 @@ G_BEGIN_DECLS
 #define SUMMER_IS_WEB_BACKEND_CLASS(klass)  (G_TYPE_CHECK_CLASS_TYPE((klass),SUMMER_TYPE_WEB_BACKEND))
 #define SUMMER_WEB_BACKEND_GET_CLASS(obj)   (G_TYPE_INSTANCE_GET_CLASS((obj),SUMMER_TYPE_WEB_BACKEND,SummerWebBackendClass))
 
-typedef struct _SummerWebBackend      SummerWebBackend;
-typedef struct _SummerWebBackendClass SummerWebBackendClass;
+typedef struct _SummerWebBackend        SummerWebBackend;
+typedef struct _SummerWebBackendClass   SummerWebBackendClass;
+typedef struct _SummerWebBackendPrivate SummerWebBackendPrivate;
 
 struct _SummerWebBackend {
-	 GObject parent;
+	GObject parent;
+	SummerWebBackendPrivate *priv;
 };
 
 struct _SummerWebBackendClass {

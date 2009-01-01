@@ -47,7 +47,6 @@ static void summer_feed_class_init (SummerFeedClass *klass);
 static void summer_feed_init       (SummerFeed *obj);
 static void summer_feed_finalize   (GObject *obj);
 
-typedef struct _SummerFeedPrivate SummerFeedPrivate;
 struct _SummerFeedPrivate {
 	gchar *url;
 	gchar *cache_dir;
@@ -82,7 +81,7 @@ set_property (GObject *object, guint prop_id, const GValue *value,
 	GParamSpec *pspec)
 {
 	SummerFeedPrivate *priv;
-	priv = SUMMER_FEED_GET_PRIVATE (object);
+	priv = SUMMER_FEED (object)->priv;
 
 	switch (prop_id) {
 	case PROP_CACHE_DIR:
@@ -122,8 +121,9 @@ set_glist (GValue *value, GList *list)
 static void
 get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 {
+	SummerFeed *self = SUMMER_FEED (object);
 	SummerFeedPrivate *priv;
-	priv = SUMMER_FEED_GET_PRIVATE (object);
+	priv = self->priv;
 
 	switch (prop_id) {
 	case PROP_CACHE_DIR:
@@ -266,8 +266,10 @@ summer_feed_class_init (SummerFeedClass *klass)
 }
 
 static void
-summer_feed_init (SummerFeed *obj)
+summer_feed_init (SummerFeed *self)
 {
+	self->priv = SUMMER_FEED_GET_PRIVATE (self);
+	g_object_set (self, "cache-dir", cache_dir, "frequency", frequency, NULL);
 }
 
 static void
@@ -293,13 +295,15 @@ static void
 on_downloaded (SummerWebBackend *web, gchar *save_path, gchar *save_data, gpointer user_data)
 {
 	SummerFeed *self = SUMMER_FEED (user_data);
-	SummerFeedPrivate *priv = SUMMER_FEED_GET_PRIVATE (self);
-	SummerFeedParser *parsers[] = {
-		SUMMER_FEED_PARSER (summer_atom_parser_new ()),
-		SUMMER_FEED_PARSER (summer_rss2_parser_new ())};
-	xmlParserInputBufferPtr buffer = xmlParserInputBufferCreateMem (save_data, strlen (save_data), 0);
-	xmlTextReaderPtr reader = xmlNewTextReader (buffer, priv->url);
-	priv->feed_data = summer_feed_parser_parse (parsers, sizeof (parsers) / sizeof (*parsers), reader);
+	SummerFeedPrivate *priv = self->priv;
+	if (save_data) {
+		SummerFeedParser *parsers[] = {
+			SUMMER_FEED_PARSER (summer_atom_parser_new ()),
+			SUMMER_FEED_PARSER (summer_rss2_parser_new ())};
+		xmlParserInputBufferPtr buffer = xmlParserInputBufferCreateMem (save_data, strlen (save_data), 0);
+		xmlTextReaderPtr reader = xmlNewTextReader (buffer, priv->url);
+		priv->feed_data = summer_feed_parser_parse (parsers, sizeof (parsers) / sizeof (*parsers), reader);
+	}
 	g_signal_emit_by_name (self, "new-entries");
 }
 
@@ -338,7 +342,9 @@ summer_feed_set (gchar *first_property_name, va_list var_args)
 				g_free (cache_dir);
 			cache_dir = g_strdup (va_arg (var_args, gchar*));
 		} else if (!g_strcmp0 (name, "frequency")) {
-			frequency = va_arg (var_args, int);
+			frequency = va_arg (var_args, gint);
+		} else {
+			g_error ("Invalid property for feed: \"%s\"", name);
 		}
 		name = va_arg (var_args, gchar*);
 	}
