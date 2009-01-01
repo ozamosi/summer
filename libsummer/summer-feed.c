@@ -180,14 +180,14 @@ summer_feed_class_init (SummerFeedClass *klass)
 		"Cache directory",
 		"The directory to store cache files in. NULL to not cache.",
 		NULL,
-		G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
+		G_PARAM_READWRITE);
 	g_object_class_install_property (gobject_class, PROP_CACHE_DIR, pspec);
 
 	pspec = g_param_spec_int ("frequency",
 		"Frequency",
 		"The number of seconds between feed refetches. 0 to disable.",
 		0, 65535, 0,
-		G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+		G_PARAM_READWRITE);
 	g_object_class_install_property (gobject_class, PROP_FREQUENCY, pspec);
 
 	pspec = g_param_spec_string ("url",

@@ -50,10 +50,12 @@ settings ()
 	gchar *cache_dir;
 	gchar *url;
 	gint frequency;
-	g_object_get (G_OBJECT (feed), "cache-dir", &cache_dir, "frequency", &frequency, "url", &url, NULL);
+	g_object_get (feed, "cache-dir", &cache_dir, "frequency", &frequency, "url", &url, NULL);
 	g_assert_cmpstr (cache_dir, ==, g_get_tmp_dir ());
 	g_assert_cmpint (frequency, ==, 900);
 	g_assert_cmpstr (url, ==, "http://localhost:52853/feeds/epicfu");
+	g_free (cache_dir);
+	g_free (url);
 	g_object_unref (feed);
 }
 
@@ -63,7 +65,7 @@ int main (int argc, char *argv[]) {
 	g_test_init (&argc, &argv, NULL);
 
 	g_test_add ("/feed/create", WebFixture, 0, web_setup, create, web_teardown);
-	g_test_add ("/feed/settings", WebFixture, 0, web_setup, create, web_teardown);
+	g_test_add ("/feed/settings", WebFixture, 0, web_setup, settings, web_teardown);
 
 	return g_test_run ();
 }
