@@ -25,6 +25,11 @@ feedburner ()
 	g_assert_cmpstr (item_data->title, ==, "postcard secrets, killing plastic, emo hate");
 	g_assert_cmpstr (item_data->id, ==, "http://epicfu.com/2008/08/postcard-secrets-killing-plast.html");
 	g_assert_cmpstr (item_data->web_url, ==, "http://feeds.feedburner.com/~r/epicfu/~3/470132724/postcard-secrets-killing-plast.html");
+	g_assert_cmpint (g_list_length (item_data->downloadables), ==, 1);
+	SummerDownloadableData *dl_data = (SummerDownloadableData *)item_data->downloadables->data;
+	g_assert_cmpstr (dl_data->url, ==, "http://feeds.feedburner.com/~r/epicfu/~5/365143000/epicfu--0123--postsecret--large.h264.mp4");
+	g_assert_cmpstr (dl_data->mime, ==, "video/quicktime");
+	g_assert_cmpint (dl_data->length, ==, 0);
 	summer_feed_data_free (feed_data);
 }
 

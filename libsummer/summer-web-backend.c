@@ -320,7 +320,9 @@ summer_web_backend_fetch (SummerWebBackend *self)
 
 	if (priv->save_dir != NULL) {
 		gchar** parts = g_strsplit (priv->url, "/", 0);
-		priv->filename = g_build_filename (priv->save_dir, parts[sizeof (parts)], NULL);
+		gchar** filename;
+		for (filename = parts; *filename != NULL; filename++) {}
+		priv->filename = g_build_filename (priv->save_dir, *(--filename), NULL);
 		g_strfreev (parts);
 		GFile *file = g_file_new_for_path (priv->filename);
 		GError *error = NULL;

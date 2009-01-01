@@ -207,6 +207,26 @@ handle_item_node (SummerFeedParser *self, xmlTextReaderPtr node, SummerFeedData 
 		item->updated = parse_rfc2822 (text));
 	SAVE_TEXT_CONTENTS ("link", node, item->web_url, ret);
 
+	if (xmlStrEqual (xmlTextReaderConstLocalName (node), BAD_CAST ("enclosure"))) {
+		SummerDownloadableData *dl = summer_downloadable_data_new ();
+		int r = 1;
+		while (r > 0) {
+			r = xmlTextReaderMoveToNextAttribute (node);
+			if (r > 0 && xmlStrEqual (xmlTextReaderConstLocalName (node),
+					BAD_CAST ("url"))) {
+				dl->url = (gchar *)xmlTextReaderValue (node);
+			} else if (r > 0 && xmlStrEqual (xmlTextReaderConstLocalName (node),
+					BAD_CAST ("type"))) {
+				dl->mime = (gchar *)xmlTextReaderValue (node);
+			} else if (r > 0 && xmlStrEqual (xmlTextReaderConstLocalName (node),
+					BAD_CAST ("length"))) {
+				dl->length = atoi ((char *)xmlTextReaderValue (node));
+			}
+		}
+		item->downloadables = g_list_append (item->downloadables, dl);
+		return 2;
+	}
+
 	return ret;
 }
 
