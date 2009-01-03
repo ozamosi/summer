@@ -24,6 +24,7 @@
 #include <libxml/xmlreader.h>
 #include <gio/gio.h>
 #include "summer-feed-parser.h"
+#include "summer-feed-cache.h"
 #include "summer-atom-parser.h"
 #include "summer-rss2-parser.h"
 #include "summer-data-types.h"
@@ -305,7 +306,30 @@ on_downloaded (SummerWebBackend *web, gchar *save_path, gchar *save_data, gpoint
 		xmlTextReaderPtr reader = xmlNewTextReader (buffer, priv->url);
 		priv->feed_data = summer_feed_parser_parse (parsers, sizeof (parsers) / sizeof (*parsers), reader);
 	}
+
+	if (self->priv->cache_dir != NULL) {
+		static SummerFeedCache *cache;
+		if (!G_IS_OBJECT (cache)) {
+			gchar *cache_path = g_build_filename (self->priv->cache_dir, "seen_objects", NULL);
+			cache = summer_feed_cache_new (cache_path);
+			g_free (cache_path);
+		}
+		summer_feed_cache_filter_old_items (cache, &priv->feed_data->items);
+	}
 	g_signal_emit_by_name (self, "new-entries");
+	g_object_unref (web);
+}
+
+static gboolean
+download_timeout (gpointer data) {
+	if (!SUMMER_IS_FEED (data)) {
+		return FALSE;
+	}
+	SummerFeed *self = SUMMER_FEED (data);
+	SummerWebBackend *web = summer_web_backend_new (NULL, self->priv->url);
+	g_signal_connect (web, "download-complete", G_CALLBACK (on_downloaded), self);
+	summer_web_backend_fetch (web);
+	return TRUE;
 }
 
 /**
@@ -319,9 +343,12 @@ on_downloaded (SummerWebBackend *web, gchar *save_path, gchar *save_data, gpoint
 void
 summer_feed_start (SummerFeed *self, gchar *url) {
 	g_object_set (self, "url", url, NULL);
-	SummerWebBackend *web = summer_web_backend_new (NULL, url);
-	g_signal_connect (web, "download-complete", G_CALLBACK (on_downloaded), self);
-	summer_web_backend_fetch (web);
+	if (self->priv->frequency > 0) {
+		g_timeout_add_seconds (self->priv->frequency, 
+			(GSourceFunc) download_timeout,
+			self);
+	}
+	download_timeout (self);
 }
 
 /**

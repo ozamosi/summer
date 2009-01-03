@@ -25,7 +25,7 @@ INCLUDES = \
 	$(WARN_CFLAGS) \
 	$(DISABLE_DEPRECATED) \
 	-include $(CONFIG_HEADER) \
-	-Wall -Wextra
+	-Wall -Wextra -Wno-missing-field-initializers -Wno-unused-parameter
 
 lib_LTLIBRARIES = libsummer.la
 
@@ -40,6 +40,7 @@ INST_H_FILES = \
 	summer-download.h \
 	summer-download-web.h \
 	summer-feed.h \
+	summer-feed-cache.h \
 	summer-feed-parser.h \
 	summer-atom-parser.h \
 	summer-rss2-parser.h \
@@ -55,6 +56,7 @@ libsummer_la_SOURCES = \
 	summer-download.c \
 	summer-download-web.c \
 	summer-feed.c \
+	summer-feed-cache.c \
 	summer-feed-parser.c \
 	summer-atom-parser.c \
 	summer-rss2-parser.c \
