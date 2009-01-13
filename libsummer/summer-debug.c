@@ -22,6 +22,14 @@
 #include "summer-debug.h"
 #include <stdlib.h>
 
+/**
+ * summer_debug:
+ * @string: a debug string. This string may contain %printf() style formating.
+ * @...: the parameters to insert into the debug string.
+ *
+ * This function let's the library conditionally print debug messages.
+ * These will only be printed if the environment variable %SUMMER_DEBUG is set.
+ */
 void
 summer_debug (gchar *string, ...) {
 	if (getenv ("SUMMER_DEBUG") != NULL) {

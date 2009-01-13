@@ -53,4 +53,3 @@ void summer_feed_cache_filter_old_items (SummerFeedCache *self, GList **items);
 G_END_DECLS
 
 #endif /* __SUMMER_FEED_CACHE_H__ */
-

@@ -1,12 +1,21 @@
 <INCLUDE>libsummer/summer.h</INCLUDE>
 
 <SECTION>
+<TITLE>Summer</TITLE>
+<FILE>summer</FILE>
+summer_set
+summer_create_download
+summer_debug
+</SECTION>
+
+<SECTION>
 <FILE>summer-download-web</FILE>
 <TITLE>SummerDownloadWeb</TITLE>
 SummerDownloadWeb
 summer_download_web_new
 <SUBSECTION Standard>
 SummerDownloadWebClass
+SummerDownloadWebPrivate
 SUMMER_DOWNLOAD_WEB
 SUMMER_IS_DOWNLOAD_WEB
 SUMMER_TYPE_DOWNLOAD_WEB
@@ -24,6 +33,7 @@ summer_download_set
 summer_download_start
 <SUBSECTION Standard>
 SummerDownloadClass
+SummerDownloadPrivate
 SUMMER_DOWNLOAD
 SUMMER_IS_DOWNLOAD
 SUMMER_TYPE_DOWNLOAD
@@ -42,6 +52,7 @@ summer_feed_set
 summer_feed_start
 <SUBSECTION Standard>
 SummerFeedClass
+SummerFeedPrivate
 SUMMER_FEED
 SUMMER_IS_FEED
 SUMMER_TYPE_FEED
@@ -120,6 +131,7 @@ summer_web_backend_new
 summer_web_backend_fetch
 <SUBSECTION Standard>
 SummerWebBackendClass
+SummerWebBackendPrivate
 SUMMER_WEB_BACKEND
 SUMMER_IS_WEB_BACKEND
 SUMMER_TYPE_WEB_BACKEND
@@ -130,8 +142,18 @@ SUMMER_WEB_BACKEND_GET_CLASS
 </SECTION>
 
 <SECTION>
-<TITLE>Summer</TITLE>
-<FILE>summer</FILE>
-summer_set
-summer_create_download
+<FILE>summer-feed-cache</FILE>
+<TITLE>SummerFeedCache</TITLE>
+SummerFeedCache
+summer_feed_cache_new
+summer_feed_cache_filter_old_items
+<SUBSECTION Standard>
+SummerFeedCacheClass
+SUMMER_FEED_CACHE
+SUMMER_IS_FEED_CACHE
+SUMMER_TYPE_FEED_CACHE
+SUMMER_FEED_CACHE_CLASS
+SUMMER_FEED_CACHE_GET_CLASS
+SUMMER_IS_FEED_CACHE_CLASS
+summer_feed_cache_get_type
 </SECTION>

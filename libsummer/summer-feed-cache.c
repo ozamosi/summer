@@ -25,6 +25,23 @@
 #include <glib.h>
 #include <gio/gio.h>
 
+/**
+ * SECTION:summer-feed-cache
+ * @short_description: Helps you keep track of what files you've downloaded
+ * @stability: Unstable
+ * @include: libsummer/summer-feed-cache.h
+ *
+ * This component is used to keep track of what files are old, and what files
+ * are new. It has no concept of per-subscription uniqueness. It currently 
+ * doesn't function very well when multiple instances are created.
+ */
+
+/**
+ * SummerFeedCache:
+ *
+ * A class used to filter previously seen files.
+ */
+
 static void summer_feed_cache_class_init (SummerFeedCacheClass *klass);
 static void summer_feed_cache_init       (SummerFeedCache *obj);
 static void summer_feed_cache_finalize   (GObject *obj);
@@ -105,10 +122,18 @@ summer_feed_cache_finalize (GObject *obj)
 	G_OBJECT_CLASS(summer_feed_cache_parent_class)->finalize (obj);
 }
 
+/**
+ * summer_feed_cache_new:
+ * @cache_file: the path to where the cache should be stored
+ *
+ * Creates a new %SummerFeedCache object.
+ *
+ * Returns: The newly created %SummerFeedCache object.
+ */
 SummerFeedCache*
-summer_feed_cache_new (gchar *cache)
+summer_feed_cache_new (gchar *cache_file)
 {
-	cache_path = g_strdup (cache);
+	cache_path = g_strdup (cache_file);
 	return SUMMER_FEED_CACHE(g_object_new(SUMMER_TYPE_FEED_CACHE, NULL));
 }
 
@@ -153,6 +178,14 @@ write_cache () {
 	g_output_stream_close (G_OUTPUT_STREAM (stream), NULL, NULL);
 }
 
+/**
+ * summer_feed_cache_filter_old_items:
+ * @self: a %SummerFeedCache object.
+ * @items: a list of %SummerItemData objects to be filtered.
+ *
+ * From a list of %SummerItemData objects, this function removes all nodes that
+ * have previously been seen.
+ */
 void
 summer_feed_cache_filter_old_items (SummerFeedCache *self, GList **items)
 {
