@@ -37,6 +37,7 @@ NOINST_H_FILES =
 INST_H_FILES = \
 	summer.h \
 	summer-data-types.h \
+	summer-debug.h \
 	summer-download.h \
 	summer-download-web.h \
 	summer-feed.h \
@@ -53,6 +54,7 @@ libsummer_la_SOURCES = \
 	$(BUILT_SOURCES) \
 	summer.c \
 	summer-data-types.c \
+	summer-debug.c \
 	summer-download.c \
 	summer-download-web.c \
 	summer-feed.c \
