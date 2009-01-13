@@ -78,7 +78,10 @@ on_download_complete (SummerWebBackend *web_backend, gchar *save_path, gchar *sa
 	GFile *src = g_file_new_for_path (save_path);
 	gchar *destpath, *save_dir;
 	g_object_get (self, "save-dir", &save_dir, NULL);
-	destpath = g_build_filename (save_dir, g_file_get_basename (src), NULL);
+	gchar *final_filename;
+	g_object_get (priv->web, "filename", &final_filename, NULL);
+	destpath = g_build_filename (save_dir, final_filename, NULL);
+	g_free (final_filename);
 	GFile *dest = g_file_new_for_path (destpath);
 	GFile *destdir = g_file_new_for_path (save_dir);
 	GError *error = NULL;
