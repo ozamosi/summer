@@ -321,8 +321,7 @@ on_got_headers (SoupMessage *msg, gpointer user_data)
 	SummerWebBackend *self = SUMMER_WEB_BACKEND (user_data);
 	SummerWebBackendPrivate *priv = self->priv;
 	if (msg->status_code >= 400) {
-		g_signal_emit_by_name (self, "download-complete", NULL, NULL);
-		g_object_unref (msg);
+		soup_session_cancel_message (session, msg, SOUP_STATUS_CANCELLED);
 	}
 	goffset length;
 	length = soup_message_headers_get_content_length (msg->response_headers);
