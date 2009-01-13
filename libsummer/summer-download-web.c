@@ -21,6 +21,7 @@
 
 #include "summer-download-web.h"
 #include "summer-web-backend.h"
+#include "summer-debug.h"
 #include <string.h>
 #include <gio/gio.h>
 /**
@@ -72,6 +73,8 @@ static void
 on_download_complete (SummerWebBackend *web_backend, gchar *save_path, gchar *save_data, gpointer user_data)
 {
 	g_return_if_fail (SUMMER_IS_DOWNLOAD_WEB (user_data));
+	g_return_if_fail (save_data == NULL);
+	g_return_if_fail (save_path != NULL);
 	SummerDownload *self = SUMMER_DOWNLOAD (user_data);
 	SummerDownloadWebPrivate *priv = SUMMER_DOWNLOAD_WEB (user_data)->priv;
 	g_object_unref (priv->web);
@@ -87,13 +90,17 @@ on_download_complete (SummerWebBackend *web_backend, gchar *save_path, gchar *sa
 	GError *error = NULL;
 	if (!g_file_query_exists (destdir, NULL)) {
 		if (!g_file_make_directory_with_parents (destdir, NULL, &error)) {
-			g_warning ("%s", error->message);
+			g_warning ("Error creating directory to put file in: %s", error->message);
 			g_clear_error (&error);
 		}
 	}
-	if (!g_file_move (src, dest, G_FILE_COPY_NONE, NULL, NULL, NULL, &error)) {
-		g_warning ("%s", error->message);
-		g_clear_error (&error);
+	if (g_file_query_exists (dest, NULL)) {
+		g_warning ("Destination file already exists - not moving download");
+	} else {
+		if (!g_file_move (src, dest, G_FILE_COPY_NONE, NULL, NULL, NULL, &error)) {
+			g_warning ("%s", error->message);
+			g_clear_error (&error);
+		}
 	}
 	g_object_unref (src);
 	g_object_unref (dest);
@@ -109,6 +116,12 @@ start (SummerDownload *self)
 	SummerDownloadWebPrivate *priv = SUMMER_DOWNLOAD_WEB (self)->priv;
 	g_signal_connect (priv->web, "download-chunk", G_CALLBACK (on_download_chunk), self);
 	g_signal_connect (priv->web, "download-complete", G_CALLBACK (on_download_complete), self);
+	gchar *url, *tmp_dir, *save_dir;
+	g_object_get (self, "tmp-dir", &tmp_dir, "save-dir", &save_dir, "url", &url, NULL);
+	summer_debug ("Downloading from %s to %s via %s\n", url, save_dir, tmp_dir);
+	g_free (url);
+	g_free (tmp_dir);
+	g_free (save_dir);
 	summer_web_backend_fetch (priv->web);
 }
 
@@ -120,12 +133,11 @@ constructor (GType gtype, guint n_properties, GObjectConstructParam *properties)
 	parent_class = G_OBJECT_CLASS (summer_download_web_parent_class);
 	obj = parent_class->constructor (gtype, n_properties, properties);
 	
-	gchar *url;
-	gchar *save_dir;
-	g_object_get (obj, "tmp-dir", &save_dir, "url", &url, NULL);
+	gchar *url, *tmp_dir;
+	g_object_get (obj, "tmp-dir", &tmp_dir, "url", &url, NULL);
 	SummerDownloadWebPrivate *priv = SUMMER_DOWNLOAD_WEB (obj)->priv;
-	priv->web = summer_web_backend_new (save_dir, url);
-	g_free (save_dir);
+	priv->web = summer_web_backend_new (tmp_dir, url);
+	g_free (tmp_dir);
 	g_free (url);
 
 	return obj;

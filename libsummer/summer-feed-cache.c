@@ -114,15 +114,29 @@ summer_feed_cache_new (gchar *cache)
 
 static void
 write_cache () {
+	GError *error = NULL;
+	GFile *directory = g_file_get_parent (cache_file);
+	if (!g_file_query_exists (directory, NULL)) {
+		if (!g_file_make_directory_with_parents (directory, NULL, &error)) {
+			g_error ("Couldn't create cache dir: %s", error->message);
+			g_clear_error (&error);
+		}
+	}
 	GFileOutputStream *stream = g_file_replace (
 		cache_file, 
 		NULL, 
 		FALSE, 
 		G_FILE_CREATE_NONE, 
 		NULL, 
-		NULL);
+		&error);
+	if (error != NULL) {
+		g_error ("Error writing cache file: %s", error->message);
+		g_clear_error (&error);
+	}
 	GList *node;
 	for (node = cache; node != NULL; node = node->next) {
+		if (node->data == NULL)
+			continue;
 		g_output_stream_write (
 			G_OUTPUT_STREAM (stream),
 			node->data,
@@ -145,9 +159,11 @@ summer_feed_cache_filter_old_items (SummerFeedCache *self, GList **items)
 	GList *cur_item, *cur_cache, *new_items = NULL;
 	for (cur_item = *items; cur_item != NULL; cur_item = cur_item->next) {
 		gboolean exists = FALSE;
+		gchar *id = ((SummerItemData *)cur_item->data)->id;
+		if (id == NULL)
+			id = ((SummerItemData *)cur_item->data)->web_url;
 		for (cur_cache = cache; cur_cache != NULL; cur_cache = cur_cache->next) {
-			if (!g_strcmp0 ((gchar *)cur_cache->data, 
-					((SummerItemData *)cur_item->data)->id)) {
+			if (!g_strcmp0 ((gchar *)cur_cache->data, id)) {
 				exists = TRUE;
 				break;
 			}
@@ -157,7 +173,7 @@ summer_feed_cache_filter_old_items (SummerFeedCache *self, GList **items)
 		} else {
 			new_items = g_list_prepend (new_items, cur_item->data);
 			cache = g_list_prepend (cache, 
-				g_strdup (((SummerItemData *)cur_item->data)->id));
+				g_strdup (id));
 		}
 	}
 	g_list_free (*items);

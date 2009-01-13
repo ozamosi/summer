@@ -144,7 +144,10 @@ get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 		g_value_set_string (value, priv->feed_data->description);
 		break;
 	case PROP_ID:
-		g_value_set_string (value, priv->feed_data->id);
+		if (priv->feed_data->id)
+			g_value_set_string (value, priv->feed_data->id);
+		else
+			g_value_set_string (value, priv->feed_data->web_url);
 		break;
 	case PROP_WEB_URL:
 		g_value_set_string (value, priv->feed_data->web_url);
