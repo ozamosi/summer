@@ -61,10 +61,11 @@ static void summer_web_backend_finalize   (GObject *obj);
 struct _SummerWebBackendPrivate {
 	gchar *save_dir;
 	gchar *url;
-	gsize length;
-	gsize received;
 	gchar *filename;
 	gchar *pretty_filename;
+	gsize length;
+	gsize received;
+	gboolean fetch;
 	GFileOutputStream *outfile;
 };
 #define SUMMER_WEB_BACKEND_GET_PRIVATE(o)      (G_TYPE_INSTANCE_GET_PRIVATE((o), \
@@ -263,7 +264,7 @@ summer_web_backend_finalize (GObject *self)
  * Returns: a newly created #SummerWebBackend object
  */
 SummerWebBackend*
-summer_web_backend_new (gchar *save_dir, gchar *url)
+summer_web_backend_new (const gchar *save_dir, const gchar *url)
 {
 	return SUMMER_WEB_BACKEND(g_object_new(SUMMER_TYPE_WEB_BACKEND, "save-dir", g_strdup (save_dir), "url", g_strdup (url), NULL));
 }
@@ -299,6 +300,9 @@ on_got_chunk (SoupMessage *msg, SoupBuffer *chunk, gpointer user_data)
 	g_return_if_fail (SOUP_IS_MESSAGE (msg));
 	SummerWebBackend *self = SUMMER_WEB_BACKEND (user_data);
 	SummerWebBackendPrivate *priv = self->priv;
+
+	if (!priv->fetch)
+		return;
 	
 	if (priv->outfile) {
 		GError *error = NULL;
@@ -320,9 +324,11 @@ on_got_headers (SoupMessage *msg, gpointer user_data)
 	g_return_if_fail (SOUP_IS_MESSAGE (msg));
 	SummerWebBackend *self = SUMMER_WEB_BACKEND (user_data);
 	SummerWebBackendPrivate *priv = self->priv;
-	if (msg->status_code >= 400) {
+	if (msg->status_code >= 400)
 		soup_session_cancel_message (session, msg, SOUP_STATUS_CANCELLED);
-	}
+	else if (msg->status_code < 300)
+		priv->fetch = TRUE;
+
 	goffset length;
 	length = soup_message_headers_get_content_length (msg->response_headers);
 	if (length)

@@ -119,7 +119,7 @@ response404 (WebFixture *fix, gconstpointer data)
 }
 
 static void
-serverdown (WebFixture *fix, gconstpointer data)
+serverdown ()
 {
 	loop = g_main_loop_new (NULL, TRUE);
 	gchar *url =  "http://localhost:52854";
@@ -132,6 +132,32 @@ serverdown (WebFixture *fix, gconstpointer data)
 	g_main_loop_unref (loop);
 }
 
+static void
+redirect_response_cb (SummerWebBackend *web, gchar *save_path, gchar *save_data, gpointer user_data)
+{
+	g_assert_cmpstr (save_path, !=, NULL);
+	g_assert_cmpstr (save_data, ==, NULL);
+	gchar *contents = NULL;
+	gsize length;
+	g_file_get_contents (save_path, &contents, &length, NULL);
+	g_assert_cmpstr (contents, ==, "dummy_video_content");
+	g_remove (save_path);
+	g_main_loop_quit (loop);
+	last_received = 0.0;
+}
+
+static void
+redirect (WebFixture *fix, gconstpointer data)
+{
+	loop = g_main_loop_new (NULL, TRUE);
+	gchar *url =  "http://localhost:52853/redirect/302";
+	SummerWebBackend *web = summer_web_backend_new (g_get_tmp_dir (), url);
+	g_signal_connect (web, "download-complete", G_CALLBACK (redirect_response_cb), NULL);
+	summer_web_backend_fetch (web);
+	g_main_loop_run (loop);
+	g_main_loop_unref (loop);
+}
+
 int main (int argc, char *argv[]) {
 	g_type_init ();
 	g_thread_init (NULL);
@@ -140,7 +166,8 @@ int main (int argc, char *argv[]) {
 	g_test_add ("/web-backend/to-ram", WebFixture, 0, web_setup, to_ram, web_teardown);
 	g_test_add ("/web-backend/to-disk", WebFixture, 0, web_setup, to_disk, web_teardown);
 	g_test_add ("/web-backend/response404", WebFixture, 0, web_setup, response404, web_teardown);
-	g_test_add ("/web-backend/serverdown", WebFixture, 0, web_setup, serverdown, web_teardown);
+	g_test_add_func ("/web-backend/serverdown", serverdown);
+	g_test_add ("/web-backend/redirect", WebFixture, 0, web_setup, redirect, web_teardown);
 
 	return g_test_run ();
 }

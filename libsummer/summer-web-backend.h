@@ -50,7 +50,7 @@ struct _SummerWebBackendClass {
 
 GType        summer_web_backend_get_type    (void) G_GNUC_CONST;
 
-SummerWebBackend*    summer_web_backend_new         (gchar *save_dir, gchar *url);
+SummerWebBackend*    summer_web_backend_new         (const gchar *save_dir, const gchar *url);
 
 void summer_web_backend_fetch (SummerWebBackend *self);
 

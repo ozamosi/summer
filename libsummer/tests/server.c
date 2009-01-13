@@ -1,12 +1,25 @@
 #include "server.h"
 #include <glib.h>
+#include <string.h>
+
+void
+redirect_server (SoupServer *server, SoupMessage *msg, const char *path,
+		GHashTable *query, SoupClientContext *client, gpointer user_data)
+{
+	const gchar *contents = "error message";
+	gsize length = strlen (contents);
+	if (!g_strcmp0 (path, "/redirect/302"))
+		soup_message_set_status (msg, 302);
+	soup_message_headers_append (msg->response_headers, "Location", "http://localhost:52853/video/dummy_mp4");
+	soup_message_set_response (msg, "text/plain", SOUP_MEMORY_COPY, contents, length);
+}
 
 void
 video_server (SoupServer *server, SoupMessage *msg, const char *path,
 		GHashTable *query, SoupClientContext *client, gpointer user_data)
 {
 	const gchar *contents = "dummy_video_content";
-	gsize length = sizeof (contents);
+	gsize length = strlen (contents);
 	gchar *mime_type = NULL;
 
 	if (!g_strcmp0 (path, "/video/dummy_mp4"))
@@ -68,6 +81,7 @@ web_setup (WebFixture *fix, gconstpointer data)
 	fix->server = soup_server_new (SOUP_SERVER_PORT, 52853, NULL);
 	soup_server_add_handler (fix->server, "/feeds/", feed_server, NULL, NULL);
 	soup_server_add_handler (fix->server, "/video/", video_server, NULL, NULL);
+	soup_server_add_handler (fix->server, "/redirect/", redirect_server, NULL, NULL);
 	soup_server_run_async (fix->server);
 }
 
