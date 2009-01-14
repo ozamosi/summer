@@ -8,7 +8,7 @@ feedburner ()
 	SummerFeedParser *parsers[] = {
 		SUMMER_FEED_PARSER (summer_rss2_parser_new ()),
 		SUMMER_FEED_PARSER (summer_atom_parser_new ())};
-	xmlTextReaderPtr reader = xmlNewTextReaderFilename ("../../tests/epicfu");
+	xmlTextReaderPtr reader = xmlNewTextReaderFilename ("epicfu");
 	SummerFeedData *feed_data = summer_feed_parser_parse (parsers, sizeof (parsers) / sizeof (*parsers), reader);
 
 	g_assert_cmpstr (feed_data->title, ==, "EPIC FU (Quicktime)");

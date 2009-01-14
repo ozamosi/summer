@@ -4,7 +4,6 @@ DISTCHECK_CONFIGURE_FLAGS=--enable-gtk-doc
 
 SUBDIRS = \
 	libsummer \
-	tests \
 	reference
 
 pkgconfigdir = $(libdir)/pkgconfig

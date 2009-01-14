@@ -42,7 +42,7 @@ feed_server (SoupServer *server, SoupMessage *msg, const char *path,
 	if (!g_strcmp0 (path, "/feeds/epicfu")) {
 		gchar *contents;
 		gsize length;
-		if (!g_file_get_contents ("../../tests/epicfu", &contents, &length, NULL)) {
+		if (!g_file_get_contents ("epicfu", &contents, &length, NULL)) {
 			g_error ("Couldn't serve feed");
 		}
 		const char *mime_type = "text/xml";

@@ -34,4 +34,9 @@ test_rss2_feed_SOURCES = test-rss2-feed.c
 test_feed_SOURCES = test-feed.c server.c server.h
 test_feed_cache_SOURCES = test-feed-cache.c
 
-EXTRA_DIST = atom_feed
+EXTRA_DIST = \
+	atom_feed \
+	atom_feed_nolink \
+	epicfu \
+	feed \
+	rss2sample.xml

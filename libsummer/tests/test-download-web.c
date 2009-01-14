@@ -30,7 +30,7 @@ complete_cb (SummerDownload *obj, gchar *save_path, gpointer user_data)
 	g_free (filename);
 	gchar *rec_contents = NULL, *orig_contents = NULL;
 	gsize rec_length, orig_length;
-	g_file_get_contents ("../../tests/epicfu", &orig_contents, &orig_length, NULL);
+	g_file_get_contents ("epicfu", &orig_contents, &orig_length, NULL);
     g_file_get_contents (save_path, &rec_contents, &rec_length, NULL);
 	g_assert_cmpstr (orig_contents, ==, rec_contents);
 	g_remove (save_path);

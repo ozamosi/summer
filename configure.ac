@@ -37,7 +37,6 @@ AC_CONFIG_FILES([Makefile
 	libsummer/Makefile
 	libsummer/tests/Makefile
 	libsummer-1.0.pc
-	reference/Makefile
-	tests/Makefile])
+	reference/Makefile])
 
 AC_OUTPUT
