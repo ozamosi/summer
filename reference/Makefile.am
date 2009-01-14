@@ -1,3 +1,5 @@
+include $(top_srcdir)/gtest.mk #to make sure it doesn't die on make test
+
 ## Process this file with automake to produce Makefile.in
 
 # We require automake 1.6 at least.
