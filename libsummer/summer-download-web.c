@@ -24,12 +24,13 @@
 #include "summer-debug.h"
 #include <string.h>
 #include <gio/gio.h>
+
 /**
  * SECTION:summer-download-web
  * @short_description: Provides a way to download audio and video files from
  * regular web servers.
  * @stability: Unstable
- * @see_also: %SummerDownload
+ * @see_also: %SummerDownloadTorrent
  *
  * This is the downloader for regular web servers - that is, the one used by 
  * most podcasts and vidcasts.
@@ -40,7 +41,6 @@
  *
  * A %SummerDownload-based class for files that's available on regular web
  * servers.
- *
  */
 
 static void summer_download_web_class_init (SummerDownloadWebClass *klass);
@@ -49,15 +49,10 @@ static void summer_download_web_finalize   (GObject *obj);
 
 struct _SummerDownloadWebPrivate {
 	SummerWebBackend *web;
-	gchar *url;
 };
 #define SUMMER_DOWNLOAD_WEB_GET_PRIVATE(o)      (G_TYPE_INSTANCE_GET_PRIVATE((o), \
                                                  SUMMER_TYPE_DOWNLOAD_WEB, \
                                                  SummerDownloadWebPrivate))
-enum {
-	PROP_0,
-	PROP_URL
-};
 
 G_DEFINE_TYPE (SummerDownloadWeb, summer_download_web, SUMMER_TYPE_DOWNLOAD);
 
@@ -144,50 +139,12 @@ constructor (GType gtype, guint n_properties, GObjectConstructParam *properties)
 }
 
 static void
-set_property (GObject *object, guint property_id, const GValue *value,
-	GParamSpec *pspec)
-{
-	SummerDownloadWebPrivate *priv;
-	priv = SUMMER_DOWNLOAD_WEB (object)->priv;
-
-	switch (property_id) {
-	case PROP_URL:
-		if (priv->url)
-			g_free (priv->url);
-		priv->url = g_value_dup_string (value);
-		break;
-	default:
-		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
-		break;
-	}
-}
-
-static void
-get_property (GObject *object, guint property_id, GValue *value,
-	GParamSpec *pspec)
-{
-	SummerDownloadWebPrivate *priv;
-	priv = SUMMER_DOWNLOAD_WEB (object)->priv;
-
-	switch (property_id) {
-	case PROP_URL:
-		g_value_set_string (value, priv->url);
-		break;
-	default:
-		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
-		break;
-	}
-}
-
-static void
 summer_download_web_class_init (SummerDownloadWebClass *klass)
 {
 	GObjectClass *gobject_class;
 	gobject_class = (GObjectClass*) klass;
 
 	gobject_class->finalize = summer_download_web_finalize;
-	gobject_class->set_property = set_property;
-	gobject_class->get_property = get_property;
 	gobject_class->constructor = constructor;
 
 	SummerDownloadClass *download_class;
@@ -195,19 +152,6 @@ summer_download_web_class_init (SummerDownloadWebClass *klass)
 	download_class->start = start;
 
 	g_type_class_add_private (gobject_class, sizeof(SummerDownloadWebPrivate));
-
-	GParamSpec *pspec;
-	/**
-	 * SummerDownloadWeb:url:
-	 *
-	 * Specifies the URL to download
-	 */
-	pspec = g_param_spec_string ("url",
-		"URL",
-		"The URL to download",
-		NULL,
-		G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
-	g_object_class_install_property (gobject_class, PROP_URL, pspec);
 }
 
 static void
@@ -222,14 +166,12 @@ summer_download_web_finalize (GObject *obj)
 	SummerDownloadWebPrivate *priv = SUMMER_DOWNLOAD_WEB (obj)->priv;
 	if (G_IS_OBJECT (priv->web))
 		g_object_unref (priv->web);
-	if (priv->url)
-		g_free (priv->url);
 	G_OBJECT_CLASS(summer_download_web_parent_class)->finalize (obj);
 }
 
 /**
  * summer_download_web_new:
- * @mime: the mime type of the file that's going to be downloaded. Should be
+ * @mime: the mime type of the file that's going to be downloaded. This hould be
  * available in the feed.
  * @url: the URL of the file that's going to be downloaded.
  *
@@ -240,7 +182,7 @@ summer_download_web_finalize (GObject *obj)
  * looking for one that's suitable.
  *
  * Returns: a newly created #SummerDownloadWeb object if @mime and @url is
- * suitable, otherwise %NULL
+ * suitable, otherwise %NULL.
  */
 SummerDownload*
 summer_download_web_new (gchar *mime, gchar *url)
@@ -249,12 +191,13 @@ summer_download_web_new (gchar *mime, gchar *url)
 	// download quite a few of them - I'm going for limited blacklisting
 	// for now.
 	gboolean application = g_str_has_prefix (mime, "application")
-		&& (strstr (mime, "xml") == NULL);
+		&& (strstr (mime, "xml") == NULL)
+		&& g_strcmp0 (mime, "application/x-bittorrent");
 	if ((application 
 			|| g_str_has_prefix (mime, "video") 
 			|| g_str_has_prefix (mime, "audio")) 
 		&& g_str_has_prefix (url, "http")) {
-		return SUMMER_DOWNLOAD(g_object_new(SUMMER_TYPE_DOWNLOAD_WEB, 
+		return SUMMER_DOWNLOAD (g_object_new (SUMMER_TYPE_DOWNLOAD_WEB, 
 			"url", url, NULL));
 	}
 	return NULL;

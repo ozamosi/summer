@@ -46,6 +46,7 @@ static void summer_download_finalize   (GObject *obj);
 struct _SummerDownloadPrivate {
 	gchar *tmp_dir;
 	gchar *save_dir;
+	gchar *url;
 };
 #define SUMMER_DOWNLOAD_GET_PRIVATE(o)   (G_TYPE_INSTANCE_GET_PRIVATE((o), \
                                           SUMMER_TYPE_DOWNLOAD, \
@@ -57,7 +58,8 @@ static gchar *save_dir = NULL;
 enum {
 	PROP_0,
 	PROP_TMP_DIR,
-	PROP_SAVE_DIR
+	PROP_SAVE_DIR,
+	PROP_URL
 };
 
 G_DEFINE_ABSTRACT_TYPE (SummerDownload, summer_download, G_TYPE_OBJECT);
@@ -79,6 +81,11 @@ set_property (GObject *object, guint prop_id, const GValue *value,
 			g_free (priv->tmp_dir);
 		priv->tmp_dir = g_value_dup_string (value);
 		break;
+	case PROP_URL:
+		if (priv->url)
+			g_free (priv->url);
+		priv->url = g_value_dup_string (value);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -97,6 +104,9 @@ get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 		break;
 	case PROP_TMP_DIR:
 		g_value_set_string (value, priv->tmp_dir);
+		break;
+	case PROP_URL:
+		g_value_set_string (value, priv->url);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -142,6 +152,13 @@ summer_download_class_init (SummerDownloadClass *klass)
 			"/",
 			G_PARAM_READWRITE);
 	g_object_class_install_property (gobject_class, PROP_TMP_DIR, pspec);
+
+	pspec = g_param_spec_string ("url",
+		"URL",
+		"The URL to download",
+		NULL,
+		G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
+	g_object_class_install_property (gobject_class, PROP_URL, pspec);
 
 	/**
 	 * SummerDownload::download-complete:
@@ -200,6 +217,8 @@ summer_download_finalize (GObject *self)
 		g_free (priv->save_dir);
 	if (priv->tmp_dir)
 		g_free (priv->tmp_dir);
+	if (priv->url)
+		g_free (priv->url);
 	G_OBJECT_CLASS(summer_download_parent_class)->finalize (self);
 }
 

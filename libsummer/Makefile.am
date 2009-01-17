@@ -22,15 +22,24 @@ INCLUDES = \
 	$(SUMMER_CFLAGS) \
 	$(GLIB_CFLAGS) \
 	$(SOUP_CFLAGS) \
-	$(WARN_CFLAGS) \
+	$(LIBXML_CFLAGS) \
 	$(DISABLE_DEPRECATED) \
 	-include $(CONFIG_HEADER) \
 	-Wall -Wextra -Wno-missing-field-initializers -Wno-unused-parameter
 
+summer_download_torrent_o_CFLAGS =  \
+	$(LIBTORRENT_CFLAGS)
+
+libsummer_la_CFLAGS = \
+	-Wmissing-prototypes
+
+
 lib_LTLIBRARIES = libsummer.la
 
 libsummer_la_LDFLAGS = -export-dynamic
-libsummer_la_LIBADD = $(LIB_LIBS)
+libsummer_la_LIBADD = \
+	$(LIB_LIBS) \
+	$(LIBTORRENT_LIBS)
 
 NOINST_H_FILES =
 
@@ -39,6 +48,7 @@ INST_H_FILES = \
 	summer-data-types.h \
 	summer-debug.h \
 	summer-download.h \
+	summer-download-torrent.hh \
 	summer-download-web.h \
 	summer-feed.h \
 	summer-feed-cache.h \
@@ -56,6 +66,7 @@ libsummer_la_SOURCES = \
 	summer-data-types.c \
 	summer-debug.c \
 	summer-download.c \
+	summer-download-torrent.cc \
 	summer-download-web.c \
 	summer-feed.c \
 	summer-feed-cache.c \
