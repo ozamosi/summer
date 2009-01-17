@@ -228,8 +228,16 @@ summer_web_backend_init (SummerWebBackend *self)
 {
 	if (G_IS_OBJECT (session))
 		g_object_ref (session);
-	else
-		session = soup_session_async_new ();
+	else {
+		session = soup_session_async_new_with_options (
+			"max-conns-per-host", 1,
+			"user-agent", "libsummer/0.1 ",
+			NULL);
+		if (summer_debug (NULL) == TRUE) {
+			SoupLogger *log = soup_logger_new (SOUP_LOGGER_LOG_MINIMAL, -1);
+			soup_session_add_feature (session, SOUP_SESSION_FEATURE (log));
+		}
+	}
 	self->priv = SUMMER_WEB_BACKEND_GET_PRIVATE (self);
 	self->priv->filename = NULL;
 	self->priv->pretty_filename = NULL;

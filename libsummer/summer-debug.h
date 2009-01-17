@@ -21,4 +21,4 @@
 
 #include <glib.h>
 
-void summer_debug (gchar *string, ...);
+gboolean summer_debug (gchar *string, ...);

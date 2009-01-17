@@ -29,13 +29,19 @@
  *
  * This function let's the library conditionally print debug messages.
  * These will only be printed if the environment variable %SUMMER_DEBUG is set.
+ *
+ * Returns: %TRUE if debugging is activated, otherwise %FALSE
  */
-void
+gboolean
 summer_debug (gchar *string, ...) {
 	if (getenv ("SUMMER_DEBUG") != NULL) {
-		va_list args;
-		va_start (args, string);
-		g_logv (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, string, args);
-		va_end (args);
+		if (string != NULL) {
+			va_list args;
+			va_start (args, string);
+			g_logv (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, string, args);
+			va_end (args);
+		}
+		return TRUE;
 	}
+	return FALSE;
 }
