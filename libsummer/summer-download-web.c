@@ -69,7 +69,7 @@ on_download_complete (SummerWebBackend *web_backend, gchar *save_path, gchar *sa
 {
 	g_return_if_fail (SUMMER_IS_DOWNLOAD_WEB (user_data));
 	g_return_if_fail (save_data == NULL);
-	g_return_if_fail (save_path != NULL);
+	g_return_if_fail (save_path != NULL); //FIXME: This is perfectly legal (connection failed, for instance), and should be handled in a proper way
 	SummerDownload *self = SUMMER_DOWNLOAD (user_data);
 	SummerDownloadWebPrivate *priv = SUMMER_DOWNLOAD_WEB (user_data)->priv;
 	g_object_unref (priv->web);
