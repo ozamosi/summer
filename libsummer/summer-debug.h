@@ -21,4 +21,8 @@
 
 #include <glib.h>
 
+G_BEGIN_DECLS
+
 gboolean summer_debug (gchar *string, ...);
+
+G_END_DECLS
