@@ -21,6 +21,7 @@
 
 #include "summer-download.h"
 #include "summer-marshal.h"
+#include "summer-debug.h"
 /**
  * SECTION:summer-download
  * @short_description: Base class for downloaders.
@@ -202,10 +203,19 @@ summer_download_class_init (SummerDownloadClass *klass)
 }
 
 static void
+print_update (SummerDownload *self, gint downloaded, gint length, gpointer user_data)
+{
+	summer_debug ("%f%% downloaded (%i)", downloaded / (float) length * 100, downloaded);
+}
+
+static void
 summer_download_init (SummerDownload *self)
 {
 	self->priv = SUMMER_DOWNLOAD_GET_PRIVATE (self);
 	g_object_set (self, "save-dir", save_dir, "tmp-dir", tmp_dir, NULL);
+	if (summer_debug (NULL)) {
+		g_signal_connect (self, "download-update", G_CALLBACK (print_update), NULL);
+	}
 }
 
 static void

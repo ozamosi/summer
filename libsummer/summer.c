@@ -20,6 +20,7 @@
  */
 
 #include "summer.h"
+#include "summer-debug.h"
 
 /*
  * All functions in this file should use gmodule to find available
@@ -80,7 +81,12 @@ summer_set (gchar *module_name, gchar *first_property_name, ...)
 SummerDownload*
 summer_create_download (gchar *mime, gchar *url) {
 	SummerDownload *dl;
-	if ((dl = summer_download_web_new (mime, url)))
+	if ((dl = summer_download_web_new (mime, url))) {
+		summer_debug ("Starting web download of %s", url);
 		return dl;
+	} else if ((dl = summer_download_torrent_new (mime, url))) {
+		summer_debug ("Starting torrent download of %s", url);
+		return dl;
+	}
 	return NULL;
 }
