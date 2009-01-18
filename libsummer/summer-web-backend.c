@@ -392,6 +392,14 @@ summer_web_backend_fetch (SummerWebBackend *self)
 		GFile *file = g_file_new_for_path (filepath);
 		g_free (filepath);
 		GError *error = NULL;
+		GFile *directory = g_file_get_parent (file);
+		if (!g_file_query_exists (directory, NULL)) {
+			if (!g_file_make_directory_with_parents (directory, NULL, &error)) {
+				g_warning ("Error creating directory for download: %s", error->message);
+				g_clear_error (&error);
+			}
+		}
+
 		priv->outfile = g_file_replace (file, NULL, FALSE, G_FILE_CREATE_NONE, NULL, &error);
 		if (!priv->outfile) {
 			g_warning ("Error opening output stream: %s", error->message);
