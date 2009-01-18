@@ -45,8 +45,10 @@
  * Allow the user to configure global, module-specific settings, such
  * as directory to save downloaded files to, cache directory, and similar.
  *
- * Whenever it is possible, you should be able to override this on an instance 
+ * Whenever it makes sense, you should be able to override this on an instance 
  * basis.
+ *
+ * Changing these options very rarely affects already created instances.
  */
 
 void
@@ -58,6 +60,10 @@ summer_set (gchar *module_name, gchar *first_property_name, ...)
 		summer_feed_set (first_property_name, var_args);
 		va_end (var_args);
 	} else if (!g_strcmp0 (module_name, "download")) {
+		va_start (var_args, first_property_name);
+		summer_download_set (first_property_name, var_args);
+		va_end (var_args);
+	} else if (!g_strcmp0 (module_name, "torrent")) {
 		va_start (var_args, first_property_name);
 		summer_download_set (first_property_name, var_args);
 		va_end (var_args);
