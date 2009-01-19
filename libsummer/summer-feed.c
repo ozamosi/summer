@@ -280,6 +280,13 @@ summer_feed_init (SummerFeed *self)
 static void
 summer_feed_finalize (GObject *obj)
 {
+	SummerFeedPrivate *priv = SUMMER_FEED_GET_PRIVATE (obj);
+	if (priv->url)
+		g_free (priv->url);
+	if (priv->cache_dir)
+		g_free (priv->cache_dir);
+	if (priv->feed_data)
+		summer_feed_data_free (priv->feed_data);
 	G_OBJECT_CLASS(summer_feed_parent_class)->finalize (obj);
 }
 
