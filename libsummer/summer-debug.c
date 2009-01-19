@@ -32,7 +32,7 @@
  * Returns: %TRUE if debugging is activated, otherwise %FALSE
  */
 gboolean
-summer_debug (gchar *string, ...) {
+summer_debug (const gchar *string, ...) {
 	if (g_getenv ("SUMMER_DEBUG") != NULL) {
 		if (string != NULL) {
 			va_list args;

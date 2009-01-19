@@ -23,6 +23,6 @@
 
 G_BEGIN_DECLS
 
-gboolean summer_debug (gchar *string, ...);
+gboolean summer_debug (const gchar *string, ...);
 
 G_END_DECLS
