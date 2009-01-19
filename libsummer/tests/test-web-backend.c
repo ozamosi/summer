@@ -17,18 +17,6 @@ chunk_cb (SummerWebBackend *web, gint received, gint length, gpointer user_data)
 }
 
 static void
-disk_chunk_cb (SummerWebBackend *web, gint received, gint length, gpointer user_data)
-{
-	gchar *contents = NULL;
-	gsize file_length;
-	gchar *filename = g_build_filename (g_get_tmp_dir (), "epicfu", NULL);
-	g_file_get_contents (filename, &contents, &file_length, NULL);
-	g_free (filename);
-	g_free (contents);
-	g_assert_cmpint (received, <=, file_length);
-}
-
-static void
 disk_downloaded_cb (SummerWebBackend *web, gchar *save_path, gchar *save_data, gpointer user_data)
 {
 	g_assert_cmpstr (save_path, !=, NULL);
@@ -58,7 +46,6 @@ to_disk (WebFixture *fix, gconstpointer data)
 	g_assert_cmpstr (path, ==, orig_path);
 
 	g_signal_connect (web, "download-chunk", G_CALLBACK (chunk_cb), NULL);
-	g_signal_connect (web, "download-chunk", G_CALLBACK (disk_chunk_cb), NULL);
 	g_signal_connect (web, "download-complete", G_CALLBACK (disk_downloaded_cb), NULL);
 	summer_web_backend_fetch (g_object_ref (web));
 	g_main_loop_run (loop);
