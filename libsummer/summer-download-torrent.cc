@@ -24,6 +24,7 @@
 #include "summer-debug.h"
 #include <libtorrent/session.hpp>
 #include <libtorrent/torrent_info.hpp>
+#include <boost/filesystem.hpp>
 #include <numeric>
 
 /**
@@ -95,23 +96,36 @@ progress_update (gpointer data) {
 }
 
 static void
-on_metafile_downloaded (SummerWebBackend *web_backend, gchar *save_path, gchar *save_data, gpointer user_data)
+on_metafile_downloaded (SummerWebBackend *web_backend, gchar *metafile_path, gchar *save_data, gpointer user_data)
 {
 	summer_debug ("Metafile downloaded - torrent transfer starting");
 	g_return_if_fail (SUMMER_IS_DOWNLOAD_TORRENT (user_data));
 	g_return_if_fail (save_data == NULL);
-	g_return_if_fail (save_path != NULL); //FIXME: This is perfectly legal (connection failed, for instance), and should be handled in a proper way
+	g_return_if_fail (metafile_path != NULL); //FIXME: This is perfectly legal (connection failed, for instance), and should be handled in a proper way
 	SummerDownload *self = SUMMER_DOWNLOAD (user_data);
 	SummerDownloadTorrentPrivate *priv = SUMMER_DOWNLOAD_TORRENT (self)->priv;
 	g_object_unref (web_backend);
 
-	gchar *tmp_dir;
-	g_object_get (self, "tmp-dir", &tmp_dir, NULL);
+	gchar *tmp_dir, *save_dir;
+	g_object_get (self, "tmp-dir", &tmp_dir, "save-dir", &save_dir, NULL);
+
 	libtorrent::add_torrent_params p;
-	boost::filesystem::path save_dir (tmp_dir);
-	p.save_path = save_dir;
-	g_free (tmp_dir);
-	p.ti = new libtorrent::torrent_info (save_path);
+
+	p.ti = new libtorrent::torrent_info (metafile_path);
+	boost::filesystem::path completed_path (save_dir);
+	completed_path /= p.ti->name ();
+
+	if (!boost::filesystem::exists (completed_path)) {
+		boost::filesystem::path output_dir (tmp_dir);
+		output_dir = output_dir / "torrentdownloads";
+		p.save_path = output_dir;
+		g_free (tmp_dir);
+	} else {
+		boost::filesystem::path output_dir (save_dir);
+		p.save_path = output_dir;
+		g_free (tmp_dir);
+	}
+	
 	priv->handle = session->add_torrent (p);
 	libtorrent::torrent_info info = priv->handle.get_torrent_info ();
 	priv->length = info.total_size ();
@@ -124,8 +138,10 @@ start (SummerDownload *self)
 	g_return_if_fail (SUMMER_IS_DOWNLOAD_TORRENT (self));
 	gchar *url, *tmp_dir;
 	g_object_get (self, "tmp-dir", &tmp_dir, "url", &url, NULL);
-	SummerWebBackend *web = summer_web_backend_new (tmp_dir, url);
+	gchar *metafile_dir = g_build_filename (tmp_dir, "metafiles", NULL);
+	SummerWebBackend *web = summer_web_backend_new (metafile_dir, url);
 	g_free (tmp_dir);
+	g_free (metafile_dir);
 	g_free (url);
 
 	g_signal_connect (web, 
