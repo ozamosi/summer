@@ -192,13 +192,13 @@ summer_download_web_new (gchar *mime, gchar *url)
 	// There are ridiculously many application/* mime types, and we want to
 	// download quite a few of them - I'm going for limited blacklisting
 	// for now.
-	gboolean application = g_str_has_prefix (mime, "application")
-		&& (strstr (mime, "xml") == NULL)
-		&& g_strcmp0 (mime, "application/x-bittorrent");
-	if ((application 
+	if (mime == NULL || ((
+				(g_str_has_prefix (mime, "application")
+				&& (strstr (mime, "xml") == NULL)
+				&& g_strcmp0 (mime, "application/x-bittorrent"))
 			|| g_str_has_prefix (mime, "video") 
 			|| g_str_has_prefix (mime, "audio")) 
-		&& g_str_has_prefix (url, "http")) {
+		&& g_str_has_prefix (url, "http"))) {
 		return SUMMER_DOWNLOAD (g_object_new (SUMMER_TYPE_DOWNLOAD_WEB, 
 			"url", url, NULL));
 	}
