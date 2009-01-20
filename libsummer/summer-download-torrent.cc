@@ -20,7 +20,7 @@
  */
 
 #include "summer-download-torrent.hh"
-#include "summer-web-backend.h"
+#include "summer-download-web.h"
 #include "summer-debug.h"
 #include <libtorrent/session.hpp>
 #include <libtorrent/torrent_info.hpp>
@@ -96,12 +96,11 @@ progress_update (gpointer data) {
 }
 
 static void
-on_metafile_downloaded (SummerWebBackend *web_backend, gchar *metafile_path, gchar *save_data, gpointer user_data)
+on_metafile_downloaded (SummerDownloadWeb *dl, gchar *metafile_path, gpointer user_data)
 {
 	summer_debug ("Metafile downloaded - torrent transfer starting");
 	g_return_if_fail (SUMMER_IS_DOWNLOAD_TORRENT (user_data));
-	g_return_if_fail (save_data == NULL);
-	g_return_if_fail (metafile_path != NULL); //FIXME: This is perfectly legal (connection failed, for instance), and should be handled in a proper way
+	g_return_if_fail (metafile_path != NULL);
 	SummerDownload *self = SUMMER_DOWNLOAD (user_data);
 	SummerDownloadTorrentPrivate *priv = SUMMER_DOWNLOAD_TORRENT (self)->priv;
 
@@ -138,7 +137,8 @@ start (SummerDownload *self)
 	gchar *url, *tmp_dir;
 	g_object_get (self, "tmp-dir", &tmp_dir, "url", &url, NULL);
 	gchar *metafile_dir = g_build_filename (tmp_dir, "metafiles", NULL);
-	SummerWebBackend *web = summer_web_backend_new (metafile_dir, url);
+	SummerDownload *web = summer_download_web_new (NULL, url);
+	g_object_set (web, "save-dir", metafile_dir, NULL);
 	g_free (tmp_dir);
 	g_free (metafile_dir);
 	g_free (url);
@@ -148,7 +148,7 @@ start (SummerDownload *self)
 		G_CALLBACK (on_metafile_downloaded), 
 		self);
 
-	summer_web_backend_fetch (web);
+	summer_download_start (web);
 }
 
 static void
