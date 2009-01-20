@@ -96,3 +96,15 @@ summer_create_download (gchar *mime, gchar *url) {
 	}
 	return NULL;
 }
+
+/**
+ * summer_shutdown:
+ *
+ * Shuts down active connections and frees resources.
+ */
+
+void
+summer_shutdown ()
+{
+	summer_download_torrent_shutdown ();
+}

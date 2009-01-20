@@ -49,6 +49,7 @@ struct _SummerDownloadTorrentClass {
 GType        summer_download_torrent_get_type    (void) G_GNUC_CONST;
 
 SummerDownload* summer_download_torrent_new (gchar *url, gchar *mime);
+void summer_download_torrent_shutdown (void);
 
 G_END_DECLS
 

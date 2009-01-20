@@ -310,3 +310,17 @@ summer_download_torrent_set (gchar *first_property_name, va_list var_args)
 		}
 	}
 }
+
+/**
+ * summer_download_torrent_shutdown:
+ *
+ * Disconnect from the tracker.
+ */
+void
+summer_download_torrent_shutdown ()
+{
+	if (session_refs > 0) {
+		delete session;
+		session_refs = 0;
+	}
+}
