@@ -72,7 +72,7 @@ on_download_complete (SummerWebBackend *web_backend, gchar *save_path, gchar *sa
 	g_return_if_fail (save_path != NULL); //FIXME: This is perfectly legal (connection failed, for instance), and should be handled in a proper way
 	SummerDownload *self = SUMMER_DOWNLOAD (user_data);
 	SummerDownloadWebPrivate *priv = SUMMER_DOWNLOAD_WEB (user_data)->priv;
-	g_object_unref (priv->web);
+
 	GFile *src = g_file_new_for_path (save_path);
 	gchar *destpath, *save_dir;
 	g_object_get (self, "save-dir", &save_dir, NULL);
@@ -80,15 +80,19 @@ on_download_complete (SummerWebBackend *web_backend, gchar *save_path, gchar *sa
 	g_object_get (priv->web, "filename", &final_filename, NULL);
 	destpath = g_build_filename (save_dir, final_filename, NULL);
 	g_free (final_filename);
+	
 	GFile *dest = g_file_new_for_path (destpath);
-	GFile *destdir = g_file_new_for_path (save_dir);
 	GError *error = NULL;
+	
+	GFile *destdir = g_file_new_for_path (save_dir);
 	if (!g_file_query_exists (destdir, NULL)) {
 		if (!g_file_make_directory_with_parents (destdir, NULL, &error)) {
 			g_warning ("Error creating directory to put file in: %s", error->message);
 			g_clear_error (&error);
 		}
 	}
+	g_object_unref (destdir);
+
 	if (g_file_query_exists (dest, NULL)) {
 		g_warning ("Destination file already exists - not moving download");
 	} else {
@@ -99,9 +103,10 @@ on_download_complete (SummerWebBackend *web_backend, gchar *save_path, gchar *sa
 	}
 	g_object_unref (src);
 	g_object_unref (dest);
+
 	g_free (save_dir);
 	g_signal_emit_by_name (self, "download-complete", destpath);
-	g_free (destpath);
+	g_object_unref (self);
 }
 
 static void
@@ -163,9 +168,6 @@ summer_download_web_init (SummerDownloadWeb *self)
 static void
 summer_download_web_finalize (GObject *obj)
 {
-	SummerDownloadWebPrivate *priv = SUMMER_DOWNLOAD_WEB (obj)->priv;
-	if (G_IS_OBJECT (priv->web))
-		g_object_unref (priv->web);
 	G_OBJECT_CLASS(summer_download_web_parent_class)->finalize (obj);
 }
 

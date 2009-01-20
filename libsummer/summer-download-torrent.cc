@@ -104,7 +104,6 @@ on_metafile_downloaded (SummerWebBackend *web_backend, gchar *metafile_path, gch
 	g_return_if_fail (metafile_path != NULL); //FIXME: This is perfectly legal (connection failed, for instance), and should be handled in a proper way
 	SummerDownload *self = SUMMER_DOWNLOAD (user_data);
 	SummerDownloadTorrentPrivate *priv = SUMMER_DOWNLOAD_TORRENT (self)->priv;
-	g_object_unref (web_backend);
 
 	gchar *tmp_dir, *save_dir;
 	g_object_get (self, "tmp-dir", &tmp_dir, "save-dir", &save_dir, NULL);
