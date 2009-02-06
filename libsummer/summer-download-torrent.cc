@@ -25,7 +25,6 @@
 #include <libtorrent/session.hpp>
 #include <libtorrent/torrent_info.hpp>
 #include <boost/filesystem.hpp>
-#include <numeric>
 
 /**
  * SECTION:summer-download-torrent
@@ -49,7 +48,6 @@ static void summer_download_torrent_finalize   (GObject *obj);
 
 struct _SummerDownloadTorrentPrivate {
 	libtorrent::torrent_handle handle;
-	gsize length;
 };
 
 #define SUMMER_DOWNLOAD_TORRENT_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE((o), \
@@ -72,17 +70,41 @@ enum {
 G_DEFINE_TYPE (SummerDownloadTorrent, summer_download_torrent, SUMMER_TYPE_DOWNLOAD);
 
 static gboolean
-progress_update (gpointer data) {
+check_done_seeding (gpointer data) {
+	if (!SUMMER_IS_DOWNLOAD_TORRENT (data))
+		return FALSE;
+	SummerDownloadTorrent *self = SUMMER_DOWNLOAD_TORRENT (data);
+	libtorrent::torrent_status status = self->priv->handle.status ();
+
+	gchar *name;
+	g_object_get (self, "filename", &name, NULL);
+	
+	gfloat ratio = (gfloat) status.all_time_upload / (gfloat) status.all_time_download;
+	summer_debug ("%s: %i uploaded, %i downloaded. Ratio: %f", name, (gint) status.all_time_upload, (gint) status.all_time_download, ratio);
+	g_free (name);
+	
+	if (ratio > 5)
+		return FALSE;
+	return TRUE;
+}
+
+static gboolean
+check_progress (gpointer data) {
 	if (!SUMMER_IS_DOWNLOAD_TORRENT (data))
 		return FALSE;
 	SummerDownload *self = SUMMER_DOWNLOAD (data);
 	SummerDownloadTorrentPrivate *priv = SUMMER_DOWNLOAD_TORRENT (self)->priv;
-	std::vector<libtorrent::size_type> fp;
-	priv->handle.file_progress(fp);
-	g_signal_emit_by_name (self, "download-update", 
-		std::accumulate (fp.begin (), fp.end (), 0),
-		priv->length);
-	if (priv->handle.is_seed ()) {
+	libtorrent::torrent_status status = priv->handle.status ();
+	if (status.state == libtorrent::torrent_status::downloading) {
+		g_signal_emit_by_name (self, "download-update", 
+			(gint) status.total_wanted_done,
+			(gint) status.total_wanted);
+	}
+	gchar *name;
+	g_object_get (self, "filename", &name, NULL);
+	g_free (name);
+	if (status.state == libtorrent::torrent_status::finished
+			|| status.state == libtorrent::torrent_status::seeding) {
 		gchar *save_dir;
 		g_object_get (self, "save-dir", &save_dir, NULL);
 		boost::filesystem::path boost_save_dir (save_dir);
@@ -126,8 +148,8 @@ on_metafile_downloaded (SummerDownloadWeb *dl, gchar *metafile_path, gpointer us
 	
 	priv->handle = session->add_torrent (p);
 	libtorrent::torrent_info info = priv->handle.get_torrent_info ();
-	priv->length = info.total_size ();
-	g_timeout_add_seconds (5, (GSourceFunc) progress_update, self);
+	g_timeout_add_seconds (5, (GSourceFunc) check_progress, self);
+	g_timeout_add_seconds (30, (GSourceFunc) check_done_seeding, self);
 }
 
 static void
