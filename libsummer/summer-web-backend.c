@@ -365,22 +365,9 @@ on_got_chunk (SoupMessage *msg, SoupBuffer *chunk, gpointer user_data)
 	g_signal_emit_by_name (self, "download-chunk", priv->received, priv->length);
 }
 
-static void
-on_got_headers (SoupMessage *msg, gpointer user_data)
+static gchar *
+get_filename (SoupMessage *msg)
 {
-	g_return_if_fail (SUMMER_IS_WEB_BACKEND (user_data));
-	g_return_if_fail (SOUP_IS_MESSAGE (msg));
-	SummerWebBackend *self = SUMMER_WEB_BACKEND (user_data);
-	SummerWebBackendPrivate *priv = self->priv;
-	if (msg->status_code >= 400)
-		soup_session_cancel_message (session, msg, SOUP_STATUS_CANCELLED);
-	else if (msg->status_code < 300)
-		priv->fetch = TRUE;
-
-	goffset length;
-	length = soup_message_headers_get_content_length (msg->response_headers);
-	if (length)
-		priv->length = length;
 	SoupMessageHeadersIter iter;
 	const gchar *name;
 	const gchar *value;
@@ -402,9 +389,36 @@ on_got_headers (SoupMessage *msg, gpointer user_data)
 			if (*(filename_start + length - 1) == '"')
 				length--;
 			
-			priv->pretty_filename = g_strndup (filename_start, length);
-			summer_debug ("Using filename '%s'", priv->pretty_filename);
+			return g_strndup (filename_start, length);
 		}
+	}
+	return NULL;
+}
+
+static void
+on_got_headers (SoupMessage *msg, gpointer user_data)
+{
+	g_return_if_fail (SUMMER_IS_WEB_BACKEND (user_data));
+	g_return_if_fail (SOUP_IS_MESSAGE (msg));
+	SummerWebBackend *self = SUMMER_WEB_BACKEND (user_data);
+	SummerWebBackendPrivate *priv = self->priv;
+	if (msg->status_code >= 400 || msg->status_code < 100)
+		soup_session_cancel_message (session, msg, SOUP_STATUS_CANCELLED);
+	else if (msg->status_code < 300)
+		priv->fetch = TRUE;
+
+	goffset length;
+	length = soup_message_headers_get_content_length (msg->response_headers);
+	if (length)
+		priv->length = length;
+	
+	if (priv->pretty_filename)
+		g_free (priv->pretty_filename);
+	priv->pretty_filename = get_filename (msg);
+
+	if (!priv->head_emitted) {
+		priv->head_emitted = TRUE;
+		g_signal_emit_by_name (self, "headers-parsed");
 	}
 }
 
