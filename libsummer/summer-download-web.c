@@ -71,13 +71,12 @@ on_download_complete (SummerWebBackend *web_backend, gchar *save_path, gchar *sa
 	g_return_if_fail (save_data == NULL);
 	g_return_if_fail (save_path != NULL); //FIXME: This is perfectly legal (connection failed, for instance), and should be handled in a proper way
 	SummerDownload *self = SUMMER_DOWNLOAD (user_data);
-	SummerDownloadWebPrivate *priv = SUMMER_DOWNLOAD_WEB (user_data)->priv;
 
 	GFile *src = g_file_new_for_path (save_path);
 	gchar *destpath, *save_dir;
 	g_object_get (self, "save-dir", &save_dir, NULL);
 	gchar *final_filename;
-	g_object_get (priv->web, "filename", &final_filename, NULL);
+	g_object_get (self, "filename", &final_filename, NULL);
 	destpath = g_build_filename (save_dir, final_filename, NULL);
 	g_free (final_filename);
 	
@@ -114,10 +113,18 @@ start (SummerDownload *self)
 {
 	g_return_if_fail (SUMMER_IS_DOWNLOAD_WEB (self));
 	SummerDownloadWebPrivate *priv = SUMMER_DOWNLOAD_WEB (self)->priv;
+
+	gchar *filename, *save_dir;
+	gsize length;
+	g_object_get (web, "filename", &filename, "length", &length, NULL);
+	g_object_set (self, "filename", filename, NULL);
+	g_object_get (self, "save-dir", &save_dir, NULL);
+	gchar *final_path = g_build_filename (save_dir, filename, NULL);
+
 	g_signal_connect (priv->web, "download-chunk", G_CALLBACK (on_download_chunk), self);
 	g_signal_connect (priv->web, "download-complete", G_CALLBACK (on_download_complete), self);
-	gchar *url, *tmp_dir, *save_dir;
-	g_object_get (self, "tmp-dir", &tmp_dir, "save-dir", &save_dir, "url", &url, NULL);
+	gchar *url, *tmp_dir;
+	g_object_get (self, "tmp-dir", &tmp_dir, "url", &url, NULL);
 	summer_debug ("Downloading from %s to %s via %s\n", url, save_dir, tmp_dir);
 	g_free (url);
 	g_free (tmp_dir);

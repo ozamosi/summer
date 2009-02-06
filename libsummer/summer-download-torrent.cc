@@ -182,7 +182,8 @@ get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 		g_value_set_int (value, session->upload_rate_limit ());
 		break;
 	case PROP_FILENAME:
-		g_value_set_string (value, priv->handle.name ().c_str());
+		g_value_set_string (value, priv->handle.name ().c_str ());
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -231,12 +232,7 @@ summer_download_torrent_class_init (SummerDownloadTorrentClass *klass)
 		GParamFlags (G_PARAM_READWRITE));
 	g_object_class_install_property (gobject_class, PROP_MAX_UP_SPEED, pspec);
 
-	pspec = g_param_spec_string ("filename",
-		"Filename",
-		"The name of the file being saved",
-		NULL,
-		G_PARAM_READABLE);
-	g_object_class_install_property (gobject_class, PROP_FILENAME, pspec);
+	g_object_class_override_property (gobject_class, PROP_FILENAME, "filename");
 }
 
 static void
