@@ -327,6 +327,7 @@ on_downloaded (SummerWebBackend *web, gchar *save_path, gchar *save_data, gpoint
 		summer_feed_cache_filter_old_items (cache, &priv->feed_data->items);
 	}
 	g_signal_emit_by_name (self, "new-entries");
+	g_object_unref (web);
 }
 
 static gboolean

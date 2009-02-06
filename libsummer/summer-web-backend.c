@@ -309,7 +309,6 @@ on_downloaded (SoupSession *session, SoupMessage *msg, gpointer user_data)
 	g_signal_emit_by_name (self, "download-complete", filepath, msg->response_body->data);
 	if (filepath)
 		g_free (filepath);
-	g_object_unref (self);
 }
 
 static void

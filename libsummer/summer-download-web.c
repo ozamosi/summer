@@ -171,6 +171,8 @@ summer_download_web_init (SummerDownloadWeb *self)
 static void
 summer_download_web_finalize (GObject *obj)
 {
+	if (G_IS_OBJECT (SUMMER_DOWNLOAD_WEB (obj)->priv->web))
+		g_object_unref (SUMMER_DOWNLOAD_WEB (obj)->priv->web);
 	G_OBJECT_CLASS(summer_download_web_parent_class)->finalize (obj);
 }
 
