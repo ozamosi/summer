@@ -47,7 +47,8 @@ feed_server (SoupServer *server, SoupMessage *msg, const char *path,
 		}
 		const char *mime_type = "text/xml";
 		soup_message_set_status (msg, SOUP_STATUS_OK);
-		soup_message_set_response (msg, mime_type, SOUP_MEMORY_COPY, contents, length);
+		if (g_strcmp0 (msg->method, "HEAD"))
+			soup_message_set_response (msg, mime_type, SOUP_MEMORY_COPY, contents, length);
 		return;
 	}
 	if (!g_strcmp0 (path, "/feeds/atom")) {
