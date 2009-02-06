@@ -92,13 +92,9 @@ on_download_complete (SummerWebBackend *web_backend, gchar *save_path, gchar *sa
 	}
 	g_object_unref (destdir);
 
-	if (g_file_query_exists (dest, NULL)) {
-		g_warning ("Destination file already exists - not moving download");
-	} else {
-		if (!g_file_move (src, dest, G_FILE_COPY_NONE, NULL, NULL, NULL, &error)) {
-			g_warning ("%s", error->message);
-			g_clear_error (&error);
-		}
+	if (!g_file_move (src, dest, G_FILE_COPY_OVERWRITE, NULL, NULL, NULL, &error)) {
+		g_warning ("%s", error->message);
+		g_clear_error (&error);
 	}
 	g_object_unref (src);
 	g_object_unref (dest);
