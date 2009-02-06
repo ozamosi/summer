@@ -104,10 +104,55 @@ on_download_complete (SummerWebBackend *web_backend, gchar *save_path, gchar *sa
 	g_object_unref (self);
 }
 
-static void
-start (SummerDownload *self)
+static gboolean
+is_downloaded (gchar *filename, gsize reported_size)
 {
-	g_return_if_fail (SUMMER_IS_DOWNLOAD_WEB (self));
+	if (!filename)
+		return FALSE;
+	GFile *file = g_file_new_for_path (filename);
+	if (g_file_query_exists (file, NULL)) {
+		GError *e = NULL;
+		GFileInfo *info = g_file_query_info (file,
+			G_FILE_ATTRIBUTE_STANDARD_SIZE,
+			G_FILE_QUERY_INFO_NONE,
+			NULL,
+			&e);
+		if (e) {
+			g_warning ("Error when checking filesize: %s", e->message);
+			g_clear_error (&e);
+			g_object_unref (file);
+			return FALSE;
+		}
+		guint64 current_size = g_file_info_get_attribute_uint64 (info,
+			G_FILE_ATTRIBUTE_STANDARD_SIZE);
+		// If reported_size is 0, assume the file is downloaded
+		if (current_size && (!reported_size || current_size == reported_size)) {
+			summer_debug ("File %s already exists - not downloading", filename);
+			g_object_unref (info);
+			g_object_unref (file);
+			return TRUE;
+		} else {
+			summer_debug ("Removing old copy of %s since it doesn't has the right size (is %i, should be %i)", filename, current_size, reported_size);
+			g_file_delete (file, NULL, &e);
+			if (e) {
+				g_warning ("Error when deleting file: %s", e->message);
+				g_clear_error (&e);
+			}
+			g_object_unref (info);
+			g_object_unref (file);
+			return FALSE;
+		}
+	}
+	g_object_unref (file);
+	return FALSE;
+}
+
+static void
+on_headers_parsed (SummerWebBackend *web, gpointer user_data)
+{
+	g_return_if_fail (SUMMER_IS_DOWNLOAD_WEB (user_data));
+	g_return_if_fail (SUMMER_IS_WEB_BACKEND (web));
+	SummerDownload *self = SUMMER_DOWNLOAD (user_data);
 	SummerDownloadWebPrivate *priv = SUMMER_DOWNLOAD_WEB (self)->priv;
 
 	gchar *filename, *save_dir;
@@ -124,8 +169,24 @@ start (SummerDownload *self)
 	summer_debug ("Downloading from %s to %s via %s\n", url, save_dir, tmp_dir);
 	g_free (url);
 	g_free (tmp_dir);
+	
+	if (is_downloaded (final_path, length)) {
+		g_signal_emit_by_name (self, "download-complete", final_path);
+	} else {
+		summer_web_backend_fetch (priv->web);
+	}
+
 	g_free (save_dir);
-	summer_web_backend_fetch (priv->web);
+	g_free (final_path);
+}
+
+static void
+start (SummerDownload *self)
+{
+	g_return_if_fail (SUMMER_IS_DOWNLOAD_WEB (self));
+	SummerDownloadWebPrivate *priv = SUMMER_DOWNLOAD_WEB (self)->priv;
+	g_signal_connect (priv->web, "headers-parsed", G_CALLBACK (on_headers_parsed), self);
+	summer_web_backend_fetch_head (priv->web);
 }
 
 static GObject *
