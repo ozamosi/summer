@@ -134,6 +134,25 @@ get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 	}
 }
 
+static GObject *
+constructor (GType gtype, guint n_properties, GObjectConstructParam *properties)
+{
+	GObject *obj;
+	GObjectClass *parent_class;
+	parent_class = G_OBJECT_CLASS (summer_web_backend_parent_class);
+	obj = parent_class->constructor (gtype, n_properties, properties);
+	
+	/* Discover filename part of URL */
+	SummerWebBackendPrivate *priv = SUMMER_WEB_BACKEND (obj)->priv;
+	gchar** parts = g_strsplit (priv->url, "/", 0);
+	gchar** filename;
+	for (filename = parts; *filename != NULL; filename++) {}
+	priv->filename = g_strdup (*(--filename));
+	g_strfreev (parts);
+
+	return obj;
+}
+
 static void
 summer_web_backend_class_init (SummerWebBackendClass *klass)
 {
@@ -143,6 +162,7 @@ summer_web_backend_class_init (SummerWebBackendClass *klass)
 	gobject_class->finalize = summer_web_backend_finalize;
 	gobject_class->set_property = set_property;
 	gobject_class->get_property = get_property;
+	gobject_class->constructor = constructor;
 
 	g_type_class_add_private (gobject_class, sizeof(SummerWebBackendPrivate));
 
@@ -231,6 +251,16 @@ summer_web_backend_class_init (SummerWebBackendClass *klass)
 		G_TYPE_NONE,
 		2,
 		G_TYPE_INT, G_TYPE_INT);
+
+	 g_signal_new (
+	 	"headers-parsed",
+		SUMMER_TYPE_WEB_BACKEND,
+		G_SIGNAL_RUN_FIRST,
+		G_STRUCT_OFFSET (SummerWebBackendClass, headers_parsed),
+		NULL, NULL,
+		g_cclosure_marshal_VOID__VOID,
+		G_TYPE_NONE,
+		0);
 }
 
 static void
@@ -392,11 +422,8 @@ summer_web_backend_fetch (SummerWebBackend *self)
 	g_return_if_fail (SUMMER_IS_WEB_BACKEND (self));
 	SummerWebBackendPrivate *priv = self->priv;
 
-	gchar** parts = g_strsplit (priv->url, "/", 0);
-	gchar** filename;
-	for (filename = parts; *filename != NULL; filename++) {}
-	priv->filename = g_strdup (*(--filename));
-	g_strfreev (parts);
+	SoupMessage *msg = soup_message_new ("GET", priv->url);
+
 	if (priv->save_dir != NULL) {
 		gchar *filepath = g_build_filename (priv->save_dir, priv->filename, NULL);
 		GFile *file = g_file_new_for_path (filepath);
@@ -415,15 +442,23 @@ summer_web_backend_fetch (SummerWebBackend *self)
 			g_warning ("Error opening output stream: %s", error->message);
 			g_clear_error (&error);
 		}
-	}
+		priv->fetch = FALSE;
+		g_object_unref (file);
 
-	SoupMessage *msg;
-	msg = soup_message_new ("GET", priv->url);
-
-	if (priv->save_dir != NULL) {
 		soup_message_body_set_accumulate (msg->response_body, FALSE);
 	}
+
 	g_signal_connect (msg, "got-chunk", G_CALLBACK (on_got_chunk), self);
 	g_signal_connect (msg, "got-headers", G_CALLBACK (on_got_headers), self);
 	soup_session_queue_message (session, msg, on_downloaded, self);
+}
+
+void
+summer_web_backend_fetch_head (SummerWebBackend *self)
+{
+	g_return_if_fail (SUMMER_IS_WEB_BACKEND (self));
+
+	SoupMessage *msg = soup_message_new ("HEAD", self->priv->url);
+	g_signal_connect (msg, "got-headers", G_CALLBACK (on_got_headers), self);
+	soup_session_queue_message (session, msg, NULL, NULL);
 }
