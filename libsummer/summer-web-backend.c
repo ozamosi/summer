@@ -61,23 +61,25 @@ static void summer_web_backend_finalize   (GObject *obj);
 struct _SummerWebBackendPrivate {
 	gchar *save_dir;
 	gchar *url;
-	gchar *filename;
+	const gchar *filename;
 	gchar *pretty_filename;
 	gsize length;
 	gsize received;
 	gboolean fetch;
 	GFileOutputStream *outfile;
+	gboolean head_emitted;
 };
-#define SUMMER_WEB_BACKEND_GET_PRIVATE(o)      (G_TYPE_INSTANCE_GET_PRIVATE((o), \
-                                                SUMMER_TYPE_WEB_BACKEND, \
-                                                SummerWebBackendPrivate))
+#define SUMMER_WEB_BACKEND_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE((o), \
+                                           SUMMER_TYPE_WEB_BACKEND, \
+                                           SummerWebBackendPrivate))
 static SoupSession *session = NULL;
 
 enum {
 	PROP_0,
 	PROP_SAVE_DIR,
 	PROP_URL,
-	PROP_FILENAME
+	PROP_FILENAME,
+	PROP_LENGTH
 };
 
 G_DEFINE_TYPE (SummerWebBackend, summer_web_backend, G_TYPE_OBJECT);
@@ -86,8 +88,7 @@ static void
 set_property (GObject *object, guint prop_id, const GValue *value,
 	GParamSpec *pspec)
 {
-	SummerWebBackendPrivate *priv;
-	priv = SUMMER_WEB_BACKEND (object)->priv;
+	SummerWebBackendPrivate *priv = SUMMER_WEB_BACKEND (object)->priv;
 
 	switch (prop_id) {
 	case PROP_SAVE_DIR:
@@ -109,8 +110,7 @@ set_property (GObject *object, guint prop_id, const GValue *value,
 static void
 get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 {
-	SummerWebBackendPrivate *priv;
-	priv = SUMMER_WEB_BACKEND (object)->priv;
+	SummerWebBackendPrivate *priv = SUMMER_WEB_BACKEND (object)->priv;
 
 	switch (prop_id) {
 	case PROP_SAVE_DIR:
@@ -124,6 +124,9 @@ get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 			g_value_set_string (value, priv->pretty_filename);
 		else
 			g_value_set_string (value, priv->filename);
+		break;
+	case PROP_LENGTH:
+		g_value_set_uint (value, priv->length);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -176,6 +179,13 @@ summer_web_backend_class_init (SummerWebBackendClass *klass)
 		NULL,
 		G_PARAM_READABLE);
 	g_object_class_install_property (gobject_class, PROP_FILENAME, pspec);
+
+	pspec = g_param_spec_uint ("length",
+		"Length",
+		"The reported length of the file",
+		0, G_MAXUINT, 0,
+		G_PARAM_READABLE);
+	g_object_class_install_property (gobject_class, PROP_LENGTH, pspec);
 
 	/**
 	 * SummerWebBackend::download-complete:
@@ -254,7 +264,7 @@ summer_web_backend_finalize (GObject *self)
 	if (priv->url != NULL)
 		g_free (priv->url);
 	if (priv->filename != NULL)
-		g_free (priv->filename);
+		g_free ((gchar *)priv->filename);
 	if (priv->pretty_filename != NULL)
 		g_free (priv->pretty_filename);
 	if (G_IS_OBJECT (priv->outfile))
