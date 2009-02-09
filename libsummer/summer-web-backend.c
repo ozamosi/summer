@@ -279,9 +279,6 @@ summer_web_backend_init (SummerWebBackend *self)
 		}
 	}
 	self->priv = SUMMER_WEB_BACKEND_GET_PRIVATE (self);
-	self->priv->filename = NULL;
-	self->priv->pretty_filename = NULL;
-	self->priv->outfile = NULL;
 }
 
 static void
@@ -314,7 +311,7 @@ summer_web_backend_finalize (GObject *self)
 SummerWebBackend*
 summer_web_backend_new (const gchar *save_dir, const gchar *url)
 {
-	return SUMMER_WEB_BACKEND(g_object_new(SUMMER_TYPE_WEB_BACKEND, "save-dir", g_strdup (save_dir), "url", g_strdup (url), NULL));
+	return SUMMER_WEB_BACKEND(g_object_new(SUMMER_TYPE_WEB_BACKEND, "save-dir", save_dir, "url", url, NULL));
 }
 
 static void
@@ -337,9 +334,6 @@ on_downloaded (SoupSession *session, SoupMessage *msg, gpointer user_data)
 	if (priv->save_dir)
 		filepath = g_build_filename (priv->save_dir, priv->filename, NULL);
 	g_signal_emit_by_name (self, "download-complete", filepath, msg->response_body->data);
-	if (filepath)
-		g_free (filepath);
-	g_object_unref (self);
 }
 
 static void
@@ -403,8 +397,10 @@ on_got_headers (SoupMessage *msg, gpointer user_data)
 	g_return_if_fail (SOUP_IS_MESSAGE (msg));
 	SummerWebBackend *self = SUMMER_WEB_BACKEND (user_data);
 	SummerWebBackendPrivate *priv = self->priv;
-	if (msg->status_code >= 400 || msg->status_code < 100)
+	if (msg->status_code >= 400 || msg->status_code < 100) {
 		soup_session_cancel_message (session, msg, SOUP_STATUS_CANCELLED);
+		return;
+	}
 	else if (msg->status_code < 300)
 		priv->fetch = TRUE;
 
