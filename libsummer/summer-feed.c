@@ -316,6 +316,11 @@ on_downloaded (SummerWebBackend *web, gchar *save_path, gchar *save_data, gpoint
 		xmlParserInputBufferPtr buffer = xmlParserInputBufferCreateMem (save_data, strlen (save_data), 0);
 		xmlTextReaderPtr reader = xmlNewTextReader (buffer, priv->url);
 		priv->feed_data = summer_feed_parser_parse (parsers, sizeof (parsers) / sizeof (*parsers), reader);
+		
+		unsigned int i;
+		for (i = 0; i < sizeof (parsers) / sizeof (*parsers); i++) {
+			g_object_unref (parsers[i]);
+		}
 	}
 
 	if (self->priv->cache_dir != NULL) {
@@ -332,8 +337,10 @@ on_downloaded (SummerWebBackend *web, gchar *save_path, gchar *save_data, gpoint
 
 static gboolean
 download_timeout (gpointer data) {
-	if (!SUMMER_IS_FEED (data))
+	if (!SUMMER_IS_FEED (data)) {
+		g_object_unref (data);
 		return FALSE;
+	}
 	SummerFeed *self = SUMMER_FEED (data);
 	SummerWebBackend *web = summer_web_backend_new (NULL, self->priv->url);
 	g_signal_connect (web, "download-complete", G_CALLBACK (on_downloaded), self);
@@ -353,6 +360,7 @@ void
 summer_feed_start (SummerFeed *self, gchar *url) {
 	g_object_set (self, "url", url, NULL);
 	if (self->priv->frequency > 0) {
+		g_object_ref (self);
 		g_timeout_add_seconds (self->priv->frequency, 
 			(GSourceFunc) download_timeout,
 			self);
