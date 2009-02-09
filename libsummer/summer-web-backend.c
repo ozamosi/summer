@@ -61,23 +61,25 @@ static void summer_web_backend_finalize   (GObject *obj);
 struct _SummerWebBackendPrivate {
 	gchar *save_dir;
 	gchar *url;
-	gchar *filename;
+	const gchar *filename;
 	gchar *pretty_filename;
 	gsize length;
 	gsize received;
 	gboolean fetch;
 	GFileOutputStream *outfile;
+	gboolean head_emitted;
 };
-#define SUMMER_WEB_BACKEND_GET_PRIVATE(o)      (G_TYPE_INSTANCE_GET_PRIVATE((o), \
-                                                SUMMER_TYPE_WEB_BACKEND, \
-                                                SummerWebBackendPrivate))
+#define SUMMER_WEB_BACKEND_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE((o), \
+                                           SUMMER_TYPE_WEB_BACKEND, \
+                                           SummerWebBackendPrivate))
 static SoupSession *session = NULL;
 
 enum {
 	PROP_0,
 	PROP_SAVE_DIR,
 	PROP_URL,
-	PROP_FILENAME
+	PROP_FILENAME,
+	PROP_LENGTH
 };
 
 G_DEFINE_TYPE (SummerWebBackend, summer_web_backend, G_TYPE_OBJECT);
@@ -86,8 +88,7 @@ static void
 set_property (GObject *object, guint prop_id, const GValue *value,
 	GParamSpec *pspec)
 {
-	SummerWebBackendPrivate *priv;
-	priv = SUMMER_WEB_BACKEND (object)->priv;
+	SummerWebBackendPrivate *priv = SUMMER_WEB_BACKEND (object)->priv;
 
 	switch (prop_id) {
 	case PROP_SAVE_DIR:
@@ -109,8 +110,7 @@ set_property (GObject *object, guint prop_id, const GValue *value,
 static void
 get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 {
-	SummerWebBackendPrivate *priv;
-	priv = SUMMER_WEB_BACKEND (object)->priv;
+	SummerWebBackendPrivate *priv = SUMMER_WEB_BACKEND (object)->priv;
 
 	switch (prop_id) {
 	case PROP_SAVE_DIR:
@@ -125,10 +125,32 @@ get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 		else
 			g_value_set_string (value, priv->filename);
 		break;
+	case PROP_LENGTH:
+		g_value_set_uint (value, priv->length);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
 	}
+}
+
+static GObject *
+constructor (GType gtype, guint n_properties, GObjectConstructParam *properties)
+{
+	GObject *obj;
+	GObjectClass *parent_class;
+	parent_class = G_OBJECT_CLASS (summer_web_backend_parent_class);
+	obj = parent_class->constructor (gtype, n_properties, properties);
+	
+	/* Discover filename part of URL */
+	SummerWebBackendPrivate *priv = SUMMER_WEB_BACKEND (obj)->priv;
+	gchar** parts = g_strsplit (priv->url, "/", 0);
+	gchar** filename;
+	for (filename = parts; *filename != NULL; filename++) {}
+	priv->filename = g_strdup (*(--filename));
+	g_strfreev (parts);
+
+	return obj;
 }
 
 static void
@@ -140,6 +162,7 @@ summer_web_backend_class_init (SummerWebBackendClass *klass)
 	gobject_class->finalize = summer_web_backend_finalize;
 	gobject_class->set_property = set_property;
 	gobject_class->get_property = get_property;
+	gobject_class->constructor = constructor;
 
 	g_type_class_add_private (gobject_class, sizeof(SummerWebBackendPrivate));
 
@@ -176,6 +199,13 @@ summer_web_backend_class_init (SummerWebBackendClass *klass)
 		NULL,
 		G_PARAM_READABLE);
 	g_object_class_install_property (gobject_class, PROP_FILENAME, pspec);
+
+	pspec = g_param_spec_uint ("length",
+		"Length",
+		"The reported length of the file",
+		0, G_MAXUINT, 0,
+		G_PARAM_READABLE);
+	g_object_class_install_property (gobject_class, PROP_LENGTH, pspec);
 
 	/**
 	 * SummerWebBackend::download-complete:
@@ -221,6 +251,16 @@ summer_web_backend_class_init (SummerWebBackendClass *klass)
 		G_TYPE_NONE,
 		2,
 		G_TYPE_INT, G_TYPE_INT);
+
+	 g_signal_new (
+	 	"headers-parsed",
+		SUMMER_TYPE_WEB_BACKEND,
+		G_SIGNAL_RUN_FIRST,
+		G_STRUCT_OFFSET (SummerWebBackendClass, headers_parsed),
+		NULL, NULL,
+		g_cclosure_marshal_VOID__VOID,
+		G_TYPE_NONE,
+		0);
 }
 
 static void
@@ -254,7 +294,7 @@ summer_web_backend_finalize (GObject *self)
 	if (priv->url != NULL)
 		g_free (priv->url);
 	if (priv->filename != NULL)
-		g_free (priv->filename);
+		g_free ((gchar *)priv->filename);
 	if (priv->pretty_filename != NULL)
 		g_free (priv->pretty_filename);
 	if (G_IS_OBJECT (priv->outfile))
@@ -326,22 +366,9 @@ on_got_chunk (SoupMessage *msg, SoupBuffer *chunk, gpointer user_data)
 	g_signal_emit_by_name (self, "download-chunk", priv->received, priv->length);
 }
 
-static void
-on_got_headers (SoupMessage *msg, gpointer user_data)
+static gchar *
+get_filename (SoupMessage *msg)
 {
-	g_return_if_fail (SUMMER_IS_WEB_BACKEND (user_data));
-	g_return_if_fail (SOUP_IS_MESSAGE (msg));
-	SummerWebBackend *self = SUMMER_WEB_BACKEND (user_data);
-	SummerWebBackendPrivate *priv = self->priv;
-	if (msg->status_code >= 400)
-		soup_session_cancel_message (session, msg, SOUP_STATUS_CANCELLED);
-	else if (msg->status_code < 300)
-		priv->fetch = TRUE;
-
-	goffset length;
-	length = soup_message_headers_get_content_length (msg->response_headers);
-	if (length)
-		priv->length = length;
 	SoupMessageHeadersIter iter;
 	const gchar *name;
 	const gchar *value;
@@ -363,9 +390,36 @@ on_got_headers (SoupMessage *msg, gpointer user_data)
 			if (*(filename_start + length - 1) == '"')
 				length--;
 			
-			priv->pretty_filename = g_strndup (filename_start, length);
-			summer_debug ("Using filename '%s'", priv->pretty_filename);
+			return g_strndup (filename_start, length);
 		}
+	}
+	return NULL;
+}
+
+static void
+on_got_headers (SoupMessage *msg, gpointer user_data)
+{
+	g_return_if_fail (SUMMER_IS_WEB_BACKEND (user_data));
+	g_return_if_fail (SOUP_IS_MESSAGE (msg));
+	SummerWebBackend *self = SUMMER_WEB_BACKEND (user_data);
+	SummerWebBackendPrivate *priv = self->priv;
+	if (msg->status_code >= 400 || msg->status_code < 100)
+		soup_session_cancel_message (session, msg, SOUP_STATUS_CANCELLED);
+	else if (msg->status_code < 300)
+		priv->fetch = TRUE;
+
+	goffset length;
+	length = soup_message_headers_get_content_length (msg->response_headers);
+	if (length)
+		priv->length = length;
+	
+	if (priv->pretty_filename)
+		g_free (priv->pretty_filename);
+	priv->pretty_filename = get_filename (msg);
+
+	if (!priv->head_emitted) {
+		priv->head_emitted = TRUE;
+		g_signal_emit_by_name (self, "headers-parsed");
 	}
 }
 
@@ -383,30 +437,43 @@ summer_web_backend_fetch (SummerWebBackend *self)
 	g_return_if_fail (SUMMER_IS_WEB_BACKEND (self));
 	SummerWebBackendPrivate *priv = self->priv;
 
-	gchar** parts = g_strsplit (priv->url, "/", 0);
-	gchar** filename;
-	for (filename = parts; *filename != NULL; filename++) {}
-	priv->filename = g_strdup (*(--filename));
-	g_strfreev (parts);
+	SoupMessage *msg = soup_message_new ("GET", priv->url);
+
 	if (priv->save_dir != NULL) {
 		gchar *filepath = g_build_filename (priv->save_dir, priv->filename, NULL);
 		GFile *file = g_file_new_for_path (filepath);
 		g_free (filepath);
 		GError *error = NULL;
+		GFile *directory = g_file_get_parent (file);
+		if (!g_file_query_exists (directory, NULL)) {
+			if (!g_file_make_directory_with_parents (directory, NULL, &error)) {
+				g_warning ("Error creating directory for download: %s", error->message);
+				g_clear_error (&error);
+			}
+		}
+
 		priv->outfile = g_file_replace (file, NULL, FALSE, G_FILE_CREATE_NONE, NULL, &error);
 		if (!priv->outfile) {
 			g_warning ("Error opening output stream: %s", error->message);
 			g_clear_error (&error);
 		}
-	}
+		priv->fetch = FALSE;
+		g_object_unref (file);
 
-	SoupMessage *msg;
-	msg = soup_message_new ("GET", priv->url);
-
-	if (priv->save_dir != NULL) {
 		soup_message_body_set_accumulate (msg->response_body, FALSE);
 	}
+
 	g_signal_connect (msg, "got-chunk", G_CALLBACK (on_got_chunk), self);
 	g_signal_connect (msg, "got-headers", G_CALLBACK (on_got_headers), self);
 	soup_session_queue_message (session, msg, on_downloaded, self);
+}
+
+void
+summer_web_backend_fetch_head (SummerWebBackend *self)
+{
+	g_return_if_fail (SUMMER_IS_WEB_BACKEND (self));
+
+	SoupMessage *msg = soup_message_new ("HEAD", self->priv->url);
+	g_signal_connect (msg, "got-headers", G_CALLBACK (on_got_headers), self);
+	soup_session_queue_message (session, msg, NULL, NULL);
 }

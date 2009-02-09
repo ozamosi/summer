@@ -33,11 +33,13 @@ G_BEGIN_DECLS
 #define SUMMER_IS_FEED_CACHE_CLASS(klass)  (G_TYPE_CHECK_CLASS_TYPE((klass),SUMMER_TYPE_FEED_CACHE))
 #define SUMMER_FEED_CACHE_GET_CLASS(obj)   (G_TYPE_INSTANCE_GET_CLASS((obj),SUMMER_TYPE_FEED_CACHE,SummerFeedCacheClass))
 
-typedef struct _SummerFeedCache      SummerFeedCache;
-typedef struct _SummerFeedCacheClass SummerFeedCacheClass;
+typedef struct _SummerFeedCache        SummerFeedCache;
+typedef struct _SummerFeedCacheClass   SummerFeedCacheClass;
+typedef struct _SummerFeedCachePrivate SummerFeedCachePrivate;
 
 struct _SummerFeedCache {
 	 GObject parent;
+	 SummerFeedCachePrivate *priv;
 };
 
 struct _SummerFeedCacheClass {

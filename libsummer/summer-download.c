@@ -21,6 +21,7 @@
 
 #include "summer-download.h"
 #include "summer-marshal.h"
+#include "summer-debug.h"
 /**
  * SECTION:summer-download
  * @short_description: Base class for downloaders.
@@ -46,6 +47,8 @@ static void summer_download_finalize   (GObject *obj);
 struct _SummerDownloadPrivate {
 	gchar *tmp_dir;
 	gchar *save_dir;
+	gchar *url;
+	gchar *filename;
 };
 #define SUMMER_DOWNLOAD_GET_PRIVATE(o)   (G_TYPE_INSTANCE_GET_PRIVATE((o), \
                                           SUMMER_TYPE_DOWNLOAD, \
@@ -57,7 +60,9 @@ static gchar *save_dir = NULL;
 enum {
 	PROP_0,
 	PROP_TMP_DIR,
-	PROP_SAVE_DIR
+	PROP_SAVE_DIR,
+	PROP_URL,
+	PROP_FILENAME
 };
 
 G_DEFINE_ABSTRACT_TYPE (SummerDownload, summer_download, G_TYPE_OBJECT);
@@ -79,6 +84,16 @@ set_property (GObject *object, guint prop_id, const GValue *value,
 			g_free (priv->tmp_dir);
 		priv->tmp_dir = g_value_dup_string (value);
 		break;
+	case PROP_URL:
+		if (priv->url)
+			g_free (priv->url);
+		priv->url = g_value_dup_string (value);
+		break;
+	case PROP_FILENAME:
+		if (priv->filename)
+			g_free (priv->filename);
+		priv->filename = g_value_dup_string (value);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -97,6 +112,12 @@ get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 		break;
 	case PROP_TMP_DIR:
 		g_value_set_string (value, priv->tmp_dir);
+		break;
+	case PROP_URL:
+		g_value_set_string (value, priv->url);
+		break;
+	case PROP_FILENAME:
+		g_value_set_string (value, priv->filename);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -143,6 +164,20 @@ summer_download_class_init (SummerDownloadClass *klass)
 			G_PARAM_READWRITE);
 	g_object_class_install_property (gobject_class, PROP_TMP_DIR, pspec);
 
+	pspec = g_param_spec_string ("url",
+		"URL",
+		"The URL to download",
+		NULL,
+		G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
+	g_object_class_install_property (gobject_class, PROP_URL, pspec);
+
+	pspec = g_param_spec_string ("filename",
+		"Filename",
+		"The filename of the file that's downloading",
+		NULL,
+		G_PARAM_READWRITE);
+	g_object_class_install_property (gobject_class, PROP_FILENAME, pspec);
+
 	/**
 	 * SummerDownload::download-complete:
 	 * @obj: the %SummerDownload object that emitted the signal
@@ -185,10 +220,19 @@ summer_download_class_init (SummerDownloadClass *klass)
 }
 
 static void
+print_update (SummerDownload *self, gint downloaded, gint length, gpointer user_data)
+{
+	summer_debug ("%f%% downloaded (%i)", downloaded / (float) length * 100, downloaded);
+}
+
+static void
 summer_download_init (SummerDownload *self)
 {
 	self->priv = SUMMER_DOWNLOAD_GET_PRIVATE (self);
 	g_object_set (self, "save-dir", save_dir, "tmp-dir", tmp_dir, NULL);
+	if (summer_debug (NULL)) {
+		g_signal_connect (self, "download-update", G_CALLBACK (print_update), NULL);
+	}
 }
 
 static void
@@ -200,6 +244,10 @@ summer_download_finalize (GObject *self)
 		g_free (priv->save_dir);
 	if (priv->tmp_dir)
 		g_free (priv->tmp_dir);
+	if (priv->url)
+		g_free (priv->url);
+	if (priv->filename)
+		g_free (priv->filename);
 	G_OBJECT_CLASS(summer_download_parent_class)->finalize (self);
 }
 

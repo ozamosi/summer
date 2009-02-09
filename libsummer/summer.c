@@ -20,6 +20,7 @@
  */
 
 #include "summer.h"
+#include "summer-debug.h"
 
 /*
  * All functions in this file should use gmodule to find available
@@ -44,8 +45,10 @@
  * Allow the user to configure global, module-specific settings, such
  * as directory to save downloaded files to, cache directory, and similar.
  *
- * Whenever it is possible, you should be able to override this on an instance 
+ * Whenever it makes sense, you should be able to override this on an instance 
  * basis.
+ *
+ * Changing these options very rarely affects already created instances.
  */
 
 void
@@ -57,6 +60,10 @@ summer_set (gchar *module_name, gchar *first_property_name, ...)
 		summer_feed_set (first_property_name, var_args);
 		va_end (var_args);
 	} else if (!g_strcmp0 (module_name, "download")) {
+		va_start (var_args, first_property_name);
+		summer_download_set (first_property_name, var_args);
+		va_end (var_args);
+	} else if (!g_strcmp0 (module_name, "torrent")) {
 		va_start (var_args, first_property_name);
 		summer_download_set (first_property_name, var_args);
 		va_end (var_args);
@@ -80,7 +87,24 @@ summer_set (gchar *module_name, gchar *first_property_name, ...)
 SummerDownload*
 summer_create_download (gchar *mime, gchar *url) {
 	SummerDownload *dl;
-	if ((dl = summer_download_web_new (mime, url)))
+	if ((dl = summer_download_web_new (mime, url))) {
+		summer_debug ("Starting web download of %s", url);
 		return dl;
+	} else if ((dl = summer_download_torrent_new (mime, url))) {
+		summer_debug ("Starting torrent download of %s", url);
+		return dl;
+	}
 	return NULL;
+}
+
+/**
+ * summer_shutdown:
+ *
+ * Shuts down active connections and frees resources.
+ */
+
+void
+summer_shutdown ()
+{
+	summer_download_torrent_shutdown ();
 }

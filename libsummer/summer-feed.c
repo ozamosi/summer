@@ -331,9 +331,8 @@ on_downloaded (SummerWebBackend *web, gchar *save_path, gchar *save_data, gpoint
 
 static gboolean
 download_timeout (gpointer data) {
-	if (!SUMMER_IS_FEED (data)) {
+	if (!SUMMER_IS_FEED (data))
 		return FALSE;
-	}
 	SummerFeed *self = SUMMER_FEED (data);
 	SummerWebBackend *web = summer_web_backend_new (NULL, self->priv->url);
 	g_signal_connect (web, "download-complete", G_CALLBACK (on_downloaded), self);

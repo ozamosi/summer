@@ -24,12 +24,13 @@
 #include "summer-debug.h"
 #include <string.h>
 #include <gio/gio.h>
+
 /**
  * SECTION:summer-download-web
  * @short_description: Provides a way to download audio and video files from
  * regular web servers.
  * @stability: Unstable
- * @see_also: %SummerDownload
+ * @see_also: %SummerDownloadTorrent
  *
  * This is the downloader for regular web servers - that is, the one used by 
  * most podcasts and vidcasts.
@@ -40,7 +41,6 @@
  *
  * A %SummerDownload-based class for files that's available on regular web
  * servers.
- *
  */
 
 static void summer_download_web_class_init (SummerDownloadWebClass *klass);
@@ -49,15 +49,10 @@ static void summer_download_web_finalize   (GObject *obj);
 
 struct _SummerDownloadWebPrivate {
 	SummerWebBackend *web;
-	gchar *url;
 };
 #define SUMMER_DOWNLOAD_WEB_GET_PRIVATE(o)      (G_TYPE_INSTANCE_GET_PRIVATE((o), \
                                                  SUMMER_TYPE_DOWNLOAD_WEB, \
                                                  SummerDownloadWebPrivate))
-enum {
-	PROP_0,
-	PROP_URL
-};
 
 G_DEFINE_TYPE (SummerDownloadWeb, summer_download_web, SUMMER_TYPE_DOWNLOAD);
 
@@ -74,15 +69,14 @@ on_download_complete (SummerWebBackend *web_backend, gchar *save_path, gchar *sa
 {
 	g_return_if_fail (SUMMER_IS_DOWNLOAD_WEB (user_data));
 	g_return_if_fail (save_data == NULL);
-	g_return_if_fail (save_path != NULL);
+	g_return_if_fail (save_path != NULL); //FIXME: This is perfectly legal (connection failed, for instance), and should be handled in a proper way
 	SummerDownload *self = SUMMER_DOWNLOAD (user_data);
-	SummerDownloadWebPrivate *priv = SUMMER_DOWNLOAD_WEB (user_data)->priv;
 
 	GFile *src = g_file_new_for_path (save_path);
 	gchar *destpath, *save_dir;
 	g_object_get (self, "save-dir", &save_dir, NULL);
 	gchar *final_filename;
-	g_object_get (priv->web, "filename", &final_filename, NULL);
+	g_object_get (self, "filename", &final_filename, NULL);
 	destpath = g_build_filename (save_dir, final_filename, NULL);
 	g_free (final_filename);
 	
@@ -98,13 +92,9 @@ on_download_complete (SummerWebBackend *web_backend, gchar *save_path, gchar *sa
 	}
 	g_object_unref (destdir);
 
-	if (g_file_query_exists (dest, NULL)) {
-		g_warning ("Destination file already exists - not moving download");
-	} else {
-		if (!g_file_move (src, dest, G_FILE_COPY_NONE, NULL, NULL, NULL, &error)) {
-			g_warning ("%s", error->message);
-			g_clear_error (&error);
-		}
+	if (!g_file_move (src, dest, G_FILE_COPY_OVERWRITE, NULL, NULL, NULL, &error)) {
+		g_warning ("%s", error->message);
+		g_clear_error (&error);
 	}
 	g_object_unref (src);
 	g_object_unref (dest);
@@ -114,20 +104,89 @@ on_download_complete (SummerWebBackend *web_backend, gchar *save_path, gchar *sa
 	g_object_unref (self);
 }
 
+static gboolean
+is_downloaded (gchar *filename, gsize reported_size)
+{
+	if (!filename)
+		return FALSE;
+	GFile *file = g_file_new_for_path (filename);
+	if (g_file_query_exists (file, NULL)) {
+		GError *e = NULL;
+		GFileInfo *info = g_file_query_info (file,
+			G_FILE_ATTRIBUTE_STANDARD_SIZE,
+			G_FILE_QUERY_INFO_NONE,
+			NULL,
+			&e);
+		if (e) {
+			g_warning ("Error when checking filesize: %s", e->message);
+			g_clear_error (&e);
+			g_object_unref (file);
+			return FALSE;
+		}
+		guint64 current_size = g_file_info_get_attribute_uint64 (info,
+			G_FILE_ATTRIBUTE_STANDARD_SIZE);
+		// If reported_size is 0, assume the file is downloaded
+		if (current_size && (!reported_size || current_size == reported_size)) {
+			summer_debug ("File %s already exists - not downloading", filename);
+			g_object_unref (info);
+			g_object_unref (file);
+			return TRUE;
+		} else {
+			summer_debug ("Removing old copy of %s since it doesn't has the right size (is %i, should be %i)", filename, current_size, reported_size);
+			g_file_delete (file, NULL, &e);
+			if (e) {
+				g_warning ("Error when deleting file: %s", e->message);
+				g_clear_error (&e);
+			}
+			g_object_unref (info);
+			g_object_unref (file);
+			return FALSE;
+		}
+	}
+	g_object_unref (file);
+	return FALSE;
+}
+
+static void
+on_headers_parsed (SummerWebBackend *web, gpointer user_data)
+{
+	g_return_if_fail (SUMMER_IS_DOWNLOAD_WEB (user_data));
+	g_return_if_fail (SUMMER_IS_WEB_BACKEND (web));
+	SummerDownload *self = SUMMER_DOWNLOAD (user_data);
+	SummerDownloadWebPrivate *priv = SUMMER_DOWNLOAD_WEB (self)->priv;
+
+	gchar *filename, *save_dir;
+	gsize length;
+	g_object_get (web, "filename", &filename, "length", &length, NULL);
+	g_object_set (self, "filename", filename, NULL);
+	g_object_get (self, "save-dir", &save_dir, NULL);
+	gchar *final_path = g_build_filename (save_dir, filename, NULL);
+
+	g_signal_connect (priv->web, "download-chunk", G_CALLBACK (on_download_chunk), self);
+	g_signal_connect (priv->web, "download-complete", G_CALLBACK (on_download_complete), self);
+	gchar *url, *tmp_dir;
+	g_object_get (self, "tmp-dir", &tmp_dir, "url", &url, NULL);
+	summer_debug ("Downloading from %s to %s via %s\n", url, save_dir, tmp_dir);
+	g_free (url);
+	g_free (tmp_dir);
+	
+	if (is_downloaded (final_path, length)) {
+		g_signal_emit_by_name (self, "download-complete", final_path);
+	} else {
+		summer_web_backend_fetch (priv->web);
+	}
+
+	g_free (save_dir);
+	g_free (final_path);
+}
+
 static void
 start (SummerDownload *self)
 {
 	g_return_if_fail (SUMMER_IS_DOWNLOAD_WEB (self));
 	SummerDownloadWebPrivate *priv = SUMMER_DOWNLOAD_WEB (self)->priv;
-	g_signal_connect (priv->web, "download-chunk", G_CALLBACK (on_download_chunk), self);
-	g_signal_connect (priv->web, "download-complete", G_CALLBACK (on_download_complete), self);
-	gchar *url, *tmp_dir, *save_dir;
-	g_object_get (self, "tmp-dir", &tmp_dir, "save-dir", &save_dir, "url", &url, NULL);
-	summer_debug ("Downloading from %s to %s via %s\n", url, save_dir, tmp_dir);
-	g_free (url);
-	g_free (tmp_dir);
-	g_free (save_dir);
-	summer_web_backend_fetch (priv->web);
+	g_signal_connect (priv->web, "headers-parsed", G_CALLBACK (on_headers_parsed), self);
+	summer_web_backend_fetch_head (priv->web);
 }
 
 static GObject *
@@ -149,50 +208,12 @@ constructor (GType gtype, guint n_properties, GObjectConstructParam *properties)
 }
 
 static void
-set_property (GObject *object, guint property_id, const GValue *value,
-	GParamSpec *pspec)
-{
-	SummerDownloadWebPrivate *priv;
-	priv = SUMMER_DOWNLOAD_WEB (object)->priv;
-
-	switch (property_id) {
-	case PROP_URL:
-		if (priv->url)
-			g_free (priv->url);
-		priv->url = g_value_dup_string (value);
-		break;
-	default:
-		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
-		break;
-	}
-}
-
-static void
-get_property (GObject *object, guint property_id, GValue *value,
-	GParamSpec *pspec)
-{
-	SummerDownloadWebPrivate *priv;
-	priv = SUMMER_DOWNLOAD_WEB (object)->priv;
-
-	switch (property_id) {
-	case PROP_URL:
-		g_value_set_string (value, priv->url);
-		break;
-	default:
-		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
-		break;
-	}
-}
-
-static void
 summer_download_web_class_init (SummerDownloadWebClass *klass)
 {
 	GObjectClass *gobject_class;
 	gobject_class = (GObjectClass*) klass;
 
 	gobject_class->finalize = summer_download_web_finalize;
-	gobject_class->set_property = set_property;
-	gobject_class->get_property = get_property;
 	gobject_class->constructor = constructor;
 
 	SummerDownloadClass *download_class;
@@ -200,19 +221,6 @@ summer_download_web_class_init (SummerDownloadWebClass *klass)
 	download_class->start = start;
 
 	g_type_class_add_private (gobject_class, sizeof(SummerDownloadWebPrivate));
-
-	GParamSpec *pspec;
-	/**
-	 * SummerDownloadWeb:url:
-	 *
-	 * Specifies the URL to download
-	 */
-	pspec = g_param_spec_string ("url",
-		"URL",
-		"The URL to download",
-		NULL,
-		G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
-	g_object_class_install_property (gobject_class, PROP_URL, pspec);
 }
 
 static void
@@ -224,15 +232,14 @@ summer_download_web_init (SummerDownloadWeb *self)
 static void
 summer_download_web_finalize (GObject *obj)
 {
-	SummerDownloadWebPrivate *priv = SUMMER_DOWNLOAD_WEB (obj)->priv;
-	if (priv->url)
-		g_free (priv->url);
+	if (G_IS_OBJECT (SUMMER_DOWNLOAD_WEB (obj)->priv->web))
+		g_object_unref (SUMMER_DOWNLOAD_WEB (obj)->priv->web);
 	G_OBJECT_CLASS(summer_download_web_parent_class)->finalize (obj);
 }
 
 /**
  * summer_download_web_new:
- * @mime: the mime type of the file that's going to be downloaded. Should be
+ * @mime: the mime type of the file that's going to be downloaded. This hould be
  * available in the feed.
  * @url: the URL of the file that's going to be downloaded.
  *
@@ -243,7 +250,7 @@ summer_download_web_finalize (GObject *obj)
  * looking for one that's suitable.
  *
  * Returns: a newly created #SummerDownloadWeb object if @mime and @url is
- * suitable, otherwise %NULL
+ * suitable, otherwise %NULL.
  */
 SummerDownload*
 summer_download_web_new (gchar *mime, gchar *url)
@@ -251,13 +258,14 @@ summer_download_web_new (gchar *mime, gchar *url)
 	// There are ridiculously many application/* mime types, and we want to
 	// download quite a few of them - I'm going for limited blacklisting
 	// for now.
-	gboolean application = g_str_has_prefix (mime, "application")
-		&& (strstr (mime, "xml") == NULL);
-	if ((application 
+	if (mime == NULL || ((
+				(g_str_has_prefix (mime, "application")
+				&& (strstr (mime, "xml") == NULL)
+				&& g_strcmp0 (mime, "application/x-bittorrent"))
 			|| g_str_has_prefix (mime, "video") 
 			|| g_str_has_prefix (mime, "audio")) 
-		&& g_str_has_prefix (url, "http")) {
-		return SUMMER_DOWNLOAD(g_object_new(SUMMER_TYPE_DOWNLOAD_WEB, 
+		&& g_str_has_prefix (url, "http"))) {
+		return SUMMER_DOWNLOAD (g_object_new (SUMMER_TYPE_DOWNLOAD_WEB, 
 			"url", url, NULL));
 	}
 	return NULL;

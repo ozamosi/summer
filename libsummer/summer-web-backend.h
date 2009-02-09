@@ -44,8 +44,9 @@ struct _SummerWebBackend {
 
 struct _SummerWebBackendClass {
 	GObjectClass parent_class;
-	void (* download_complete) (SummerWebBackend* obj, gchar *save_path, gchar *save_data, gpointer user_data);
-	void (* download_chunk) (SummerWebBackend* obj, gint received, gint length, gpointer user_data);
+	void (* download_complete) (SummerWebBackend *obj, gchar *save_path, gchar *save_data, gpointer user_data);
+	void (* download_chunk) (SummerWebBackend *obj, gint received, gint length, gpointer user_data);
+	void (* headers_parsed) (SummerWebBackend *obj, gpointer user_data);
 };
 
 GType        summer_web_backend_get_type    (void) G_GNUC_CONST;
@@ -53,8 +54,8 @@ GType        summer_web_backend_get_type    (void) G_GNUC_CONST;
 SummerWebBackend*    summer_web_backend_new         (const gchar *save_dir, const gchar *url);
 
 void summer_web_backend_fetch (SummerWebBackend *self);
+void summer_web_backend_fetch_head (SummerWebBackend *self);
 
 G_END_DECLS
 
 #endif /* __SUMMER_WEB_BACKEND_H__ */
-

@@ -17,18 +17,6 @@ chunk_cb (SummerWebBackend *web, gint received, gint length, gpointer user_data)
 }
 
 static void
-disk_chunk_cb (SummerWebBackend *web, gint received, gint length, gpointer user_data)
-{
-	gchar *contents = NULL;
-	gsize file_length;
-	gchar *filename = g_build_filename (g_get_tmp_dir (), "epicfu", NULL);
-	g_file_get_contents (filename, &contents, &file_length, NULL);
-	g_free (filename);
-	g_free (contents);
-	g_assert_cmpint (received, <=, file_length);
-}
-
-static void
 disk_downloaded_cb (SummerWebBackend *web, gchar *save_path, gchar *save_data, gpointer user_data)
 {
 	g_assert_cmpstr (save_path, !=, NULL);
@@ -58,7 +46,6 @@ to_disk (WebFixture *fix, gconstpointer data)
 	g_assert_cmpstr (path, ==, orig_path);
 
 	g_signal_connect (web, "download-chunk", G_CALLBACK (chunk_cb), NULL);
-	g_signal_connect (web, "download-chunk", G_CALLBACK (disk_chunk_cb), NULL);
 	g_signal_connect (web, "download-complete", G_CALLBACK (disk_downloaded_cb), NULL);
 	summer_web_backend_fetch (g_object_ref (web));
 	g_main_loop_run (loop);
@@ -158,6 +145,43 @@ redirect (WebFixture *fix, gconstpointer data)
 	g_main_loop_unref (loop);
 }
 
+static void
+head_not_reached (SummerWebBackend *web, ...)
+{
+	g_assert_not_reached ();
+}
+
+static gulong head_complete_id;
+static gulong head_chunk_id;
+
+static void
+head_got_headers (SummerWebBackend *web, gpointer user_data)
+{
+	static gboolean run = FALSE;
+	g_assert_cmpint (run, ==, FALSE);
+	run = TRUE;
+	g_signal_connect (web, "download-complete", G_CALLBACK (disk_downloaded_cb), NULL);
+	g_signal_connect (web, "headers-parsed", G_CALLBACK (head_not_reached), NULL);
+	g_signal_handler_disconnect (web, head_complete_id);
+	g_signal_handler_disconnect (web, head_chunk_id);
+	summer_web_backend_fetch (web);
+
+}
+
+static void
+head (WebFixture *fix, gconstpointer data)
+{
+	loop = g_main_loop_new (NULL, TRUE);
+	gchar *url = "http://localhost:52853/feeds/epicfu";
+	SummerWebBackend *web = summer_web_backend_new (g_get_tmp_dir (), url);
+	head_complete_id = g_signal_connect_data (web, "download-complete", G_CALLBACK (head_not_reached), NULL, NULL, 0);
+	head_chunk_id = g_signal_connect (web, "download-chunk", G_CALLBACK (head_not_reached), NULL);
+	g_signal_connect (web, "headers-parsed", G_CALLBACK (head_got_headers), NULL);
+	summer_web_backend_fetch_head (web);
+	g_main_loop_run (loop);
+	g_main_loop_unref (loop);
+}
+
 int main (int argc, char *argv[]) {
 	g_type_init ();
 	g_thread_init (NULL);
@@ -168,6 +192,7 @@ int main (int argc, char *argv[]) {
 	g_test_add ("/web-backend/response404", WebFixture, 0, web_setup, response404, web_teardown);
 	g_test_add_func ("/web-backend/serverdown", serverdown);
 	g_test_add ("/web-backend/redirect", WebFixture, 0, web_setup, redirect, web_teardown);
+	g_test_add ("/web-backend/head", WebFixture, 0, web_setup, head, web_teardown);
 
 	return g_test_run ();
 }

@@ -20,7 +20,6 @@
  */
 
 #include "summer-debug.h"
-#include <stdlib.h>
 
 /**
  * summer_debug:
@@ -33,8 +32,8 @@
  * Returns: %TRUE if debugging is activated, otherwise %FALSE
  */
 gboolean
-summer_debug (gchar *string, ...) {
-	if (getenv ("SUMMER_DEBUG") != NULL) {
+summer_debug (const gchar *string, ...) {
+	if (g_getenv ("SUMMER_DEBUG") != NULL) {
 		if (string != NULL) {
 			va_list args;
 			va_start (args, string);

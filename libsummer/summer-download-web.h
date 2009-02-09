@@ -44,7 +44,6 @@ struct _SummerDownloadWeb {
 
 struct _SummerDownloadWebClass {
 	SummerDownloadClass parent_class;
-	/* void (* my_event) (SummerDownloadWeb* obj); */
 };
 
 GType        summer_download_web_get_type    (void) G_GNUC_CONST;
@@ -54,4 +53,3 @@ SummerDownload* summer_download_web_new (gchar *url, gchar *mime);
 G_END_DECLS
 
 #endif /* __SUMMER_DOWNLOAD_WEB_H__ */
-
