@@ -71,12 +71,11 @@ summer_feed_parser_finalize (GObject *self)
  * @feed: A %SummerFeedData to store the results in.
  * @is_item: A boolean that will be set to %TRUE if the tag is the start of an item.
  *
- * Handle a feed node. A feed node is a node that is not part of a post - that
- * is, a node that describes the global scope in a feed. If the node was
+ * Handles a node. If the node was
  * handled, @node will be pointing att the next element node upon return.
  *
  * Returns: %-1 if there was a XML error, %0 if we've reached the end of the 
- * XML node, %1 if the node wasn't handled, and %2 if the node was handled.
+ * XML feed, %1 if the node wasn't handled, and %2 if the node was handled.
  */
 gint 
 summer_feed_parser_handle_node (SummerFeedParser* self, 
