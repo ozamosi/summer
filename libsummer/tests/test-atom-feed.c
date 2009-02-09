@@ -18,14 +18,14 @@ parse ()
 	g_assert_cmpstr (feed_data->author, ==, "John Doe");
 
 	g_assert_cmpint (g_list_length (feed_data->items), ==, 1);
-	SummerItemData *item_data = (SummerItemData *)feed_data->items->data;
+	SummerItemData *item_data = SUMMER_ITEM_DATA (feed_data->items->data);
 	g_assert_cmpstr (item_data->title, ==, "Atom-Powered Robots Run Amok");
 	g_assert_cmpstr (item_data->description, ==, "Some text.");
 	g_assert_cmpstr (item_data->id, ==, "urn:uuid:1225c695-cfb8-4ebb-aaaa-80da344efa6a");
 	g_assert_cmpstr (item_data->web_url, ==, "http://example.org/2003/12/13/atom03");
 	g_time_val_from_iso8601 ("2003-12-13T18:30:02Z", &time);	
 	g_assert_cmpint (item_data->updated, ==, time.tv_sec);
-	summer_feed_data_free (feed_data);
+	g_object_unref (feed_data);
 }
 
 static void
@@ -40,7 +40,7 @@ broken_title ()
 	g_assert_cmpint (feed_data->updated, ==, time.tv_sec);
 	g_assert (feed_data->web_url == NULL);
 
-	summer_feed_data_free (feed_data);
+	g_object_unref (feed_data);
 }
 
 int main (int argc, char *argv[]) {

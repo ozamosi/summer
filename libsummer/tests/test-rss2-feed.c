@@ -30,7 +30,7 @@ feedburner ()
 	g_assert_cmpstr (dl_data->url, ==, "http://feeds.feedburner.com/~r/epicfu/~5/365143000/epicfu--0123--postsecret--large.h264.mp4");
 	g_assert_cmpstr (dl_data->mime, ==, "video/quicktime");
 	g_assert_cmpint (dl_data->length, ==, 0);
-	summer_feed_data_free (feed_data);
+	g_object_unref (feed_data);
 }
 
 
@@ -58,7 +58,7 @@ parse ()
 	g_assert_cmpstr (item_data->description, ==, "How do Americans get ready to work with Russians aboard the International Space Station? They take a crash course in culture, language and protocol at Russia's <a href=\"http://howe.iki.rssi.ru/GCTC/gctc_e.htm\">Star City</a>.");
 	g_assert_cmpstr (item_data->id, ==, "http://liftoff.msfc.nasa.gov/2003/06/03.html#item573");
 	g_assert_cmpstr (item_data->web_url, ==, "http://liftoff.msfc.nasa.gov/news/2003/news-starcity.asp");
-	summer_feed_data_free (feed_data);
+	g_object_unref (feed_data);
 }
 
 int main (int argc, char *argv[]) {

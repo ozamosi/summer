@@ -286,7 +286,7 @@ summer_feed_finalize (GObject *obj)
 	if (priv->cache_dir)
 		g_free (priv->cache_dir);
 	if (priv->feed_data)
-		summer_feed_data_free (priv->feed_data);
+		g_object_unref (priv->feed_data);
 	G_OBJECT_CLASS(summer_feed_parent_class)->finalize (obj);
 }
 

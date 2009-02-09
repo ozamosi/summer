@@ -197,7 +197,7 @@ handle_feed_node (SummerFeedParser *self, xmlTextReaderPtr node, SummerFeedData 
 static gint
 handle_item_node (SummerFeedParser *self, xmlTextReaderPtr node, SummerFeedData *feed)
 {
-	SummerItemData *item = (SummerItemData *)feed->items->data;
+	SummerItemData *item = SUMMER_ITEM_DATA (feed->items->data);
 	gint ret = 1;
 	
 	SAVE_TEXT_CONTENTS ("title", node, item->title, ret);

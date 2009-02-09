@@ -265,9 +265,9 @@ summer_feed_cache_filter_old_items (SummerFeedCache *self, GList **items)
 	GList *cur_item, *cur_cache, *new_items = NULL;
 	for (cur_item = *items; cur_item != NULL; cur_item = cur_item->next) {
 		gboolean exists = FALSE;
-		gchar *id = ((SummerItemData *)cur_item->data)->id;
+		gchar *id = SUMMER_ITEM_DATA (cur_item->data)->id;
 		if (id == NULL)
-			id = ((SummerItemData *)cur_item->data)->web_url;
+			id = SUMMER_ITEM_DATA (cur_item->data)->web_url;
 		for (cur_cache = self->priv->cache; 
 				cur_cache != NULL; 
 				cur_cache = cur_cache->next) {
@@ -277,7 +277,7 @@ summer_feed_cache_filter_old_items (SummerFeedCache *self, GList **items)
 			}
 		}
 		if (exists) {
-			summer_item_data_free ((SummerItemData *)cur_item->data);
+			g_object_unref ((GObject *)cur_item->data);
 		} else {
 			new_items = g_list_prepend (new_items, cur_item->data);
 			self->priv->cache = g_list_prepend (self->priv->cache, 
