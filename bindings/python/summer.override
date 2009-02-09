@@ -1,0 +1,108 @@
+%%
+headers
+#include <Python.h>
+#include <pygobject.h>
+#include "summer.h"
+%%
+modulename summer
+%%
+import gobject.GObject as PyGObject_Type
+%%
+ignore-glob
+  *_get_type
+%%
+override summer_feed_get_items noargs
+static PyObject *
+_wrap_summer_feed_get_items (PyGObject *self)
+{
+	GList *list, *tmp;
+	PyObject *py_list;
+
+	list = summer_feed_get_items (SUMMER_FEED (self->obj));
+
+	if ((py_list = PyList_New (0)) == NULL) {
+		g_list_free (list);
+		return NULL;
+	}
+	for (tmp = list; tmp != NULL; tmp = tmp->next) {
+		PyObject *obj = pygobject_new (G_OBJECT (tmp->data));
+
+		if (obj == NULL) {
+			g_list_free (list);
+			Py_DECREF (py_list);
+			return NULL;
+		}
+		PyList_Append (py_list, obj);
+		Py_DECREF (obj);
+	}
+	g_list_free (list);
+	return py_list;
+}
+%%
+override summer_feed_data_get_items noargs
+static PyObject *
+_wrap_summer_feed_data_get_items (PyGObject *self)
+{
+	GList *list, *tmp;
+	PyObject *py_list;
+
+	list = summer_feed_data_get_items (SUMMER_FEED_DATA (self->obj));
+
+	if ((py_list = PyList_New (0)) == NULL) {
+		g_list_free (list);
+		return NULL;
+	}
+	for (tmp = list; tmp != NULL; tmp = tmp->next) {
+		PyObject *obj = pygobject_new (G_OBJECT (tmp->data));
+
+		if (obj == NULL) {
+			g_list_free (list);
+			Py_DECREF (py_list);
+			return NULL;
+		}
+		PyList_Append (py_list, obj);
+		Py_DECREF (obj);
+	}
+	g_list_free (list);
+	return py_list;
+}
+%%
+override summer_item_data_get_downloadables noargs
+static PyObject *
+_wrap_summer_item_data_get_downloadables (PyGObject *self)
+{
+	GList *list, *tmp;
+	PyObject *py_list;
+
+	list = summer_item_data_get_downloadables (SUMMER_ITEM_DATA (self->obj));
+
+	if ((py_list = PyList_New (0)) == NULL) {
+		g_list_free (list);
+		return NULL;
+	}
+	for (tmp = list; tmp != NULL; tmp = tmp->next) {
+		PyObject *obj = pygobject_new (G_OBJECT (tmp->data));
+
+		if (obj == NULL) {
+			g_list_free (list);
+			Py_DECREF (py_list);
+			return NULL;
+		}
+		PyList_Append (py_list, obj);
+		Py_DECREF (obj);
+	}
+	g_list_free (list);
+	return py_list;
+}
+%%
+override summer_download_start noargs
+static PyObject *
+_wrap_summer_download_start(PyGObject *self)
+{
+
+    summer_download_start(SUMMER_DOWNLOAD(self->obj));
+	g_object_ref (G_OBJECT (self->obj));
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}

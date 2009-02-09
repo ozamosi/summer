@@ -1,0 +1,391 @@
+;; -*- scheme -*-
+; object definitions ...
+(define-object Download
+  (in-module "Summer")
+  (parent "GObject")
+  (c-name "SummerDownload")
+  (gtype-id "SUMMER_TYPE_DOWNLOAD")
+)
+
+(define-object DownloadWeb
+  (in-module "Summer")
+  (parent "SummerDownload")
+  (c-name "SummerDownloadWeb")
+  (gtype-id "SUMMER_TYPE_DOWNLOAD_WEB")
+)
+
+(define-object DownloadTorrent
+  (in-module "Summer")
+  (parent "SummerDownload")
+  (c-name "SummerDownloadTorrent")
+  (gtype-id "SUMMER_TYPE_DOWNLOAD_TORRENT")
+)
+
+(define-object Feed
+  (in-module "Summer")
+  (parent "GObject")
+  (c-name "SummerFeed")
+  (gtype-id "SUMMER_TYPE_FEED")
+)
+
+(define-object DownloadableData
+  (in-module "Summer")
+  (parent "GObject")
+  (c-name "SummerDownloadableData")
+  (gtype-id "SUMMER_TYPE_DOWNLOADABLE_DATA")
+)
+
+(define-object FeedData
+  (in-module "Summer")
+  (parent "GObject")
+  (c-name "SummerFeedData")
+  (gtype-id "SUMMER_TYPE_FEED_DATA")
+)
+
+(define-object ItemData
+  (in-module "Summer")
+  (parent "GObject")
+  (c-name "SummerItemData")
+  (gtype-id "SUMMER_TYPE_ITEM_DATA")
+)
+
+
+;; Enumerations and flags ...
+
+
+;; From summer-data-types.h
+
+(define-function summer_feed_data_new
+  (c-name "summer_feed_data_new")
+  (is-constructor-of "SummerFeedData")
+  (return-type "SummerFeedData*")
+)
+
+(define-function summer_item_data_new
+  (c-name "summer_item_data_new")
+  (is-constructor-of "SummerItemData")
+  (return-type "SummerItemData*")
+)
+
+(define-function summer_downloadable_data_new
+  (c-name "summer_downloadable_data_new")
+  (is-constructor-of "SummerDownloadableData")
+  (return-type "SummerDownloadableData*")
+)
+
+(define-function summer_feed_data_get_type
+  (c-name "summer_feed_data_get_type")
+  (return-type "GType")
+)
+
+(define-function summer_item_data_get_type
+  (c-name "summer_item_data_get_type")
+  (return-type "GType")
+)
+
+(define-function summer_downloadable_data_get_type
+  (c-name "summer_downloadable_data_get_type")
+  (return-type "GType")
+)
+
+(define-method get_title
+  (of-object "SummerFeedData")
+  (c-name "summer_feed_data_get_title")
+  (return-type "const-gchar*")
+)
+
+(define-method get_description
+  (of-object "SummerFeedData")
+  (c-name "summer_feed_data_get_description")
+  (return-type "const-gchar*")
+)
+
+(define-method get_id
+  (of-object "SummerFeedData")
+  (c-name "summer_feed_data_get_id")
+  (return-type "const-gchar*")
+)
+
+(define-method get_web_url
+  (of-object "SummerFeedData")
+  (c-name "summer_feed_data_get_web_url")
+  (return-type "const-gchar*")
+)
+
+(define-method get_author
+  (of-object "SummerFeedData")
+  (c-name "summer_feed_data_get_author")
+  (return-type "const-gchar*")
+)
+
+(define-method get_updated
+  (of-object "SummerFeedData")
+  (c-name "summer_feed_data_get_updated")
+  (return-type "time_t")
+)
+
+(define-method get_items
+  (of-object "SummerFeedData")
+  (c-name "summer_feed_data_get_items")
+  (return-type "const-SummerItemsData*")
+)
+
+(define-method get_title
+  (of-object "SummerItemData")
+  (c-name "summer_item_data_get_title")
+  (return-type "const-gchar*")
+)
+
+(define-method get_description
+  (of-object "SummerItemData")
+  (c-name "summer_item_data_get_description")
+  (return-type "const-gchar*")
+)
+
+(define-method get_id
+  (of-object "SummerItemData")
+  (c-name "summer_item_data_get_id")
+  (return-type "const-gchar*")
+)
+
+(define-method get_web_url
+  (of-object "SummerItemData")
+  (c-name "summer_item_data_get_web_url")
+  (return-type "const-gchar*")
+)
+
+(define-method get_author
+  (of-object "SummerItemData")
+  (c-name "summer_item_data_get_author")
+  (return-type "const-gchar*")
+)
+
+(define-method get_updated
+  (of-object "SummerItemData")
+  (c-name "summer_item_data_get_updated")
+  (return-type "time_t")
+)
+
+(define-method get_downloadables
+  (of-object "SummerItemData")
+  (c-name "summer_item_data_get_downloadables")
+  (return-type "const-SummerDownloadablesData*")
+)
+
+(define-method get_url
+  (of-object "SummerDownloadableData")
+  (c-name "summer_downloadable_data_get_url")
+  (return-type "const-gchar*")
+)
+
+(define-method get_mime
+  (of-object "SummerDownloadableData")
+  (c-name "summer_downloadable_data_get_mime")
+  (return-type "const-gchar*")
+)
+
+(define-method get_length
+  (of-object "SummerDownloadableData")
+  (c-name "summer_downloadable_data_get_length")
+  (return-type "gint")
+)
+
+
+;; From summer-download.h
+
+(define-function summer_download_get_type
+  (c-name "summer_download_get_type")
+  (return-type "GType")
+)
+
+(define-method start
+  (of-object "SummerDownload")
+  (c-name "summer_download_start")
+  (return-type "none")
+)
+
+(define-function download_set_default
+  (c-name "summer_download_set_default")
+  (return-type "none")
+  (parameters
+    '("gchar*" "tmp_dir")
+    '("gchar*" "save_dir")
+  )
+)
+
+(define-method set_tmp_dir
+  (of-object "SummerDownload")
+  (c-name "summer_download_set_tmp_dir")
+  (return-type "none")
+  (parameters
+    '("gchar*" "tmp_dir")
+  )
+)
+
+(define-method set_save_dir
+  (of-object "SummerDownload")
+  (c-name "summer_download_set_save_dir")
+  (return-type "none")
+  (parameters
+    '("gchar*" "save_dir")
+  )
+)
+
+;; From summer-download-web.h
+
+(define-function summer_download_web_get_type
+  (c-name "summer_download_web_get_type")
+  (return-type "GType")
+)
+
+;; From summer-download-torrent.h
+
+(define-function summer_download_torrent_get_type
+  (c-name "summer_download_torrent_get_type")
+  (return-type "GType")
+)
+
+(define-function torrent_set_default
+  (c-name "summer_download_torrent_set_default")
+  (return-type "none")
+  (parameters
+    '("gint" "min_port")
+    '("gint" "max_port")
+    '("gint" "max_up_speed")
+  )
+)
+
+;; From summer-feed.h
+
+(define-function summer_feed_get_type
+  (c-name "summer_feed_get_type")
+  (return-type "GType")
+)
+
+(define-function summer_feed_new
+  (c-name "summer_feed_new")
+  (is-constructor-of "SummerFeed")
+  (return-type "SummerFeed*")
+)
+
+(define-method start
+  (of-object "SummerFeed")
+  (c-name "summer_feed_start")
+  (return-type "none")
+  (parameters
+    '("gchar*" "url")
+  )
+)
+
+(define-function feed_set_default
+  (c-name "summer_feed_set_default")
+  (return-type "none")
+  (parameters
+    '("gchar*" "cache_dir" '(null-ok))
+    '("gint" "frequency")
+  )
+)
+
+(define-method get_cache_dir
+  (of-object "SummerFeed")
+  (c-name "summer_feed_get_cache_dir")
+  (return-type "const-gchar*")
+)
+
+(define-method set_cache_dir
+  (of-object "SummerFeed")
+  (c-name "summer_feed_set_cache_dir")
+  (return-type "none")
+  (parameters
+    '("gchar*" "cache_dir")
+  )
+)
+
+(define-method get_frequency
+  (of-object "SummerFeed")
+  (c-name "summer_feed_get_frequency")
+  (return-type "gint")
+)
+
+(define-method set_frequency
+  (of-object "SummerFeed")
+  (c-name "summer_feed_set_frequency")
+  (return-type "none")
+  (parameters
+    '("gint" "frequency")
+  )
+)
+
+(define-method get_url
+  (of-object "SummerFeed")
+  (c-name "summer_feed_get_url")
+  (return-type "const-gchar*")
+)
+
+(define-method set_url
+  (of-object "SummerFeed")
+  (c-name "summer_feed_set_url")
+  (return-type "none")
+  (parameters
+    '("gchar*" "url")
+  )
+)
+
+(define-method get_title
+  (of-object "SummerFeed")
+  (c-name "summer_feed_get_title")
+  (return-type "const-gchar*")
+)
+
+(define-method get_description
+  (of-object "SummerFeed")
+  (c-name "summer_feed_get_description")
+  (return-type "const-gchar*")
+)
+
+(define-method get_id
+  (of-object "SummerFeed")
+  (c-name "summer_feed_get_id")
+  (return-type "const-gchar*")
+)
+
+(define-method get_web_url
+  (of-object "SummerFeed")
+  (c-name "summer_feed_get_web_url")
+  (return-type "const-gchar*")
+)
+
+(define-method get_author
+  (of-object "SummerFeed")
+  (c-name "summer_feed_get_author")
+  (return-type "const-gchar*")
+)
+
+(define-method get_updated
+  (of-object "SummerFeed")
+  (c-name "summer_feed_get_updated")
+  (return-type "time_t")
+)
+
+(define-method get_items
+  (of-object "SummerFeed")
+  (c-name "summer_feed_get_items")
+  (return-type "const-SummerItemData*")
+)
+
+
+;; From summer.h
+
+(define-function create_download
+  (c-name "summer_create_download")
+  (return-type "SummerDownload*")
+  (parameters
+    '("gchar*" "mime")
+    '("gchar*" "url")
+  )
+)
+
+(define-function summer_shutdown
+  (c-name "summer_shutdown")
+  (return-type "none")
+)
