@@ -120,7 +120,7 @@ check_progress (gpointer data) {
 static void
 on_metafile_downloaded (SummerDownloadWeb *dl, gchar *metafile_path, gpointer user_data)
 {
-	summer_debug ("Metafile downloaded - torrent transfer starting");
+	summer_debug ("%s: Metafile downloaded - torrent transfer starting", metafile_path);
 	g_return_if_fail (SUMMER_IS_DOWNLOAD_TORRENT (user_data));
 	g_return_if_fail (metafile_path != NULL);
 	SummerDownload *self = SUMMER_DOWNLOAD (user_data);
@@ -139,12 +139,11 @@ on_metafile_downloaded (SummerDownloadWeb *dl, gchar *metafile_path, gpointer us
 		boost::filesystem::path output_dir (tmp_dir);
 		output_dir = output_dir / "torrentdownloads";
 		p.save_path = output_dir;
-		g_free (tmp_dir);
 	} else {
-		boost::filesystem::path output_dir (save_dir);
-		p.save_path = output_dir;
-		g_free (tmp_dir);
+		summer_debug ("Torrent downloaded - seeding");
+		p.save_path = boost::filesystem::path (save_dir);
 	}
+	g_free (tmp_dir);
 	
 	priv->handle = session->add_torrent (p);
 	libtorrent::torrent_info info = priv->handle.get_torrent_info ();
