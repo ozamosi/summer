@@ -385,7 +385,7 @@
   )
 )
 
-(define-function summer_shutdown
+(define-function shutdown
   (c-name "summer_shutdown")
   (return-type "none")
 )
