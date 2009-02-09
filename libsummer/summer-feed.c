@@ -394,3 +394,99 @@ summer_feed_set_default (const gchar *cache_dir, const gint frequency)
 	if (frequency != 0)
 		default_frequency = frequency;
 }
+
+gchar *
+summer_feed_get_cache_dir (SummerFeed *self)
+{
+	gchar *cache_dir;
+	g_object_get (self, "cache-dir", &cache_dir, NULL);
+	return cache_dir;
+}
+
+void
+summer_feed_set_cache_dir (SummerFeed *self, gchar *cache_dir)
+{
+	g_object_set (self, "cache-dir", cache_dir, NULL);
+}
+
+gint
+summer_feed_get_frequency (SummerFeed *self)
+{
+	gint frequency;
+	g_object_get (self, "frequency", &frequency, NULL);
+	return frequency;
+}
+
+void
+summer_feed_set_frequency (SummerFeed *self, gint frequency)
+{
+	g_object_set (self, "frequency", frequency, NULL);
+}
+
+gchar *
+summer_feed_get_url (SummerFeed *self)
+{
+	gchar *url;
+	g_object_get (self, "url", &url, NULL);
+	return url;
+}
+
+void
+summer_feed_set_url (SummerFeed *self, gchar *url)
+{
+	g_object_set (self, "url", url, NULL);
+}
+
+gchar *
+summer_feed_get_title (SummerFeed *self)
+{
+	gchar *title;
+	g_object_get (self, "title", &title, NULL);
+	return title;
+}
+
+gchar *
+summer_feed_get_description (SummerFeed *self)
+{
+	gchar *description;
+	g_object_get (self, "description", &description, NULL);
+	return description;
+}
+
+gchar *
+summer_feed_get_id (SummerFeed *self)
+{
+	gchar *id;
+	g_object_get (self, "id", &id, NULL);
+	return id;
+}
+
+gchar *
+summer_feed_get_web_url (SummerFeed *self)
+{
+	gchar *web_url;
+	g_object_get (self, "web-url", &web_url, NULL);
+	return web_url;
+}
+
+gchar *
+summer_feed_get_author (SummerFeed *self)
+{
+	gchar *author;
+	g_object_get (self, "author", &author, NULL);
+	return author;
+}
+
+time_t
+summer_feed_get_updated (SummerFeed *self)
+{
+	glong updated;
+	g_object_get (self, "updated", &updated, NULL);
+	return updated;
+}
+
+GList *
+summer_feed_get_items (SummerFeed *self)
+{
+	return g_list_copy (self->priv->feed_data->items);
+}

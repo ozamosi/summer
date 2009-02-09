@@ -55,6 +55,29 @@ void summer_feed_start (SummerFeed *self, gchar *url);
 
 void summer_feed_set_default (const gchar *cache_dir, const gint frequency);
 
+gchar* summer_feed_get_cache_dir (SummerFeed *self);
+void summer_feed_set_cache_dir (SummerFeed *self, gchar *cache_dir);
+
+gint summer_feed_get_frequency (SummerFeed *self);
+void summer_feed_set_frequency (SummerFeed *self, gint frequency);
+
+gchar* summer_feed_get_url (SummerFeed *self);
+void summer_feed_set_url (SummerFeed *self, gchar *url);
+
+gchar* summer_feed_get_title (SummerFeed *self);
+
+gchar* summer_feed_get_description (SummerFeed *self);
+
+gchar* summer_feed_get_id (SummerFeed *self);
+
+gchar* summer_feed_get_web_url (SummerFeed *self);
+
+gchar* summer_feed_get_author (SummerFeed *self);
+
+time_t summer_feed_get_updated (SummerFeed *self);
+
+GList* summer_feed_get_items (SummerFeed *self);
+
 G_END_DECLS
 
 #endif /* __SUMMER_FEED_H__ */
