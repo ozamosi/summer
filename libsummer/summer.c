@@ -48,7 +48,8 @@
  */
 
 SummerDownload*
-summer_create_download (gchar *mime, gchar *url) {
+summer_create_download (gchar *mime, gchar *url)
+{
 	SummerDownload *dl;
 	if ((dl = summer_download_web_new (mime, url))) {
 		summer_debug ("Starting web download of %s", url);
