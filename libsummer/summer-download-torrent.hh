@@ -50,7 +50,7 @@ GType        summer_download_torrent_get_type    (void) G_GNUC_CONST;
 
 SummerDownload* summer_download_torrent_new (gchar *url, gchar *mime);
 void summer_download_torrent_shutdown (void);
-
+void summer_download_torrent_set_default (gint min_port, gint max_port, gint max_up_speed);
 G_END_DECLS
 
 #endif /* __SUMMER_DOWNLOAD_TORRENT_H__ */

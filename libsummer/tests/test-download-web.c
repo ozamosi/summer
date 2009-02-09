@@ -19,6 +19,7 @@ update_cb (SummerDownload *obj, gint received, gint length, gpointer user_data)
 	g_file_get_contents (tmp_filename, &contents, &file_length, NULL);
 	g_free (tmp_filename);
 	g_assert_cmpint (received, <=, file_length);
+	g_free (contents);
 }
 
 static void
@@ -34,6 +35,8 @@ complete_cb (SummerDownload *obj, gchar *save_path, gpointer user_data)
     g_file_get_contents (save_path, &rec_contents, &rec_length, NULL);
 	g_assert_cmpstr (orig_contents, ==, rec_contents);
 	g_remove (save_path);
+	g_free (rec_contents);
+	g_free (orig_contents);
 
 	gchar *tmp_filename = g_build_filename (g_get_tmp_dir (), "epicfu", NULL);
 	g_assert (!g_file_test (tmp_filename, G_FILE_TEST_EXISTS));
@@ -45,10 +48,7 @@ complete_cb (SummerDownload *obj, gchar *save_path, gpointer user_data)
 static void
 basic (WebFixture *fix, gconstpointer data)
 {
-	summer_set ("download", 
-		"save-dir", g_get_home_dir (), 
-		"tmp-dir", g_get_tmp_dir (),
-		NULL);
+	summer_download_set_default (g_get_tmp_dir (), g_get_home_dir ());
 	loop = g_main_loop_new (NULL, TRUE);
 	SummerDownload *dl;
 	dl = summer_create_download ("video/mp4", "http://localhost:52853/feeds/epicfu");
@@ -57,7 +57,6 @@ basic (WebFixture *fix, gconstpointer data)
 	summer_download_start (dl);
 	g_main_loop_run (loop);
 	g_main_loop_unref (loop);
-	g_object_unref (dl);
 }
 
 
@@ -72,7 +71,6 @@ mimes ()
 	g_object_unref (dl);
 	dl = summer_create_download ("video/mp4", "http://localhost:52853/video/dummy_mp4");
 	g_assert (SUMMER_IS_DOWNLOAD_WEB (dl));
-	g_object_unref (dl);
 }
 
 int main (int argc, char *argv[]) {

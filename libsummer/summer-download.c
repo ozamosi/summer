@@ -54,8 +54,8 @@ struct _SummerDownloadPrivate {
                                           SUMMER_TYPE_DOWNLOAD, \
 										  SummerDownloadPrivate))
 
-static gchar *tmp_dir = NULL;
-static gchar *save_dir = NULL;
+static gchar *default_tmp_dir = NULL;
+static gchar *default_save_dir = NULL;
 
 enum {
 	PROP_0,
@@ -222,14 +222,17 @@ summer_download_class_init (SummerDownloadClass *klass)
 static void
 print_update (SummerDownload *self, gint downloaded, gint length, gpointer user_data)
 {
-	summer_debug ("%f%% downloaded (%i)", downloaded / (float) length * 100, downloaded);
+	gchar *name;
+	g_object_get (self, "filename", &name, NULL);
+	summer_debug ("%s: %f%% downloaded (%i of %i)", name, downloaded / (float) length * 100, downloaded, length);
+	g_free (name);
 }
 
 static void
 summer_download_init (SummerDownload *self)
 {
 	self->priv = SUMMER_DOWNLOAD_GET_PRIVATE (self);
-	g_object_set (self, "save-dir", save_dir, "tmp-dir", tmp_dir, NULL);
+	g_object_set (self, "save-dir", default_save_dir, "tmp-dir", default_tmp_dir, NULL);
 	if (summer_debug (NULL)) {
 		g_signal_connect (self, "download-update", G_CALLBACK (print_update), NULL);
 	}
@@ -252,29 +255,32 @@ summer_download_finalize (GObject *self)
 }
 
 /**
- * summer_download_set
- * @first_property_name: the first property name.
- * @var_args: the first property value, optionally followed by more property
- * names and values.
+ * summer_download_set_default():
+ * @tmp_dir: the directory to save temporary files in, or %NULL to keep current
+ * value.
+ * @save_dir: the directory to save completed downloads in, or %NULL to keep
+ * current value.
  *
- * Not meant to be used directly - see %summer_set.
+ * Set default options for all new SummerDownload objects.
+ *
+ * These options may be set at any time during the session. You may change these
+ * as you wish after downloads have been started, but note that changing these
+ * will only affect downloads started after the change. These options can be
+ * individually overridden by editing the SummerDownload::tmp-dir and 
+ * SummerDownload::save-dir properties.
  */
 void
-summer_download_set (gchar *first_property_name, va_list var_args)
+summer_download_set_default (const gchar *tmp_dir, const gchar *save_dir)
 {
-	const gchar *name;
-	name = first_property_name;
-	while (name) {
-		if (!g_strcmp0 (name, "tmp-dir")) {
-			if (tmp_dir)
-				g_free (tmp_dir);
-			tmp_dir = g_strdup (va_arg (var_args, gchar*));
-		} else if (!g_strcmp0 (name, "save-dir")) {
-			if (save_dir)
-				g_free (save_dir);
-			save_dir = g_strdup (va_arg (var_args, gchar*));
-		}
-		name = va_arg (var_args, gchar*);
+	if (tmp_dir != NULL) {
+		if (default_tmp_dir)
+			g_free (default_tmp_dir);
+		default_tmp_dir = g_strdup (tmp_dir);
+	}
+	if (save_dir != NULL) {
+		if (default_save_dir)
+			g_free (default_save_dir);
+		default_save_dir = g_strdup (save_dir);
 	}
 }
 

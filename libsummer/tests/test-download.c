@@ -18,10 +18,7 @@ create (WebFixture *fix, gconstpointer data)
 static void
 settings ()
 {
-	summer_set ("download", 
-		"save-dir", g_get_home_dir (), 
-		"tmp-dir", g_get_tmp_dir (),
-		NULL);
+	summer_download_set_default (g_get_tmp_dir (), g_get_home_dir ());
 	SummerDownload *dl;
 	dl = summer_create_download ("video/mp4", "http://localhost:52853/video/dummy_mp4");
 	gchar *save_dir, *tmp_dir;

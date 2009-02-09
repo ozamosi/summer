@@ -53,9 +53,8 @@ SummerFeed*    summer_feed_new         (void);
 
 void summer_feed_start (SummerFeed *self, gchar *url);
 
-void summer_feed_set (gchar *first_property_name, va_list var_args);
+void summer_feed_set_default (const gchar *cache_dir, const gint frequency);
 
 G_END_DECLS
 
 #endif /* __SUMMER_FEED_H__ */
-

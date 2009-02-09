@@ -51,7 +51,7 @@ struct _SummerDownloadClass {
 
 GType        summer_download_get_type    (void) G_GNUC_CONST;
 
-void summer_download_set (gchar *first_property_name, va_list var_args);
+void summer_download_set_default (const gchar *tmp_dir, const gchar *save_dir);
 void summer_download_start (SummerDownload *obj);
 
 G_END_DECLS

@@ -56,9 +56,9 @@ struct _SummerDownloadTorrentPrivate {
 
 static libtorrent::session *session;
 static gint session_refs = 0;
-static gushort min_port = 6881;
-static gushort max_port = 6899;
-static gint max_up_speed = -1;
+static gushort default_min_port = 6881;
+static gushort default_max_port = 6899;
+static gint default_max_up_speed = -1;
 
 enum {
 	PROP_0,
@@ -264,18 +264,18 @@ summer_download_torrent_init (SummerDownloadTorrent *self)
 	
 	if (session_refs == 0) {
 		session = new libtorrent::session ();
-		session->listen_on (std::make_pair (min_port, max_port));
+		session->listen_on (std::make_pair (default_min_port, default_max_port));
 	}
 	session_refs++;
 }
 
 static void
-summer_download_torrent_finalize (GObject *obj)
+summer_download_torrent_finalize (GObject *self)
 {
 	session_refs--;
 	if (session_refs == 0)
 		delete session;
-	G_OBJECT_CLASS(summer_download_torrent_parent_class)->finalize (obj);
+	G_OBJECT_CLASS(summer_download_torrent_parent_class)->finalize (self);
 }
 
 /**
@@ -299,34 +299,36 @@ summer_download_torrent_new (gchar *mime, gchar *url)
 	if (!g_strcmp0(mime, "application/x-bittorrent")) {
 		return SUMMER_DOWNLOAD (g_object_new (SUMMER_TYPE_DOWNLOAD_TORRENT, 
 			"url", url,
-			"max-up-speed", max_up_speed,
+			"max-up-speed", default_max_up_speed,
 			NULL));
 	}
 	return NULL;
 }
 
 /**
- * summer_download_torrent_set
- * @first_property_name: the first property name.
- * @var_args: the first property value, optionally followed by more property
- * names and values.
+ * summer_download_torrent_set_default():
+ * @min_port: In the range of ports to try, this is the lower boundary.
+ * @max_port: In the range of ports to try, this is the upper boundary.
+ * @max_up_speed: The maximum upload speed to allow.
  *
- * Not meant to be used directly - see %summer_set.
+ * Set default options for all new SummerDownloadTorrent objects.
+ *
+ * These options may be set at any time during the session. You may change these
+ * as you wish after downloads have been started, but note that changing these
+ * will only affect downloads started after the change. @max_up_speed can be
+ * individually overridden by changing the %SummerDownloadTorrent::max-up-speed
+ * property. The port selected in the range specified by @min_port and @max_port
+ * can be retrieved by looking at the %SummerDownloadTorrent::port property.
  */
 void
-summer_download_torrent_set (gchar *first_property_name, va_list var_args)
+summer_download_torrent_set_default (gint min_port, gint max_port, gint max_up_speed)
 {
-	const gchar *name;
-	name = first_property_name;
-	while (name) {
-		if (!g_strcmp0 (name, "min-port")) {
-			min_port = va_arg (var_args, gint);
-		} else if (!g_strcmp0 (name, "max-port")) {
-			max_port = va_arg (var_args, gint);
-		} else if (!g_strcmp0 (name, "max-up-speed")) {
-			max_up_speed = va_arg (var_args, gint);
-		}
-	}
+	if (min_port != 0)
+		default_min_port = min_port;
+	if (max_port != 0)
+		default_max_port = max_port;
+	if (max_up_speed != 0)
+		default_max_up_speed = max_up_speed;
 }
 
 /**

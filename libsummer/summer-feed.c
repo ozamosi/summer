@@ -59,8 +59,8 @@ struct _SummerFeedPrivate {
                                          SUMMER_TYPE_FEED, \
                                          SummerFeedPrivate))
 
-static gchar *cache_dir = NULL;
-static gint frequency;
+static gchar *default_cache_dir;
+static gint default_frequency;
 
 enum {
 	PROP_0,
@@ -189,8 +189,8 @@ summer_feed_class_init (SummerFeedClass *klass)
 
 	pspec = g_param_spec_int ("frequency",
 		"Frequency",
-		"The number of seconds between feed refetches. 0 to disable.",
-		0, 65535, 0,
+		"The number of seconds between feed refetches. -1 to disable.",
+		-1, G_MAXINT, -1,
 		G_PARAM_READWRITE);
 	g_object_class_install_property (gobject_class, PROP_FREQUENCY, pspec);
 
@@ -274,7 +274,8 @@ static void
 summer_feed_init (SummerFeed *self)
 {
 	self->priv = SUMMER_FEED_GET_PRIVATE (self);
-	g_object_set (self, "cache-dir", cache_dir, "frequency", frequency, NULL);
+	g_object_set (self, 
+		"cache-dir", default_cache_dir, "frequency", default_frequency, NULL);
 }
 
 static void
@@ -360,28 +361,28 @@ summer_feed_start (SummerFeed *self, gchar *url) {
 }
 
 /**
- * summer_feed_set ():
- * @first_property_name: the first property name.
- * @var_args: the first property value, optionally followed by more property
- * names and values.
+ * summer_feed_set_default():
+ * @cache_dir: the directory to store cache files in, or %NULL to keep current
+ * value.
+ * @frequency: the number of seconds to wait between checking for updates. %0 to
+ * keep current value, %-1 to disable.
  *
- * Not meant to be used directly - see %summer_set.
+ * Set default options for all new SummerFeed objects.
+ *
+ * These options may be set at any time during the session. You may change these
+ * as you wish after downloads have been started, but note that changing these
+ * will only affect downloads started after the change. These options can be
+ * individually overridden by editing the SummerDownload::cache-dir and 
+ * SummerDownload::frequency properties.
  */
 void
-summer_feed_set (gchar *first_property_name, va_list var_args)
+summer_feed_set_default (const gchar *cache_dir, const gint frequency)
 {
-	const gchar *name;
-	name = first_property_name;
-	while (name) {
-		if (!g_strcmp0 (name, "cache-dir")) {
-			if (cache_dir)
-				g_free (cache_dir);
-			cache_dir = g_strdup (va_arg (var_args, gchar*));
-		} else if (!g_strcmp0 (name, "frequency")) {
-			frequency = va_arg (var_args, gint);
-		} else {
-			g_error ("Invalid property for feed: \"%s\"", name);
-		}
-		name = va_arg (var_args, gchar*);
+	if (cache_dir != NULL) {
+		if (default_cache_dir)
+			g_free (default_cache_dir);
+		default_cache_dir = g_strdup (cache_dir);
 	}
+	if (frequency != 0)
+		default_frequency = frequency;
 }

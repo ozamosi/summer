@@ -40,10 +40,7 @@ create (WebFixture *fix, gconstpointer data)
 static void
 settings ()
 {
-	summer_set ("feed", 
-		"cache-dir", g_get_tmp_dir (),
-		"frequency", 900,
-		NULL);
+	summer_feed_set_default (g_get_tmp_dir (), 900);
 	SummerFeed *feed;
 	feed = summer_feed_new ();
 	summer_feed_start (feed, "http://localhost:52853/feeds/epicfu");
