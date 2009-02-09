@@ -41,6 +41,9 @@
  *
  * A %SummerDownload-based class for files that's available on regular web
  * servers.
+ *
+ * Note that this class steals a reference and frees itself after the download
+ * is completed - thus you don't have to unref it yourself.
  */
 
 static void summer_download_web_class_init (SummerDownloadWebClass *klass);
@@ -68,8 +71,8 @@ static void
 on_download_complete (SummerWebBackend *web_backend, gchar *save_path, gchar *save_data, gpointer user_data)
 {
 	g_return_if_fail (SUMMER_IS_DOWNLOAD_WEB (user_data));
-	g_return_if_fail (save_data == NULL);
-	g_return_if_fail (save_path != NULL); //FIXME: This is perfectly legal (connection failed, for instance), and should be handled in a proper way
+	g_return_if_fail (save_data == NULL); //FIXME: This is perfectly legal (connection failed, for instance), and should be handled in a proper way
+	g_return_if_fail (save_path != NULL);
 	SummerDownload *self = SUMMER_DOWNLOAD (user_data);
 
 	GFile *src = g_file_new_for_path (save_path);
