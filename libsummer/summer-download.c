@@ -295,3 +295,15 @@ summer_download_start (SummerDownload *obj)
 {
 	SUMMER_DOWNLOAD_GET_CLASS (obj)->start (obj);
 }
+
+void
+summer_download_set_save_dir (SummerDownload *self, gchar *save_dir)
+{
+	g_object_set (self, "save-dir", save_dir, NULL);
+}
+
+void
+summer_download_set_tmp_dir (SummerDownload *self, gchar *tmp_dir)
+{
+	g_object_set (self, "tmp-dir", tmp_dir, NULL);
+}

@@ -54,6 +54,9 @@ GType        summer_download_get_type    (void) G_GNUC_CONST;
 void summer_download_set_default (const gchar *tmp_dir, const gchar *save_dir);
 void summer_download_start (SummerDownload *obj);
 
+void summer_download_set_save_dir (SummerDownload *self, gchar *save_dir);
+void summer_download_set_tmp_dir (SummerDownload *self, gchar *tmp_dir);
+
 G_END_DECLS
 
 #endif /* __SUMMER_DOWNLOAD_H__ */
