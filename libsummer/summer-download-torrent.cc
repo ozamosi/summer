@@ -24,6 +24,8 @@
 #include "summer-debug.h"
 #include <libtorrent/session.hpp>
 #include <libtorrent/torrent_info.hpp>
+#include <libtorrent/alert_types.hpp>
+#include <libtorrent/bencode.hpp>
 #include <boost/filesystem.hpp>
 
 /**
@@ -56,9 +58,12 @@ struct _SummerDownloadTorrentPrivate {
 
 static libtorrent::session *session;
 static gint session_refs = 0;
+
 static gushort default_min_port = 6881;
 static gushort default_max_port = 6899;
 static gint default_max_up_speed = -1;
+
+static GSList *downloads;
 
 enum {
 	PROP_0,
@@ -132,6 +137,16 @@ on_metafile_downloaded (SummerDownloadWeb *dl, gchar *metafile_path, gpointer us
 	libtorrent::add_torrent_params p;
 
 	p.ti = new libtorrent::torrent_info (metafile_path);
+
+	boost::filesystem::path fastresume (tmp_dir);
+	fastresume /= p.ti->name () + ".fastresume";
+
+	std::vector<char> resume;
+	if (libtorrent::load_file (fastresume, resume) == 0) {
+		summer_debug ("Loading fastresume from %s", fastresume.string().c_str());
+		p.resume_data = &resume;
+	}
+
 	boost::filesystem::path completed_path (save_dir);
 	completed_path /= p.ti->name ();
 
@@ -266,15 +281,25 @@ summer_download_torrent_init (SummerDownloadTorrent *self)
 		session->listen_on (std::make_pair (default_min_port, default_max_port));
 	}
 	session_refs++;
+
+	downloads = g_slist_prepend (downloads, self);
 }
 
 static void
-summer_download_torrent_finalize (GObject *self)
+summer_download_torrent_finalize (GObject *obj)
 {
 	session_refs--;
+	session->remove_torrent (SUMMER_DOWNLOAD_TORRENT (obj)->priv->handle);
 	if (session_refs == 0)
 		delete session;
-	G_OBJECT_CLASS(summer_download_torrent_parent_class)->finalize (self);
+	GSList *l;
+	for (l = downloads; l != NULL; l = l->next) {
+		if (l->data == obj) {
+			downloads = g_slist_delete_link (downloads, l);
+			break;
+		}
+	}
+	G_OBJECT_CLASS(summer_download_torrent_parent_class)->finalize (obj);
 }
 
 /**
@@ -330,6 +355,69 @@ summer_download_torrent_set_default (gint min_port, gint max_port, gint max_up_s
 		default_max_up_speed = max_up_speed;
 }
 
+void
+create_autoresume ()
+{
+	std::vector<libtorrent::torrent_handle> handles = session->get_torrents ();
+	session->pause ();
+	session->set_alert_mask (libtorrent::alert::storage_notification | libtorrent::alert::error_notification);
+	int num_resume_data = 0;
+	for (std::vector<libtorrent::torrent_handle>::iterator handle = handles.begin ();
+			handle != handles.end (); handle++) {
+		if (!handle->has_metadata ())
+			continue;
+		if (!handle->is_valid ())
+			continue;
+
+		handle->save_resume_data ();
+		num_resume_data++;
+	}
+
+	while (num_resume_data > 0) {
+		libtorrent::alert const *a = session->wait_for_alert (libtorrent::seconds(10));
+
+		if (a == 0)
+			break;
+
+		std::auto_ptr<libtorrent::alert> holder = session->pop_alert ();
+
+		if (dynamic_cast<libtorrent::save_resume_data_failed_alert const *> (a)) {
+			summer_debug ("Couldn't save fastresume data: %s",
+				dynamic_cast<libtorrent::save_resume_data_failed_alert const *> (a)->msg.c_str ());
+			num_resume_data--;
+			continue;
+		}
+
+		libtorrent::save_resume_data_alert const *rd = dynamic_cast<libtorrent::save_resume_data_alert const *> (a);
+
+		if (rd == 0) {
+			continue;
+		}
+
+		GSList *l;
+		for (l = downloads; l != NULL; l = l->next) {
+			if (SUMMER_DOWNLOAD_TORRENT (l->data)->priv->handle == rd->handle)
+				break;
+		}
+
+		if (l == NULL) {
+			summer_debug ("Auto-resume available, but nowhere to write it");
+			num_resume_data--;
+			continue;
+		}
+		gchar *tmp_dir;
+		tmp_dir = summer_download_get_tmp_dir (SUMMER_DOWNLOAD (l->data));
+		boost::filesystem::path out_path (tmp_dir);
+		g_free (tmp_dir);
+		out_path /= SUMMER_DOWNLOAD_TORRENT (l->data)->priv->handle.get_torrent_info ().name () + ".fastresume";
+		summer_debug ("saving fastresume to %s", out_path.string ().c_str ());
+		boost::filesystem::ofstream out (out_path, std::ios_base::binary);
+		out.unsetf (std::ios_base::skipws);
+		libtorrent::bencode (std::ostream_iterator<char> (out), *rd->resume_data);
+		num_resume_data--;
+	}
+}
+
 /**
  * summer_download_torrent_shutdown:
  *
@@ -339,6 +427,7 @@ void
 summer_download_torrent_shutdown ()
 {
 	if (session_refs > 0) {
+		create_autoresume ();
 		delete session;
 		session_refs = 0;
 	}
