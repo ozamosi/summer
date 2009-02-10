@@ -50,6 +50,7 @@ static void summer_download_torrent_finalize   (GObject *obj);
 
 struct _SummerDownloadTorrentPrivate {
 	libtorrent::torrent_handle handle;
+	gfloat max_ratio;
 };
 
 #define SUMMER_DOWNLOAD_TORRENT_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE((o), \
@@ -62,6 +63,7 @@ static gint session_refs = 0;
 static gushort default_min_port = 6881;
 static gushort default_max_port = 6899;
 static gint default_max_up_speed = -1;
+static gfloat default_max_ratio = 5;
 
 static GSList *downloads;
 
@@ -69,7 +71,8 @@ enum {
 	PROP_0,
 	PROP_PORT,
 	PROP_MAX_UP_SPEED,
-	PROP_FILENAME
+	PROP_FILENAME,
+	PROP_MAX_RATIO
 };
 
 G_DEFINE_TYPE (SummerDownloadTorrent, summer_download_torrent, SUMMER_TYPE_DOWNLOAD);
@@ -84,12 +87,19 @@ check_done_seeding (gpointer data) {
 	gchar *name;
 	g_object_get (self, "filename", &name, NULL);
 	
-	gfloat ratio = (gfloat) status.all_time_upload / (gfloat) status.all_time_download;
+	gfloat ratio = status.all_time_upload / 
+		(gfloat) (status.all_time_download > status.total_wanted_done ? 
+			status.all_time_download : status.total_wanted_done);
 	summer_debug ("%s: %i uploaded, %i downloaded. Ratio: %f", name, (gint) status.all_time_upload, (gint) status.all_time_download, ratio);
 	g_free (name);
 	
-	if (ratio > 5)
+	if ((status.state == libtorrent::torrent_status::seeding ||
+				status.state == libtorrent::torrent_status::finished) &&
+			ratio > self->priv->max_ratio) {
+		self->priv->handle.pause ();
+		g_object_unref (G_OBJECT (self));
 		return FALSE;
+	}
 	return TRUE;
 }
 
@@ -198,6 +208,9 @@ set_property (GObject *object, guint prop_id, const GValue *value,
 	case PROP_MAX_UP_SPEED:
 		session->set_upload_rate_limit (g_value_get_int (value));
 		break;
+	case PROP_MAX_RATIO:
+		priv->max_ratio = g_value_get_float (value);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -219,6 +232,9 @@ get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 		break;
 	case PROP_FILENAME:
 		g_value_set_string (value, priv->handle.name ().c_str ());
+		break;
+	case PROP_MAX_RATIO:
+		g_value_set_float (value, priv->max_ratio);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -268,6 +284,15 @@ summer_download_torrent_class_init (SummerDownloadTorrentClass *klass)
 		GParamFlags (G_PARAM_READWRITE));
 	g_object_class_install_property (gobject_class, PROP_MAX_UP_SPEED, pspec);
 
+	pspec = g_param_spec_float ("max-ratio",
+		"Maximum ratio",
+		"The ratio at wich a torrent should stop seeding.",
+		1,
+		G_MAXFLOAT,
+		5,
+		GParamFlags (G_PARAM_READWRITE));
+	g_object_class_install_property (gobject_class, PROP_MAX_RATIO, pspec);
+
 	g_object_class_override_property (gobject_class, PROP_FILENAME, "filename");
 }
 
@@ -279,10 +304,13 @@ summer_download_torrent_init (SummerDownloadTorrent *self)
 	if (session_refs == 0) {
 		session = new libtorrent::session ();
 		session->listen_on (std::make_pair (default_min_port, default_max_port));
+		summer_debug ("Listening on %u", session->listen_port ());
 	}
 	session_refs++;
 
 	downloads = g_slist_prepend (downloads, self);
+
+	self->priv->max_ratio = default_max_ratio;
 }
 
 static void
@@ -334,6 +362,7 @@ summer_download_torrent_new (gchar *mime, gchar *url)
  * @min_port: In the range of ports to try, this is the lower boundary.
  * @max_port: In the range of ports to try, this is the upper boundary.
  * @max_up_speed: The maximum upload speed to allow.
+ * @max_ratio: The ratio at wich the torrent should stop seeding.
  *
  * Set default options for all new SummerDownloadTorrent objects.
  *
@@ -345,7 +374,11 @@ summer_download_torrent_new (gchar *mime, gchar *url)
  * can be retrieved by looking at the %SummerDownloadTorrent::port property.
  */
 void
-summer_download_torrent_set_default (gint min_port, gint max_port, gint max_up_speed)
+summer_download_torrent_set_default (
+	gint min_port, 
+	gint max_port, 
+	gint max_up_speed,
+	gfloat max_ratio)
 {
 	if (min_port != 0)
 		default_min_port = min_port;
@@ -353,6 +386,8 @@ summer_download_torrent_set_default (gint min_port, gint max_port, gint max_up_s
 		default_max_port = max_port;
 	if (max_up_speed != 0)
 		default_max_up_speed = max_up_speed;
+	if (max_ratio != 0.0)
+		default_max_ratio = max_ratio;
 }
 
 void
