@@ -208,8 +208,8 @@
   (c-name "summer_download_set_default")
   (return-type "none")
   (parameters
-    '("gchar*" "tmp_dir")
-    '("gchar*" "save_dir")
+    '("gchar*" "tmp_dir" (null-ok) (default "NULL"))
+    '("gchar*" "save_dir" (null-ok) (default "NULL"))
   )
 )
 
@@ -261,9 +261,10 @@
   (c-name "summer_download_torrent_set_default")
   (return-type "none")
   (parameters
-    '("gint" "min_port")
-    '("gint" "max_port")
-    '("gint" "max_up_speed")
+    '("gint" "min_port" (null-ok) (default "0"))
+    '("gint" "max_port" (null-ok) (default "0"))
+    '("gint" "max_up_speed" (null-ok) (default "0"))
+    '("gfloat" "max_ratio" (null-ok) (default "0"))
   )
 )
 
@@ -293,15 +294,15 @@
   (c-name "summer_feed_set_default")
   (return-type "none")
   (parameters
-    '("gchar*" "cache_dir" '(null-ok))
-    '("gint" "frequency")
+    '("gchar*" "cache_dir" (null-ok) (default "FALSE"))
+    '("gint" "frequency" (null-ok) (default "0"))
   )
 )
 
 (define-method get_cache_dir
   (of-object "SummerFeed")
   (c-name "summer_feed_get_cache_dir")
-  (return-type "const-gchar*")
+  (return-type "gchar*")
 )
 
 (define-method set_cache_dir
@@ -309,7 +310,7 @@
   (c-name "summer_feed_set_cache_dir")
   (return-type "none")
   (parameters
-    '("gchar*" "cache_dir")
+    '("gchar*" "dir")
   )
 )
 
@@ -331,7 +332,7 @@
 (define-method get_url
   (of-object "SummerFeed")
   (c-name "summer_feed_get_url")
-  (return-type "const-gchar*")
+  (return-type "gchar*")
 )
 
 (define-method set_url
@@ -346,31 +347,31 @@
 (define-method get_title
   (of-object "SummerFeed")
   (c-name "summer_feed_get_title")
-  (return-type "const-gchar*")
+  (return-type "gchar*")
 )
 
 (define-method get_description
   (of-object "SummerFeed")
   (c-name "summer_feed_get_description")
-  (return-type "const-gchar*")
+  (return-type "gchar*")
 )
 
 (define-method get_id
   (of-object "SummerFeed")
   (c-name "summer_feed_get_id")
-  (return-type "const-gchar*")
+  (return-type "gchar*")
 )
 
 (define-method get_web_url
   (of-object "SummerFeed")
   (c-name "summer_feed_get_web_url")
-  (return-type "const-gchar*")
+  (return-type "gchar*")
 )
 
 (define-method get_author
   (of-object "SummerFeed")
   (c-name "summer_feed_get_author")
-  (return-type "const-gchar*")
+  (return-type "gchar*")
 )
 
 (define-method get_updated
