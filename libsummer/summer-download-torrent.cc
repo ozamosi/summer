@@ -124,7 +124,8 @@ check_progress (gpointer data) {
 		g_object_get (self, "save-dir", &save_dir, NULL);
 		boost::filesystem::path boost_save_dir (save_dir);
 		g_free (save_dir);
-		priv->handle.move_storage (boost_save_dir);
+		if (boost_save_dir != priv->handle.save_path ())
+			priv->handle.move_storage (boost_save_dir);
 		g_signal_emit_by_name (self, "download-complete", //FIXME: will give the wrong path if save-dir and temp-dir are on different drives
 			priv->handle.save_path ().string ().c_str ());
 		return FALSE;
