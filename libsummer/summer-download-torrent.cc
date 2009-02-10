@@ -163,7 +163,6 @@ on_metafile_downloaded (SummerDownloadWeb *dl, gchar *metafile_path, gpointer us
 
 	if (!boost::filesystem::exists (completed_path)) {
 		boost::filesystem::path output_dir (tmp_dir);
-		output_dir = output_dir / "torrentdownloads";
 		p.save_path = output_dir;
 	} else {
 		summer_debug ("Torrent downloaded - seeding");
