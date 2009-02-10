@@ -302,8 +302,24 @@ summer_download_set_save_dir (SummerDownload *self, gchar *save_dir)
 	g_object_set (self, "save-dir", save_dir, NULL);
 }
 
+gchar*
+summer_download_get_save_dir (SummerDownload *self)
+{
+	gchar *save_dir;
+	g_object_get (self, "save-dir", &save_dir, NULL);
+	return save_dir;
+}
+
 void
 summer_download_set_tmp_dir (SummerDownload *self, gchar *tmp_dir)
 {
 	g_object_set (self, "tmp-dir", tmp_dir, NULL);
+}
+
+gchar*
+summer_download_get_tmp_dir (SummerDownload *self)
+{
+	gchar *tmp_dir;
+	g_object_get (self, "tmp-dir", &tmp_dir, NULL);
+	return tmp_dir;
 }

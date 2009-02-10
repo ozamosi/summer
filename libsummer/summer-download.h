@@ -55,7 +55,10 @@ void summer_download_set_default (const gchar *tmp_dir, const gchar *save_dir);
 void summer_download_start (SummerDownload *obj);
 
 void summer_download_set_save_dir (SummerDownload *self, gchar *save_dir);
+gchar* summer_download_get_save_dir (SummerDownload *self);
+
 void summer_download_set_tmp_dir (SummerDownload *self, gchar *tmp_dir);
+gchar* summer_download_get_tmp_dir (SummerDownload *self);
 
 G_END_DECLS
 

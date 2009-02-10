@@ -222,6 +222,12 @@
   )
 )
 
+(define-method get_tmp_dir
+  (of-object "SummerDownload")
+  (c-name "summer_download_get_tmp_dir")
+  (return-type "gchar*")
+)
+
 (define-method set_save_dir
   (of-object "SummerDownload")
   (c-name "summer_download_set_save_dir")
@@ -229,6 +235,12 @@
   (parameters
     '("gchar*" "save_dir")
   )
+)
+
+(define-method get_save_dir
+  (of-object "SummerDownload")
+  (c-name "summer_download_get_save_dir")
+  (return-type "gchar*")
 )
 
 ;; From summer-download-web.h
