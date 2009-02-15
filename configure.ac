@@ -81,7 +81,7 @@ if test "x$have_python" != "xyes"; then
 fi
 
 if test "x$have_python" != "xno"; then
-	PYGOBJECT_REQUIRED=2.14.0
+	PYGOBJECT_REQUIRED=2.15.2
 
 	PKG_CHECK_MODULES([PYGOBJECT], [pygobject-2.0 >= $PYGOBJECT_REQUIRED], [], [
 		have_python=no
@@ -100,10 +100,15 @@ fi
 
 if test "x$have_python" != "xno"; then
 	AC_MSG_CHECKING([for pygobject defs])
-	PYGTK_DEFSDIR=`$PKG_CONFIG --variable=defsdir pygobject-2.0`
-	AC_MSG_RESULT([$PYGTK_DEFSDIR])
+	PYGOBJECT_DEFSDIR=`$PKG_CONFIG --variable=defsdir pygobject-2.0`
+	AC_MSG_RESULT([$PYGOBJECT_DEFSDIR])
+
+	AC_MSG_CHECKING([for pygobject codegen])
+	PYGOBJECT_CODEGEN="$PYTHON `$PKG_CONFIG --variable=codegendir pygtk-2.0`/codegen.py"
+	AC_MSG_RESULT([$PYGOBJECT_CODEGEN])
 	
-	AC_SUBST([PYGTK_DEFSDIR])
+	AC_SUBST([PYGOBJECT_DEFSDIR])
+	AC_SUBST([PYGOBJECT_CODEGEN])
 fi
 
 if test "x$have_python" != "xno" -a "x$enable_python" != "xno"; then

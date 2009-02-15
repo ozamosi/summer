@@ -22,7 +22,7 @@ summer_la_LDFLAGS = \
 	$(SOUP_LIBS)
 
 summer.c: summer.defs summer.override
-	( cd $(srcdir) && pygobject-codegen-2.0 \
+	( cd $(srcdir) && $(PYGOBJECT_CODEGEN) \
 		--prefix summer \
 		--override $*.override \
 		summer.defs) > $@
