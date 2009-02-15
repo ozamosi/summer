@@ -336,7 +336,7 @@ summer_item_data_get_description (SummerItemData *self)
 gchar *
 summer_item_data_get_id (SummerItemData *self)
 {
-	return self->id;
+	return self->id ? self->id : self->web_url;
 }
 
 /**
