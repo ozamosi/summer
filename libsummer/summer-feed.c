@@ -323,16 +323,12 @@ on_downloaded (SummerWebBackend *web, gchar *save_path, gchar *save_data, gpoint
 		}
 	}
 
-	if (self->priv->cache_dir != NULL) {
-		static SummerFeedCache *cache;
-		if (!G_IS_OBJECT (cache)) {
-			gchar *cache_path = g_build_filename (self->priv->cache_dir, "seen_objects", NULL);
-			cache = summer_feed_cache_new (cache_path);
-			g_free (cache_path);
-		}
-		summer_feed_cache_filter_old_items (cache, &priv->feed_data->items);
-	}
-	g_signal_emit_by_name (self, "new-entries");
+	SummerFeedCache *cache = summer_feed_cache_get ();
+	summer_feed_cache_filter_old_items (cache, &priv->feed_data->items);
+	g_object_unref (cache);
+
+	if (priv->feed_data->items != NULL)
+		g_signal_emit_by_name (self, "new-entries");
 }
 
 static gboolean
@@ -390,6 +386,11 @@ summer_feed_set_default (const gchar *cache_dir, const gint frequency)
 		if (default_cache_dir)
 			g_free (default_cache_dir);
 		default_cache_dir = g_strdup (cache_dir);
+		SummerFeedCache *cache = summer_feed_cache_get ();
+		gchar *cache_file;
+		cache_file = g_build_filename (default_cache_dir, "seen_objects", NULL);
+		g_object_set (cache, "cache-file", cache_file, NULL);
+		g_object_unref (cache);
 	}
 	if (frequency != 0)
 		default_frequency = frequency;

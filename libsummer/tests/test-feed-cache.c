@@ -15,7 +15,8 @@ static void
 basic ()
 {
 	gchar *path = g_build_filename (g_get_tmp_dir (), "feedcache", NULL);
-	SummerFeedCache *cache = summer_feed_cache_new (path);
+	SummerFeedCache *cache = summer_feed_cache_get ();
+	g_object_set (cache, "cache-file", path, NULL);
 	GList *list = NULL;
 
 	list = append_uri (list, "urn:uuid:60a76c80-d399-11d9-b93C-0003939e0af6");

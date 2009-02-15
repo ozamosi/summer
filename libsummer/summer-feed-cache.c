@@ -33,15 +33,12 @@
  *
  * This component is used to keep track of what files are old, and what files
  * are new. It has no concept of per-subscription uniqueness.
- *
- * Don't create several instances of this class that operates on the same cache
- * file.
  */
 
 /**
  * SummerFeedCache:
  *
- * A class used to filter previously seen files.
+ * A singleton class used to filter previously seen files.
  */
 
 static void summer_feed_cache_class_init (SummerFeedCacheClass *klass);
@@ -50,7 +47,8 @@ static void summer_feed_cache_finalize   (GObject *obj);
 static GList* parse_cache_file (GFile *file);
 
 struct _SummerFeedCachePrivate {
-	GList *cache;
+	GList *downloading_objects;
+	GList *downloaded_objects;
 	GFile *cache_file;
 	gchar *cache_path;
 };
@@ -79,14 +77,16 @@ set_property (GObject *object, guint prop_id, const GValue *value,
 		if (G_IS_OBJECT (priv->cache_file))
 			g_object_unref (priv->cache_file);
 		priv->cache_file = g_file_new_for_path (priv->cache_path);
-		if (priv->cache) {
+		if (priv->downloaded_objects) {
 			GList *list;
-			for (list = priv->cache; list != NULL; list = list->next) {
+			for (list = priv->downloaded_objects; 
+					list != NULL; 
+					list = list->next) {
 				g_free (list->data);
 			}
-			g_list_free (priv->cache);
+			g_list_free (priv->downloaded_objects);
 		}
-		priv->cache = parse_cache_file (priv->cache_file);
+		priv->downloaded_objects = parse_cache_file (priv->cache_file);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -127,7 +127,7 @@ summer_feed_cache_class_init (SummerFeedCacheClass *klass)
 		"Cache File",
 		"The file to save the cache data in",
 		NULL,
-		G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
+		G_PARAM_READWRITE);
 	g_object_class_install_property (gobject_class, PROP_CACHE_FILE, pspec);
 }
 
@@ -169,6 +169,7 @@ parse_cache_file (GFile *file)
 			result = g_list_prepend (result, g_strdup (*line));
 		}
 	}
+	result = g_list_reverse (result);
 	g_strfreev (lines);
 	return result;
 }
@@ -185,27 +186,39 @@ summer_feed_cache_finalize (GObject *obj)
 	SummerFeedCachePrivate *priv = SUMMER_FEED_CACHE (obj)->priv;
 	g_object_unref (priv->cache_file);
 	GList *list;
-	for (list = priv->cache; list != NULL; list = list->next) {
+	for (list = priv->downloaded_objects; list != NULL; list = list->next) {
 		g_free (list->data);
 	}
-	g_list_free (priv->cache);
+	g_list_free (priv->downloaded_objects);
+	
+	for (list = priv->downloading_objects; list != NULL; list = list->next) {
+		g_free (list->data);
+	}
+	g_list_free (priv->downloading_objects);
+
 	g_free (priv->cache_path);
 	G_OBJECT_CLASS(summer_feed_cache_parent_class)->finalize (obj);
 }
 
 /**
- * summer_feed_cache_new:
- * @cache_file: the path to where the cache should be stored
+ * summer_feed_cache_get:
  *
- * Creates a new %SummerFeedCache object.
+ * Returns the global %SummerFeedCache instance, or creates one if there isn't
+ * one.
  *
- * Returns: The newly created %SummerFeedCache object.
+ * Returns: The %SummerFeedCache object.
  */
 SummerFeedCache*
-summer_feed_cache_new (gchar *cache_file)
+summer_feed_cache_get ()
 {
-	return SUMMER_FEED_CACHE(g_object_new(SUMMER_TYPE_FEED_CACHE, 
-		"cache-file", cache_file, NULL));
+	static SummerFeedCache *cache = NULL;
+	if (cache == NULL)
+		cache = SUMMER_FEED_CACHE(g_object_new(SUMMER_TYPE_FEED_CACHE, NULL));
+	// Give each client one reference each, and keep the first one to ourselves.
+	// This means this object won't be destroyed if nobody's using it 
+	// temporarily.
+	g_object_ref (G_OBJECT (cache));
+	return cache;
 }
 
 static void
@@ -216,8 +229,9 @@ write_cache (SummerFeedCache *self) {
 	GFile *directory = g_file_get_parent (self->priv->cache_file);
 	if (!g_file_query_exists (directory, NULL)) {
 		if (!g_file_make_directory_with_parents (directory, NULL, &error)) {
-			g_error ("Couldn't create cache dir: %s", error->message);
+			g_warning ("Couldn't create cache dir: %s", error->message);
 			g_clear_error (&error);
+			return;
 		}
 	}
 	GFileOutputStream *stream = g_file_replace (
@@ -228,11 +242,12 @@ write_cache (SummerFeedCache *self) {
 		NULL, 
 		&error);
 	if (error != NULL) {
-		g_error ("Error writing cache file: %s", error->message);
+		g_warning ("Error writing cache file: %s", error->message);
 		g_clear_error (&error);
+		return;
 	}
 	GList *node;
-	for (node = self->priv->cache; node != NULL; node = node->next) {
+	for (node = self->priv->downloaded_objects; node != NULL; node = node->next) {
 		if (node->data == NULL)
 			continue;
 		g_output_stream_write (
@@ -251,6 +266,18 @@ write_cache (SummerFeedCache *self) {
 	g_output_stream_close (G_OUTPUT_STREAM (stream), NULL, NULL);
 }
 
+static GList*
+list_find_string (GList *list, const gchar *string)
+{
+	GList *l;
+	for (l = list; l != NULL; l = l->next) {
+		if (!g_strcmp0 ((gchar *)l->data, string)) {
+			return l;
+		}
+	}
+	return NULL;
+}
+
 /**
  * summer_feed_cache_filter_old_items:
  * @self: a %SummerFeedCache object.
@@ -264,27 +291,45 @@ summer_feed_cache_filter_old_items (SummerFeedCache *self, GList **items)
 {
 	GList *cur_item, *cur_cache, *new_items = NULL;
 	for (cur_item = *items; cur_item != NULL; cur_item = cur_item->next) {
-		gboolean exists = FALSE;
-		gchar *id = SUMMER_ITEM_DATA (cur_item->data)->id;
-		if (id == NULL)
-			id = SUMMER_ITEM_DATA (cur_item->data)->web_url;
-		for (cur_cache = self->priv->cache; 
-				cur_cache != NULL; 
-				cur_cache = cur_cache->next) {
-			if (!g_strcmp0 ((gchar *)cur_cache->data, id)) {
-				exists = TRUE;
-				break;
-			}
-		}
-		if (exists) {
-			g_object_unref ((GObject *)cur_item->data);
+		gchar *id = summer_item_data_get_id (SUMMER_ITEM_DATA (cur_item->data));
+		cur_cache = list_find_string (self->priv->downloaded_objects, id);
+		if (!cur_cache)
+			cur_cache = list_find_string (self->priv->downloading_objects, id);
+
+		if (cur_cache) {
+			g_object_unref (G_OBJECT (cur_item->data));
 		} else {
 			new_items = g_list_prepend (new_items, cur_item->data);
-			self->priv->cache = g_list_prepend (self->priv->cache, 
-				g_strdup (id));
+			self->priv->downloading_objects = g_list_prepend (
+				self->priv->downloading_objects, g_strdup (id));
 		}
 	}
 	g_list_free (*items);
-	*items = new_items;
+	*items = g_list_reverse (new_items);
+	write_cache (self);
+}
+
+/**
+ * summer_feed_cache_add_new_item:
+ * @self: the %SummerFeedCache object
+ * @item: the item to add to the cache
+ *
+ * After a download is finnished, this function must be called, to make sure
+ * that the download won't be redownloaded after the library has been 
+ * reinitialized.
+ */
+void
+summer_feed_cache_add_new_item (SummerFeedCache *self, SummerItemData *item)
+{
+	gchar *id = summer_item_data_get_id (item);
+	if (!id)
+		return;
+	GList *cache_node = list_find_string (self->priv->downloading_objects, id);
+	if (!cache_node)
+		return;
+	self->priv->downloaded_objects = g_list_prepend (
+		self->priv->downloaded_objects, cache_node->data);
+	self->priv->downloading_objects = g_list_delete_link (
+		self->priv->downloading_objects, cache_node);
 	write_cache (self);
 }

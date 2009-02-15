@@ -21,6 +21,7 @@
 
 #include "summer-download-torrent.h"
 #include "summer-download-web.h"
+#include "summer-feed-cache.h"
 #include "summer-debug.h"
 #include <libtorrent/session.hpp>
 #include <libtorrent/torrent_info.hpp>
@@ -97,6 +98,14 @@ check_done_seeding (gpointer data) {
 				status.state == libtorrent::torrent_status::finished) &&
 			ratio > self->priv->max_ratio) {
 		self->priv->handle.pause ();
+		
+		SummerItemData *item;
+		g_object_get (self, "item", &item, NULL);
+		SummerFeedCache *cache = summer_feed_cache_get ();
+		summer_feed_cache_add_new_item (cache, item);
+		g_object_unref (G_OBJECT (cache));
+		g_object_unref (G_OBJECT (item));
+
 		g_object_unref (G_OBJECT (self));
 		return FALSE;
 	}

@@ -23,6 +23,7 @@
 #define __SUMMER_FEED_CACHE_H__
 
 #include <glib-object.h>
+#include "summer-data-types.h"
 
 G_BEGIN_DECLS
 
@@ -48,9 +49,10 @@ struct _SummerFeedCacheClass {
 
 GType        summer_feed_cache_get_type    (void) G_GNUC_CONST;
 
-SummerFeedCache*    summer_feed_cache_new         (gchar *cache_file);
+SummerFeedCache*    summer_feed_cache_get         (void);
 
 void summer_feed_cache_filter_old_items (SummerFeedCache *self, GList **items);
+void summer_feed_cache_add_new_item (SummerFeedCache *self, SummerItemData *item);
 
 G_END_DECLS
 

@@ -21,6 +21,7 @@
 
 #include "summer-download-web.h"
 #include "summer-web-backend.h"
+#include "summer-feed-cache.h"
 #include "summer-debug.h"
 #include <string.h>
 #include <gio/gio.h>
@@ -103,6 +104,14 @@ on_download_complete (SummerWebBackend *web_backend, gchar *save_path, gchar *sa
 	g_object_unref (dest);
 
 	g_free (save_dir);
+
+	SummerItemData *item;
+	g_object_get (self, "item", &item, NULL);
+	SummerFeedCache *cache = summer_feed_cache_get ();
+	summer_feed_cache_add_new_item (cache, item);
+	g_object_unref (G_OBJECT (cache));
+	g_object_unref (G_OBJECT (item));
+
 	g_signal_emit_by_name (self, "download-complete", destpath);
 	g_object_unref (self);
 }
