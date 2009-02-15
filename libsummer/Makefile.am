@@ -19,16 +19,15 @@ BUILT_SOURCES = $(MARSHAL_GENERATED)
 CLEANFILES = $(MARSHAL_GENERATED)
 
 INCLUDES = \
+	$(CFLAGS) \
 	$(SUMMER_CFLAGS) \
 	$(GLIB_CFLAGS) \
 	$(SOUP_CFLAGS) \
 	$(LIBXML_CFLAGS) \
 	$(DISABLE_DEPRECATED) \
+	$(LIBTORRENT_CFLAGS) \
 	-include $(CONFIG_HEADER) \
-	-Wall -Wextra -Wno-missing-field-initializers -Wno-unused-parameter
-
-summer_download_torrent_o_CFLAGS =  \
-	$(LIBTORRENT_CFLAGS)
+	-Wall -Wextra -Wno-missing-field-initializers -Wno-unused-parameter -Werror
 
 libsummer_la_CFLAGS = \
 	-Wmissing-prototypes
@@ -39,6 +38,7 @@ lib_LTLIBRARIES = libsummer.la
 libsummer_la_LDFLAGS = -export-dynamic
 libsummer_la_LIBADD = \
 	$(LIB_LIBS) \
+	$(SUMMER_LIBS) \
 	$(LIBTORRENT_LIBS)
 
 NOINST_H_FILES =
