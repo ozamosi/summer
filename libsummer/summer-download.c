@@ -255,7 +255,7 @@ summer_download_finalize (GObject *self)
 }
 
 /**
- * summer_download_set_default():
+ * summer_download_set_default:
  * @tmp_dir: the directory to save temporary files in, or %NULL to keep current
  * value.
  * @save_dir: the directory to save completed downloads in, or %NULL to keep
@@ -296,12 +296,28 @@ summer_download_start (SummerDownload *obj)
 	SUMMER_DOWNLOAD_GET_CLASS (obj)->start (obj);
 }
 
+/**
+ * summer_download_set_save_dir:
+ * @self: a %SummerDownload instance
+ * @save_dir: a directory path
+ *
+ * Changes the directory to store completed downloads in.
+ */
 void
 summer_download_set_save_dir (SummerDownload *self, gchar *save_dir)
 {
 	g_object_set (self, "save-dir", save_dir, NULL);
 }
 
+/**
+ * summer_download_get_save_dir:
+ * @self: a %SummerDownload instance
+ *
+ * Returns the directory where completed downloads are stored. You must free the
+ * returned string yourself.
+ *
+ * Returns: the directory where completed downloads are stored.
+ */
 gchar*
 summer_download_get_save_dir (SummerDownload *self)
 {
@@ -310,12 +326,29 @@ summer_download_get_save_dir (SummerDownload *self)
 	return save_dir;
 }
 
+/**
+ * summer_download_set_tmp_dir:
+ * @self: a %SummerDownload instance
+ * @tmp_dir: a directory path
+ *
+ * Changes the directory to store temporary files (for instance incomplete 
+ * downloads) in.
+ */
 void
 summer_download_set_tmp_dir (SummerDownload *self, gchar *tmp_dir)
 {
 	g_object_set (self, "tmp-dir", tmp_dir, NULL);
 }
 
+/**
+ * summer_download_get_tmp_dir:
+ * @self: a %SummerDownload instance
+ *
+ * Returns the directory where incomplete downloads and other temporary files
+ * are stored. You must free the returned string yourself.
+ *
+ * Returns: the directory where temporary files are stored.
+ */
 gchar*
 summer_download_get_tmp_dir (SummerDownload *self)
 {

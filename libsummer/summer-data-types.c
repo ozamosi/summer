@@ -38,7 +38,22 @@ static void summer_downloadable_data_finalize   (GObject *obj);
  * @short_description: Data types for handling feed data.
  * @stability: Unstable
  *
- * This component contains a few datatypes for storing feed data.
+ * This component contains a few datatypes for storing feed data. Their 
+ * relations are as follows:
+ *
+ * A %SummerFeedData represents a complete feed and contains global data about
+ * it. It contains a list of several %SummerItemData objects.
+ *
+ * A %SummerItemData object represents an item, also known as a post or an
+ * entry, in a feed. It contains a list of several %SummerDownloadableData
+ * objects.
+ *
+ * A %SummerDownloadableData object represents something that a feed parser
+ * thinks may be something worth downloading. Most commonly, this represents an
+ * <enclosure/> tag in RSS2, and is some kind of multimedia file. It is not 
+ * uncommon that one item contains several of these, where each differ for
+ * instance in quality, format, or they may be the same, expressed in several 
+ * different vocabularies.
  */
 
 /**
@@ -107,42 +122,104 @@ summer_feed_data_finalize (GObject *obj)
 	G_OBJECT_CLASS (summer_feed_data_parent_class)->finalize (obj);
 }
 
+/**
+ * summer_feed_data_get_title:
+ * @self: a %SummerFeedData object.
+ *
+ * Returns the title of the feed that this object represents. This string
+ * should not be freed.
+ *
+ * Returns: The title of the feed.
+ */
 gchar *
 summer_feed_data_get_title (SummerFeedData *self)
 {
 	return self->title;
 }
 
+/**
+ * summer_feed_data_get_description:
+ * @self: a %SummerFeedData object.
+ *
+ * Returns the description of the feed that this object represents. This 
+ * string should not be freed.
+ *
+ * Returns: The description of the feed.
+ */
 gchar *
 summer_feed_data_get_description (SummerFeedData *self)
 {
 	return self->description;
 }
 
+/**
+ * summer_feed_data_get_id:
+ * @self: a %SummerFeedData object.
+ *
+ * Returns a unique identifier for the feed that this object represents. This 
+ * string should not be freed.
+ *
+ * Returns: The title of the feed.
+ */
 gchar *
 summer_feed_data_get_id (SummerFeedData *self)
 {
 	return self->id;
 }
 
+/**
+ * summer_feed_data_get_web_url:
+ * @self: a %SummerFeedData object.
+ *
+ * Returns a URL, pointing to a web resource for the feed that this object 
+ * represents. This string should not be freed.
+ *
+ * Returns: A URL to a web representation of the feed.
+ */
 gchar *
 summer_feed_data_get_web_url (SummerFeedData *self)
 {
 	return self->web_url;
 }
 
+/**
+ * summer_feed_data_get_author:
+ * @self: a %SummerFeedData object.
+ *
+ * Returns the author of the feed that this object represents. This 
+ * string should not be freed.
+ *
+ * Returns: The author of the feed.
+ */
 gchar *
 summer_feed_data_get_author (SummerFeedData *self)
 {
 	return self->author;
 }
 
+/**
+ * summer_feed_data_get_updated:
+ * @self: a %SummerFeedData object.
+ *
+ * Returns when, in seconds since the epoch, this feed was most recently
+ * updated.
+ *
+ * Returns: The last time this feed was updated.
+ */
 time_t
 summer_feed_data_get_updated (SummerFeedData *self)
 {
 	return self->updated;
 }
 
+/**
+ * summer_feed_data_get_items:
+ * @self: a %SummerFeedData object.
+ *
+ * Returns all items in this feed. This list should not be freed.
+ *
+ * Returns: The items in the feed.
+ */
 GList *
 summer_feed_data_get_items (SummerFeedData *self)
 {
@@ -216,42 +293,105 @@ summer_item_data_finalize (GObject *obj)
 	G_OBJECT_CLASS (summer_item_data_parent_class)->finalize (obj);
 }
 
+/**
+ * summer_item_data_get_title:
+ * @self: a %SummerItemData object.
+ *
+ * Returns the title of the item that this object represents. You should not
+ * free the returned string.
+ *
+ * Returns: The title of the item.
+ */
 gchar *
 summer_item_data_get_title (SummerItemData *self)
 {
 	return self->title;
 }
 
+/**
+ * summer_item_data_get_description:
+ * @self: a %SummerItemData object.
+ *
+ * Returns the description of the item that this object represents. You should
+ * not free the returned string.
+ *
+ * Returns: The description of the item.
+ */
 gchar *
 summer_item_data_get_description (SummerItemData *self)
 {
 	return self->description;
 }
 
+/**
+ * summer_item_data_get_id:
+ * @self: a %SummerItemData object.
+ *
+ * Returns a unique identifier for the item that this object represents. If the
+ * item doesn't specify one, the web URL is used for that purpose instead.
+ * You should not free the returned string.
+ *
+ * Returns: A unique identifier for the item.
+ */
 gchar *
 summer_item_data_get_id (SummerItemData *self)
 {
 	return self->id;
 }
 
+/**
+ * summer_item_data_get_web_url:
+ * @self: a %SummerItemData object.
+ *
+ * Returns a URL to a web representation of the item that this object 
+ * represents. You should not free the returned string.
+ *
+ * Returns: A link to a web representation of the item.
+ */
 gchar *
 summer_item_data_get_web_url (SummerItemData *self)
 {
 	return self->web_url;
 }
 
+/**
+ * summer_item_data_get_author:
+ * @self: a %SummerItemData object.
+ *
+ * Returns the author of the item that this object represents. You should not
+ * free the returned string.
+ *
+ * Returns: The author of the item.
+ */
 gchar *
 summer_item_data_get_author (SummerItemData *self)
 {
 	return self->author;
 }
 
+/**
+ * summer_item_data_get_updated:
+ * @self: a %SummerItemData object.
+ *
+ * Returns when this item was most recently updated, in seconds since the epoch.
+ *
+ * Returns: When this item was most recently updated.
+ */
 time_t
 summer_item_data_get_updated (SummerItemData *self)
 {
 	return self->updated;
 }
 
+/**
+ * summer_item_data_get_downloadables:
+ * @self: a %SummerItemData object.
+ *
+ * Returns a list of all the downloadables the item that this object represents
+ * contains. You should not free the returned list.
+ *
+ * Returns: A list of downloadables.
+ */
 GList *
 summer_item_data_get_downloadables (SummerItemData *self)
 {
@@ -306,18 +446,45 @@ summer_downloadable_data_finalize (GObject *obj)
 	G_OBJECT_CLASS (summer_downloadable_data_parent_class)->finalize (obj);
 }
 
+/**
+ * summer_downloadable_data_get_url:
+ * @self: a %SummerItemData object.
+ *
+ * Returns the URL where this downloadable object can be downloaded from.
+ * You should not free the returned string.
+ *
+ * Returns: The URL of the downloadable.
+ */
 gchar *
 summer_downloadable_data_get_url (SummerDownloadableData *self)
 {
 	return self->url;
 }
 
+/**
+ * summer_downloadable_data_get_mime:
+ * @self: a %SummerItemData object.
+ *
+ * Returns the reported mime type of this downloadable object.
+ * You should not free the returned string.
+ *
+ * Returns: The mime type of the downloadable.
+ */
 gchar *
 summer_downloadable_data_get_mime (SummerDownloadableData *self)
 {
 	return self->mime;
 }
 
+/**
+ * summer_downloadable_data_get_length:
+ * @self: a %SummerItemData object.
+ *
+ * Returns the reported length of the downloadable object. This data is usually
+ * in bytes, but since it's fetched from a web feed, it could be something else.
+ *
+ * Returns: The length of the downloadable.
+ */
 gint
 summer_downloadable_data_get_length (SummerDownloadableData *self)
 {

@@ -1,6 +1,7 @@
 #include <libsummer/summer.h>
 
 summer_download_web_get_type
+summer_download_torrent_get_type
 summer_download_get_type
 summer_feed_get_type
 summer_feed_parser_get_type
@@ -8,3 +9,6 @@ summer_atom_parser_get_type
 summer_rss2_parser_get_type
 summer_web_backend_get_type
 summer_feed_cache_get_type
+summer_feed_data_get_type
+summer_item_data_get_type
+summer_downloadable_data_get_type

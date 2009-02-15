@@ -15,11 +15,13 @@
     <title>Libsummer</title>
     <xi:include href="xml/summer.xml"/>
     <xi:include href="xml/summer-download.xml"/>
+    <xi:include href="xml/summer-download-torrent.xml"/>
     <xi:include href="xml/summer-download-web.xml"/>
     <xi:include href="xml/summer-feed.xml"/>
     <xi:include href="xml/summer-feed-parser.xml"/>
     <xi:include href="xml/summer-atom-parser.xml"/>
     <xi:include href="xml/summer-rss2-parser.xml"/>
+    <xi:include href="xml/summer-data-types.xml"/>
     <xi:include href="xml/summer-web-backend.xml"/>
   </chapter>
 </book>

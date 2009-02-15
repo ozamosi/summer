@@ -3,9 +3,28 @@
 <SECTION>
 <TITLE>Summer</TITLE>
 <FILE>summer</FILE>
-summer_set
 summer_create_download
 summer_debug
+summer_shutdown
+</SECTION>
+
+<SECTION>
+<FILE>summer-download-torrent</FILE>
+<TITLE>SummerDownloadTorrent</TITLE>
+SummerDownloadTorrent
+summer_download_torrent_new
+summer_download_torrent_set_default
+summer_download_torrent_shutdown
+<SUBSECTION Standard>
+SummerDownloadTorrentClass
+SummerDownloadTorrentPrivate
+SUMMER_DOWNLOAD_TORRENT
+SUMMER_IS_DOWNLOAD_TORRENT
+SUMMER_TYPE_DOWNLOAD_TORRENT
+summer_download_torrent_get_type
+SUMMER_DOWNLOAD_TORRENT_CLASS
+SUMMER_IS_DOWNLOAD_TORRENT_CLASS
+SUMMER_DOWNLOAD_TORRENT_GET_CLASS
 </SECTION>
 
 <SECTION>
@@ -29,8 +48,12 @@ SUMMER_DOWNLOAD_WEB_GET_CLASS
 <FILE>summer-download</FILE>
 <TITLE>SummerDownload</TITLE>
 SummerDownload
-summer_download_set
 summer_download_start
+summer_download_get_save_dir
+summer_download_get_tmp_dir
+summer_download_set_default
+summer_download_set_save_dir
+summer_download_set_tmp_dir
 <SUBSECTION Standard>
 SummerDownloadClass
 SummerDownloadPrivate
@@ -48,8 +71,21 @@ SUMMER_DOWNLOAD_GET_CLASS
 <TITLE>SummerFeed</TITLE>
 SummerFeed
 summer_feed_new
-summer_feed_set
 summer_feed_start
+summer_feed_get_author
+summer_feed_get_cache_dir
+summer_feed_get_description
+summer_feed_get_frequency
+summer_feed_get_id
+summer_feed_get_items
+summer_feed_get_title
+summer_feed_get_updated
+summer_feed_get_url
+summer_feed_get_web_url
+summer_feed_set_cache_dir
+summer_feed_set_default
+summer_feed_set_frequency
+summer_feed_set_url
 <SUBSECTION Standard>
 SummerFeedClass
 SummerFeedPrivate
@@ -66,15 +102,6 @@ SUMMER_FEED_GET_CLASS
 <FILE>summer-feed-parser</FILE>
 <TITLE>SummerFeedParser</TITLE>
 SummerFeedParser
-SummerFeedData
-SummerItemData
-summer_feed_data_free
-summer_feed_data_new
-summer_item_data_free
-summer_item_data_new
-SummerDownloadableData
-summer_downloadable_data_free
-summer_downloadable_data_new
 summer_feed_parser_handle_node
 summer_feed_parser_parse
 DO_WITH_TEXT_CONTENTS
@@ -89,6 +116,48 @@ SUMMER_FEED_PARSER
 SUMMER_IS_FEED_PARSER
 SUMMER_TYPE_FEED_PARSER
 summer_feed_parser_get_type
+</SECTION>
+
+<SECTION>
+<FILE>summer-data-types</FILE>
+<TITLE>SummerDataTypes</TITLE>
+SummerFeedData
+SummerItemData
+SummerDownloadableData
+summer_feed_data_new
+summer_item_data_new
+summer_downloadable_data_new
+summer_downloadable_data_get_length
+summer_downloadable_data_get_mime
+summer_downloadable_data_get_url
+summer_feed_data_get_author
+summer_feed_data_get_description
+summer_feed_data_get_id
+summer_feed_data_get_items
+summer_feed_data_get_title
+summer_feed_data_get_updated
+summer_feed_data_get_web_url
+summer_item_data_append_downloadable
+summer_item_data_get_author
+summer_item_data_get_description
+summer_item_data_get_downloadables
+summer_item_data_get_id
+summer_item_data_get_title
+summer_item_data_get_updated
+summer_item_data_get_web_url
+<SUBSECTION Standard>
+SummerFeedDataClass
+SummerItemDataClass
+SummerDownloadableDataClass
+SUMMER_DOWNLOADABLE_DATA
+SUMMER_FEED_DATA
+SUMMER_ITEM_DATA
+SUMMER_TYPE_DOWNLOADABLE_DATA
+SUMMER_TYPE_FEED_DATA
+SUMMER_TYPE_ITEM_DATA
+summer_downloadable_data_get_type
+summer_item_data_get_type
+summer_feed_data_get_type
 </SECTION>
 
 <SECTION>
@@ -129,6 +198,8 @@ SUMMER_RSS2_PARSER_GET_CLASS
 SummerWebBackend
 summer_web_backend_new
 summer_web_backend_fetch
+summer_web_backend_fetch_head
+summer_web_backend_fake_firefox
 <SUBSECTION Standard>
 SummerWebBackendClass
 SummerWebBackendPrivate
@@ -145,10 +216,12 @@ SUMMER_WEB_BACKEND_GET_CLASS
 <FILE>summer-feed-cache</FILE>
 <TITLE>SummerFeedCache</TITLE>
 SummerFeedCache
-summer_feed_cache_new
+summer_feed_cache_get
 summer_feed_cache_filter_old_items
+summer_feed_cache_add_new_item
 <SUBSECTION Standard>
 SummerFeedCacheClass
+SummerFeedCachePrivate
 SUMMER_FEED_CACHE
 SUMMER_IS_FEED_CACHE
 SUMMER_TYPE_FEED_CACHE

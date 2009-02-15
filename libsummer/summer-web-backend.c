@@ -252,6 +252,17 @@ summer_web_backend_class_init (SummerWebBackendClass *klass)
 		2,
 		G_TYPE_INT, G_TYPE_INT);
 
+	/**
+	 * SummerWebBackend::headers-parsed:
+	 * @web_backend: the %SummerWebBackend that emitted the signal
+	 * @user_data: user-provided data.
+	 *
+	 * Emitted when the headers of a transfer has been downloaded and
+	 * transfered. Only emitted once per %SummerWebBackend instance, so if you
+	 * call %summer_web_backend_fetch_head(), it will not be emitted during
+	 * subsequent calls to %summer_web_backend_fetch_head() or 
+	 * %summer_web_backend_fetch()
+	 */
 	 g_signal_new (
 	 	"headers-parsed",
 		SUMMER_TYPE_WEB_BACKEND,
@@ -464,6 +475,14 @@ summer_web_backend_fetch (SummerWebBackend *self)
 	soup_session_queue_message (session, msg, on_downloaded, self);
 }
 
+/**
+ * summer_web_backend_fetch_head:
+ * @self: a #SummerWebBackend instance
+ *
+ * Performs a HEAD request against #SummerWebBackend:url.
+ * function will not return anything - instead, connect to the 
+ * #SummerWebBackend::headers-parsed signal.
+ */
 void
 summer_web_backend_fetch_head (SummerWebBackend *self)
 {

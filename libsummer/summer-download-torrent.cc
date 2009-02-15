@@ -269,12 +269,6 @@ summer_download_torrent_class_init (SummerDownloadTorrentClass *klass)
 		G_PARAM_READABLE);
 	g_object_class_install_property (gobject_class, PROP_PORT, pspec);
 
-	/**
-	 * SummerDownloadTorrent:max-up-speed:
-	 *
-	 * This is the maximum upload speed allowed, in kbps. Will be initialized 
-	 * from the value set by %summer_set on construction. %-1 means no maximum.
-	 */
 	pspec = g_param_spec_int ("max-up-speed",
 		"Maximum upload speed",
 		"This is the maximum upload speed allowed",

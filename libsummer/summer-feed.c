@@ -395,6 +395,14 @@ summer_feed_set_default (const gchar *cache_dir, const gint frequency)
 		default_frequency = frequency;
 }
 
+/**
+ * summer_feed_get_cache_dir:
+ * @self: the SummerFeed object
+ *
+ * Returns the directory where cache files will be stored.
+ *
+ * Returns: the directory where cache files will be stored.
+ */
 gchar *
 summer_feed_get_cache_dir (SummerFeed *self)
 {
@@ -403,12 +411,28 @@ summer_feed_get_cache_dir (SummerFeed *self)
 	return cache_dir;
 }
 
+/**
+ * summer_feed_set_cache_dir:
+ * @self: the SummerFeed object
+ * @cache_dir: a directory path
+ *
+ * Changes the directory where cache files will be stored to @cache_dir
+ */
 void
 summer_feed_set_cache_dir (SummerFeed *self, gchar *cache_dir)
 {
 	g_object_set (self, "cache-dir", cache_dir, NULL);
 }
 
+/**
+ * summer_feed_get_frequency:
+ * @self: a %SummerFeed object
+ *
+ * Returns the number of seconds the %SummerFeed object waits before it tries 
+ * to recheck the feed.
+ *
+ * Returns: the frequency.
+ */
 gint
 summer_feed_get_frequency (SummerFeed *self)
 {
@@ -417,12 +441,29 @@ summer_feed_get_frequency (SummerFeed *self)
 	return frequency;
 }
 
+/**
+ * summer_feed_set_frequency:
+ * @self: a %SummerFeed object
+ * @frequency: the new frequency.
+ *
+ * Sets the number of seconds the %SummerFeed object waits before 
+ * it tries to recheck the feed to @frequency.
+ */
 void
 summer_feed_set_frequency (SummerFeed *self, gint frequency)
 {
 	g_object_set (self, "frequency", frequency, NULL);
 }
 
+
+/**
+ * summer_feed_get_url:
+ * @self: the SummerFeed object
+ *
+ * Returns the URL this %SummerFeed uses to fetch it's feeds.
+ *
+ * Returns: the URL this %SummerFeed uses.
+ */
 gchar *
 summer_feed_get_url (SummerFeed *self)
 {
@@ -431,12 +472,27 @@ summer_feed_get_url (SummerFeed *self)
 	return url;
 }
 
+/**
+ * summer_feed_set_url:
+ * @self: the SummerFeed object
+ * @url: a URL
+ *
+ * Changes the URL this %SummerFeed uses to fetched it's feeds to @url.
+ */
 void
 summer_feed_set_url (SummerFeed *self, gchar *url)
 {
 	g_object_set (self, "url", url, NULL);
 }
 
+/**
+ * summer_feed_get_title:
+ * @self: a %SummerFeedData object.
+ *
+ * Returns the title of the feed that this object represents.
+ *
+ * Returns: The title of the feed.
+ */
 gchar *
 summer_feed_get_title (SummerFeed *self)
 {
@@ -445,6 +501,14 @@ summer_feed_get_title (SummerFeed *self)
 	return title;
 }
 
+/**
+ * summer_feed_get_description:
+ * @self: a %SummerFeedData object.
+ *
+ * Returns the description of the feed that this object represents.
+ *
+ * Returns: The description of the feed.
+ */
 gchar *
 summer_feed_get_description (SummerFeed *self)
 {
@@ -453,6 +517,14 @@ summer_feed_get_description (SummerFeed *self)
 	return description;
 }
 
+/**
+ * summer_feed_get_id:
+ * @self: a %SummerFeedData object.
+ *
+ * Returns a unique identifier for the feed that this object represents.
+ *
+ * Returns: The title of the feed.
+ */
 gchar *
 summer_feed_get_id (SummerFeed *self)
 {
@@ -461,6 +533,15 @@ summer_feed_get_id (SummerFeed *self)
 	return id;
 }
 
+/**
+ * summer_feed_get_web_url:
+ * @self: a %SummerFeedData object.
+ *
+ * Returns a URL, pointing to a web resource for the feed that this object 
+ * represents.
+ *
+ * Returns: A URL to a web representation of the feed.
+ */
 gchar *
 summer_feed_get_web_url (SummerFeed *self)
 {
@@ -469,6 +550,14 @@ summer_feed_get_web_url (SummerFeed *self)
 	return web_url;
 }
 
+/**
+ * summer_feed_get_author:
+ * @self: a %SummerFeedData object.
+ *
+ * Returns the author of the feed that this object represents.
+ *
+ * Returns: The author of the feed.
+ */
 gchar *
 summer_feed_get_author (SummerFeed *self)
 {
@@ -477,6 +566,15 @@ summer_feed_get_author (SummerFeed *self)
 	return author;
 }
 
+/**
+ * summer_feed_get_updated:
+ * @self: a %SummerFeedData object.
+ *
+ * Returns when, in seconds since the epoch, this feed was most recently
+ * updated.
+ *
+ * Returns: The last time this feed was updated.
+ */
 time_t
 summer_feed_get_updated (SummerFeed *self)
 {
@@ -485,6 +583,14 @@ summer_feed_get_updated (SummerFeed *self)
 	return updated;
 }
 
+/**
+ * summer_feed_get_items:
+ * @self: a %SummerFeedData object.
+ *
+ * Returns all items in this feed.
+ *
+ * Returns: The items in the feed.
+ */
 GList *
 summer_feed_get_items (SummerFeed *self)
 {
