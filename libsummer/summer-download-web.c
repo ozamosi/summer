@@ -72,9 +72,15 @@ static void
 on_download_complete (SummerWebBackend *web_backend, gchar *save_path, gchar *save_data, gpointer user_data)
 {
 	g_return_if_fail (SUMMER_IS_DOWNLOAD_WEB (user_data));
-	g_return_if_fail (save_data == NULL); //FIXME: This is perfectly legal (connection failed, for instance), and should be handled in a proper way
-	g_return_if_fail (save_path != NULL);
+	g_return_if_fail (save_data == NULL);
+
 	SummerDownload *self = SUMMER_DOWNLOAD (user_data);
+
+	if (save_path == NULL) {
+		g_signal_emit_by_name (self, "download-complete", NULL);
+		g_object_unref (self);
+		return;
+	}
 
 	GFile *src = g_file_new_for_path (save_path);
 	gchar *destpath, *save_dir;
