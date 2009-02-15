@@ -172,6 +172,17 @@
   (return-type "const-SummerDownloadablesData*")
 )
 
+(define-method append_downloadable
+  (of-object "SummerItemData")
+  (c-name "summer_item_data_append_downloadable")
+  (return-type "none")
+  (parameters
+    '("gchar*" "url")
+    '("gchar*" "mime" (null-ok) (default "NULL"))
+    '("gint" "length" (null-ok) (default "0"))
+  )
+)
+
 (define-method get_url
   (of-object "SummerDownloadableData")
   (c-name "summer_downloadable_data_get_url")

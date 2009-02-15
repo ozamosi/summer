@@ -399,6 +399,27 @@ summer_item_data_get_downloadables (SummerItemData *self)
 }
 
 /**
+ * summer_item_data_append_downloadable:
+ * @self: a %SummerItemData object.
+ * @url: the URL of the new downloadable.
+ * @mime: the mime for the new downloadable.
+ * @length: the length of the new downloadable.
+ *
+ * A convenience function for creating a new downloadable, and appending it
+ * to the list of downloadables in one go.
+ */
+void
+summer_item_data_append_downloadable (SummerItemData *self, 
+	gchar *url, gchar *mime, gint length)
+{
+	SummerDownloadableData *dlable = summer_downloadable_data_new ();
+	dlable->url = g_strdup (url);
+	dlable->mime = g_strdup (mime);
+	dlable->length = length;
+	self->downloadables = g_list_append (self->downloadables, dlable);
+}
+
+/**
  * SummerDownloadableData:
  * @url: The URL to the downloadable file.
  * @mime: The MIME type of the downloadable file.

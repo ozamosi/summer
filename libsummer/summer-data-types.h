@@ -107,6 +107,7 @@ gchar* summer_item_data_get_web_url (SummerItemData *self);
 gchar* summer_item_data_get_author (SummerItemData *self);
 time_t summer_item_data_get_updated (SummerItemData *self);
 GList* summer_item_data_get_downloadables (SummerItemData *self);
+void summer_item_data_append_downloadable (SummerItemData *self, gchar *url, gchar *mime, gint length);
 
 gchar* summer_downloadable_data_get_url (SummerDownloadableData *self);
 gchar* summer_downloadable_data_get_mime (SummerDownloadableData *self);
