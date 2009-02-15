@@ -19,7 +19,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include "summer-download-torrent.hh"
+#include "summer-download-torrent.h"
 #include "summer-download-web.h"
 #include "summer-debug.h"
 #include <libtorrent/session.hpp>

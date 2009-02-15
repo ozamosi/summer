@@ -23,6 +23,7 @@
 #define __SUMMER_DOWNLOAD_TORRENT_H__
 
 #include "summer-download.h"
+#include "summer-data-types.h"
 
 G_BEGIN_DECLS
 
@@ -48,7 +49,7 @@ struct _SummerDownloadTorrentClass {
 
 GType        summer_download_torrent_get_type    (void) G_GNUC_CONST;
 
-SummerDownload* summer_download_torrent_new (gchar *url, gchar *mime);
+SummerDownload* summer_download_torrent_new (SummerItemData *item);
 void summer_download_torrent_shutdown (void);
 void summer_download_torrent_set_default (gint min_port, gint max_port, gint max_up_speed, gfloat max_ratio);
 G_END_DECLS

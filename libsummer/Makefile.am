@@ -48,7 +48,7 @@ INST_H_FILES = \
 	summer-data-types.h \
 	summer-debug.h \
 	summer-download.h \
-	summer-download-torrent.hh \
+	summer-download-torrent.h \
 	summer-download-web.h \
 	summer-feed.h \
 	summer-feed-cache.h \
