@@ -6,8 +6,12 @@ static void
 init ()
 {
 	SummerDownload *dl;
-	dl = summer_create_download ("application/x-bittorrent", "http://localhost");
+	SummerItemData *item = summer_item_data_new ();
+	summer_item_data_append_downloadable (item, 
+		"http://localhost", "application/x-bittorrent", 0);
+	dl = summer_create_download (item);
 	g_assert (SUMMER_IS_DOWNLOAD_TORRENT (dl));
+	g_object_unref (item);
 }
 
 int main (int argc, char *argv[]) {

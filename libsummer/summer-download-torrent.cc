@@ -180,14 +180,21 @@ static void
 start (SummerDownload *self)
 {
 	g_return_if_fail (SUMMER_IS_DOWNLOAD_TORRENT (self));
-	gchar *url, *tmp_dir;
-	g_object_get (self, "tmp-dir", &tmp_dir, "url", &url, NULL);
+	gchar *tmp_dir;
+	SummerDownloadableData *downloadable;
+	g_object_get (self, 
+		"tmp-dir", &tmp_dir, "downloadable", &downloadable, NULL);
 	gchar *metafile_dir = g_build_filename (tmp_dir, "metafiles", NULL);
-	SummerDownload *web = summer_download_web_new (NULL, url);
+
+	SummerItemData *item = summer_item_data_new ();
+	summer_item_data_append_downloadable (item, 
+		summer_downloadable_data_get_url (downloadable), NULL, 0);
+	SummerDownload *web = summer_download_web_new (item);
 	g_object_set (web, "save-dir", metafile_dir, NULL);
 	g_free (tmp_dir);
 	g_free (metafile_dir);
-	g_free (url);
+	g_object_unref (item);
+	g_object_unref (downloadable);
 
 	g_signal_connect (web, 
 		"download-complete", 
@@ -302,6 +309,7 @@ summer_download_torrent_init (SummerDownloadTorrent *self)
 	}
 	session_refs++;
 
+	g_object_set (self, "max-up-speed", default_max_up_speed, NULL);
 	downloads = g_slist_prepend (downloads, self);
 
 	self->priv->max_ratio = default_max_ratio;
@@ -326,9 +334,7 @@ summer_download_torrent_finalize (GObject *obj)
 
 /**
  * summer_download_torrent_new:
- * @mime: the mime typ of the file that's going to be downloaded. This should be
- * available in the feed.
- * @url: the URL of the file that's going to be downloaded.
+ * @item: a SummerItemData, containing information about the download.
  *
  * Creates a new #SummerDownloadTorrent
  *
@@ -336,17 +342,22 @@ summer_download_torrent_finalize (GObject *obj)
  * factory %summer_create_download, which will go through all the downloaders,
  * looking for one that's suitable.
  *
- * Returns: a newly created #SummerDownloadTorrent object if @mime and @url is
- * suitable, otherwise %NULL.
+ * Returns: a newly created #SummerDownloadTorrent object if the item's mime
+ * and url is suitable, otherwise %NULL.
  */
 SummerDownload*
-summer_download_torrent_new (gchar *mime, gchar *url)
+summer_download_torrent_new (SummerItemData *item)
 {
-	if (!g_strcmp0(mime, "application/x-bittorrent")) {
-		return SUMMER_DOWNLOAD (g_object_new (SUMMER_TYPE_DOWNLOAD_TORRENT, 
-			"url", url,
-			"max-up-speed", default_max_up_speed,
-			NULL));
+	GList *dl;
+	for (dl = summer_item_data_get_downloadables (item); dl != NULL;
+			dl = dl->next) {
+		SummerDownloadableData *downloadable;
+		downloadable = SUMMER_DOWNLOADABLE_DATA (dl->data);
+		gchar *mime = summer_downloadable_data_get_mime (downloadable);
+		if (!g_strcmp0(mime, "application/x-bittorrent")) {
+			return SUMMER_DOWNLOAD (g_object_new (SUMMER_TYPE_DOWNLOAD_TORRENT, 
+				"item", item, "downloadable", downloadable, NULL));
+		}
 	}
 	return NULL;
 }

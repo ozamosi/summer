@@ -404,8 +404,7 @@
   (c-name "summer_create_download")
   (return-type "SummerDownload*")
   (parameters
-    '("gchar*" "mime")
-    '("gchar*" "url")
+    '("SummerItemData*" "item")
   )
 )
 

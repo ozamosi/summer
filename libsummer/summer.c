@@ -41,28 +41,24 @@
 
 /**
  * summer_create_download:
- * @mime: the mime type of the download (you're supposed to get this from the
- * feed).
- * @url: the url you want to download.
+ * @item: a %SummerItemData, containing information about the download.
  *
  * A factory function that returns a %SummerDownload suited for handling the 
- * @mime and the @url requested.
+ * download specified in @item.
  *
  * Returns: a %SummerDownload if one could be created, otherwise %NULL
  */
 
 SummerDownload*
-summer_create_download (gchar *mime, gchar *url)
+summer_create_download (SummerItemData *item)
 {
 	SummerDownload *dl;
-	if ((dl = summer_download_web_new (mime, url))) {
-		summer_debug ("Starting web download of %s", url);
-		return dl;
-	} else if ((dl = summer_download_torrent_new (mime, url))) {
-		summer_debug ("Starting torrent download of %s", url);
-		return dl;
-	}
-	return NULL;
+	if ((dl = summer_download_torrent_new (item)))
+		summer_debug ("Starting torrent download of '%s'", item->title);
+	else if ((dl = summer_download_web_new (item)))
+		summer_debug ("Starting web download of '%s'", item->title);
+
+	return dl;
 }
 
 /**

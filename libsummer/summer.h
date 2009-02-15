@@ -23,6 +23,6 @@
 #include "summer-download.h"
 #include "summer-data-types.h"
 
-SummerDownload* summer_create_download (gchar *mime, gchar *url);
+SummerDownload* summer_create_download (SummerItemData *item);
 
 void summer_shutdown (void);

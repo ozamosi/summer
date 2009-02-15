@@ -23,6 +23,7 @@
 #define __SUMMER_DOWNLOAD_WEB_H__
 
 #include "summer-download.h"
+#include "summer-data-types.h"
 
 G_BEGIN_DECLS
 
@@ -48,7 +49,7 @@ struct _SummerDownloadWebClass {
 
 GType        summer_download_web_get_type    (void) G_GNUC_CONST;
 
-SummerDownload* summer_download_web_new (gchar *url, gchar *mime);
+SummerDownload* summer_download_web_new (SummerItemData *item);
 
 G_END_DECLS
 

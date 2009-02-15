@@ -20,8 +20,10 @@
  */
 
 #include "summer-download.h"
+#include "summer-data-types.h"
 #include "summer-marshal.h"
 #include "summer-debug.h"
+
 /**
  * SECTION:summer-download
  * @short_description: Base class for downloaders.
@@ -47,8 +49,9 @@ static void summer_download_finalize   (GObject *obj);
 struct _SummerDownloadPrivate {
 	gchar *tmp_dir;
 	gchar *save_dir;
-	gchar *url;
 	gchar *filename;
+	SummerItemData *item;
+	SummerDownloadableData *downloadable;
 };
 #define SUMMER_DOWNLOAD_GET_PRIVATE(o)   (G_TYPE_INSTANCE_GET_PRIVATE((o), \
                                           SUMMER_TYPE_DOWNLOAD, \
@@ -62,7 +65,9 @@ enum {
 	PROP_TMP_DIR,
 	PROP_SAVE_DIR,
 	PROP_URL,
-	PROP_FILENAME
+	PROP_FILENAME,
+	PROP_ITEM,
+	PROP_DOWNLOADABLE
 };
 
 G_DEFINE_ABSTRACT_TYPE (SummerDownload, summer_download, G_TYPE_OBJECT);
@@ -84,15 +89,20 @@ set_property (GObject *object, guint prop_id, const GValue *value,
 			g_free (priv->tmp_dir);
 		priv->tmp_dir = g_value_dup_string (value);
 		break;
-	case PROP_URL:
-		if (priv->url)
-			g_free (priv->url);
-		priv->url = g_value_dup_string (value);
-		break;
 	case PROP_FILENAME:
 		if (priv->filename)
 			g_free (priv->filename);
 		priv->filename = g_value_dup_string (value);
+		break;
+	case PROP_ITEM:
+		if (priv->item)
+			g_object_unref (priv->item);
+		priv->item = g_value_dup_object (value);
+		break;
+	case PROP_DOWNLOADABLE:
+		if (priv->downloadable)
+			g_object_unref (priv->downloadable);
+		priv->downloadable = g_value_dup_object (value);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -114,10 +124,16 @@ get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 		g_value_set_string (value, priv->tmp_dir);
 		break;
 	case PROP_URL:
-		g_value_set_string (value, priv->url);
+		g_value_set_string (value, SUMMER_DOWNLOADABLE_DATA (priv->item->downloadables->data)->url);
 		break;
 	case PROP_FILENAME:
 		g_value_set_string (value, priv->filename);
+		break;
+	case PROP_ITEM:
+		g_value_set_object (value, priv->item);
+		break;
+	case PROP_DOWNLOADABLE:
+		g_value_set_object (value, priv->downloadable);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -168,7 +184,7 @@ summer_download_class_init (SummerDownloadClass *klass)
 		"URL",
 		"The URL to download",
 		NULL,
-		G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
+		G_PARAM_READABLE);
 	g_object_class_install_property (gobject_class, PROP_URL, pspec);
 
 	pspec = g_param_spec_string ("filename",
@@ -177,6 +193,20 @@ summer_download_class_init (SummerDownloadClass *klass)
 		NULL,
 		G_PARAM_READWRITE);
 	g_object_class_install_property (gobject_class, PROP_FILENAME, pspec);
+
+	pspec = g_param_spec_object ("item",
+		"Item",
+		"A SummerItemData to download",
+		SUMMER_TYPE_ITEM_DATA,
+		G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
+	g_object_class_install_property (gobject_class, PROP_ITEM, pspec);
+	
+	pspec = g_param_spec_object ("downloadable",
+		"Downloadable",
+		"The SummerDownloadableData to download",
+		SUMMER_TYPE_DOWNLOADABLE_DATA,
+		G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
+	g_object_class_install_property (gobject_class, PROP_DOWNLOADABLE, pspec);
 
 	/**
 	 * SummerDownload::download-complete:
@@ -247,10 +277,10 @@ summer_download_finalize (GObject *self)
 		g_free (priv->save_dir);
 	if (priv->tmp_dir)
 		g_free (priv->tmp_dir);
-	if (priv->url)
-		g_free (priv->url);
 	if (priv->filename)
 		g_free (priv->filename);
+	if (priv->item)
+		g_object_unref (G_OBJECT (priv->item));
 	G_OBJECT_CLASS(summer_download_parent_class)->finalize (self);
 }
 

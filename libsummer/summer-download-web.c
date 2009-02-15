@@ -167,11 +167,6 @@ on_headers_parsed (SummerWebBackend *web, gpointer user_data)
 
 	g_signal_connect (priv->web, "download-chunk", G_CALLBACK (on_download_chunk), self);
 	g_signal_connect (priv->web, "download-complete", G_CALLBACK (on_download_complete), self);
-	gchar *url, *tmp_dir;
-	g_object_get (self, "tmp-dir", &tmp_dir, "url", &url, NULL);
-	summer_debug ("Downloading from %s to %s via %s\n", url, save_dir, tmp_dir);
-	g_free (url);
-	g_free (tmp_dir);
 	
 	if (is_downloaded (final_path, length)) {
 		g_signal_emit_by_name (self, "download-complete", final_path);
@@ -242,9 +237,7 @@ summer_download_web_finalize (GObject *obj)
 
 /**
  * summer_download_web_new:
- * @mime: the mime type of the file that's going to be downloaded. This hould be
- * available in the feed.
- * @url: the URL of the file that's going to be downloaded.
+ * @item: a SummerItemData, containing information about the download.
  *
  * Creates a new #SummerDownloadWeb.
  *
@@ -252,24 +245,32 @@ summer_download_web_finalize (GObject *obj)
  * factory %summer_create_download, which will go through all downloaders,
  * looking for one that's suitable.
  *
- * Returns: a newly created #SummerDownloadWeb object if @mime and @url is
- * suitable, otherwise %NULL.
+ * Returns: a newly created #SummerDownloadWeb object if the item's mime and url
+ * is suitable, otherwise %NULL.
  */
 SummerDownload*
-summer_download_web_new (gchar *mime, gchar *url)
+summer_download_web_new (SummerItemData *item)
 {
-	// There are ridiculously many application/* mime types, and we want to
-	// download quite a few of them - I'm going for limited blacklisting
-	// for now.
-	if (mime == NULL || ((
-				(g_str_has_prefix (mime, "application")
-				&& (strstr (mime, "xml") == NULL)
-				&& g_strcmp0 (mime, "application/x-bittorrent"))
-			|| g_str_has_prefix (mime, "video") 
-			|| g_str_has_prefix (mime, "audio")) 
-		&& g_str_has_prefix (url, "http"))) {
-		return SUMMER_DOWNLOAD (g_object_new (SUMMER_TYPE_DOWNLOAD_WEB, 
-			"url", url, NULL));
+	GList *dl;
+	for (dl = summer_item_data_get_downloadables (item); dl != NULL;
+			dl = dl->next) {
+		SummerDownloadableData *downloadable;
+		downloadable = SUMMER_DOWNLOADABLE_DATA (dl->data);
+		gchar *mime = summer_downloadable_data_get_mime (downloadable);
+		gchar *url = summer_downloadable_data_get_url (downloadable);
+		// There are ridiculously many application/* mime types, and we want to
+		// download quite a few of them - I'm going for limited blacklisting
+		// for now.
+		if ((mime == NULL || (
+					(g_str_has_prefix (mime, "application")
+					&& (strstr (mime, "xml") == NULL)
+					&& g_strcmp0 (mime, "application/x-bittorrent"))
+				|| g_str_has_prefix (mime, "video") 
+				|| g_str_has_prefix (mime, "audio"))) 
+			&& g_str_has_prefix (url, "http")) {
+			return SUMMER_DOWNLOAD (g_object_new (SUMMER_TYPE_DOWNLOAD_WEB, 
+				"item", item, "downloadable", downloadable, NULL));
+		}
 	}
 	return NULL;
 }

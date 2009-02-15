@@ -1,5 +1,6 @@
 #include <glib.h>
 #include <libsummer/summer.h>
+#include <libsummer/summer-download-web.h>
 #include "server.h"
 
 static GMainLoop *loop;
@@ -51,7 +52,11 @@ basic (WebFixture *fix, gconstpointer data)
 	summer_download_set_default (g_get_tmp_dir (), g_get_home_dir ());
 	loop = g_main_loop_new (NULL, TRUE);
 	SummerDownload *dl;
-	dl = summer_create_download ("video/mp4", "http://localhost:52853/feeds/epicfu");
+	SummerItemData *item = summer_item_data_new ();
+	summer_item_data_append_downloadable (item, 
+		"http://localhost:52853/feeds/epicfu", "video/mp4", 0);
+	dl = summer_create_download (item);
+	g_object_unref (item);
 	g_signal_connect (dl, "download-complete", G_CALLBACK (complete_cb), NULL);
 	g_signal_connect (dl, "download-update", G_CALLBACK (update_cb), NULL);
 	summer_download_start (dl);
@@ -64,12 +69,26 @@ static void
 mimes ()
 {
 	SummerDownload *dl;
-	dl = summer_create_download ("application/xml", "http://localhost:52853/");
+	SummerItemData *item = summer_item_data_new ();
+	summer_item_data_append_downloadable (item, 
+		"http://localhost:52853/", "application/xml", 0);
+	dl = summer_create_download (item);
+	g_object_unref (item);
 	g_assert (!SUMMER_IS_DOWNLOAD_WEB (dl));
-	dl = summer_create_download ("application/flac", "http://localhost:52853/");
+
+	item = summer_item_data_new ();
+	summer_item_data_append_downloadable (item, 
+		"http://localhost:52853/", "application/flac", 0);
+	dl = summer_create_download (item);
+	g_object_unref (item);
 	g_assert (SUMMER_IS_DOWNLOAD_WEB (dl));
 	g_object_unref (dl);
-	dl = summer_create_download ("video/mp4", "http://localhost:52853/video/dummy_mp4");
+	
+	item = summer_item_data_new ();
+	summer_item_data_append_downloadable (item, 
+		"http://localhost:52853/video/dummy_mp4", "video/mp4", 0);
+	dl = summer_create_download (item);
+	g_object_unref (item);
 	g_assert (SUMMER_IS_DOWNLOAD_WEB (dl));
 }
 
