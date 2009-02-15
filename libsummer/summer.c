@@ -55,6 +55,8 @@ summer_create_download (SummerItemData *item)
 	SummerDownload *dl;
 	if ((dl = summer_download_torrent_new (item)))
 		summer_debug ("Starting torrent download of '%s'", item->title);
+	else if ((dl = summer_download_youtube_new (item)))
+		summer_debug ("Starting youtube download of '%s'", item->title);
 	else if ((dl = summer_download_web_new (item)))
 		summer_debug ("Starting web download of '%s'", item->title);
 

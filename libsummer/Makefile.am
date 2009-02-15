@@ -49,6 +49,7 @@ INST_H_FILES = \
 	summer-debug.h \
 	summer-download.h \
 	summer-download-torrent.h \
+	summer-download-youtube.h \
 	summer-download-web.h \
 	summer-feed.h \
 	summer-feed-cache.h \
@@ -67,6 +68,7 @@ libsummer_la_SOURCES = \
 	summer-debug.c \
 	summer-download.c \
 	summer-download-torrent.cc \
+	summer-download-youtube.c \
 	summer-download-web.c \
 	summer-feed.c \
 	summer-feed-cache.c \

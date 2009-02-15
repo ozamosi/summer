@@ -32,6 +32,17 @@ video_server (SoupServer *server, SoupMessage *msg, const char *path,
 		soup_message_set_response (msg, mime_type, SOUP_MEMORY_COPY, contents, length);
 		return;
 	}
+
+	if (!g_strcmp0 (path, "/video/youtube")) {
+		gchar *page_contents;
+		gsize length;
+		if (!g_file_get_contents ("watch?v=SiYurfwzyuY", &page_contents, &length, NULL)) {
+			g_error ("Couldn't serve video file");
+		}
+		soup_message_set_status (msg, SOUP_STATUS_OK);
+		soup_message_set_response (msg, "text/html", SOUP_MEMORY_COPY, page_contents, length);
+		return;
+	}
 	soup_message_set_status (msg, SOUP_STATUS_NOT_FOUND);
 }
 

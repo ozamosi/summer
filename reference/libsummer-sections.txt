@@ -9,6 +9,23 @@ summer_shutdown
 </SECTION>
 
 <SECTION>
+<FILE>summer-download-youtube</FILE>
+<TITLE>SummerDownloadYoutube</TITLE>
+SummerDownloadYoutube
+summer_download_youtube_new
+<SUBSECTION  Standard>
+SummerDownloadYoutubeClass
+SummerDownloadYoutubePrivate
+SUMMER_DOWNLOAD_YOUTUBE
+SUMMER_IS_DOWNLOAD_YOUTUBE
+SUMMER_TYPE_DOWNLOAD_YOUTUBE
+summer_download_youtube_get_type
+SUMMER_DOWNLOAD_YOUTUBE_CLASS
+SUMMER_IS_DOWNLOAD_YOUTUBE_CLASS
+SUMMER_DOWNLOAD_YOUTUBE_GET_CLASS
+</SECTION>
+
+<SECTION>
 <FILE>summer-download-torrent</FILE>
 <TITLE>SummerDownloadTorrent</TITLE>
 SummerDownloadTorrent

@@ -2,6 +2,7 @@
 
 summer_download_web_get_type
 summer_download_torrent_get_type
+summer_download_youtube_get_type
 summer_download_get_type
 summer_feed_get_type
 summer_feed_parser_get_type

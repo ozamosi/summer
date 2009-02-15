@@ -16,6 +16,7 @@
     <xi:include href="xml/summer.xml"/>
     <xi:include href="xml/summer-download.xml"/>
     <xi:include href="xml/summer-download-torrent.xml"/>
+    <xi:include href="xml/summer-download-youtube.xml"/>
     <xi:include href="xml/summer-download-web.xml"/>
     <xi:include href="xml/summer-feed.xml"/>
     <xi:include href="xml/summer-feed-parser.xml"/>
