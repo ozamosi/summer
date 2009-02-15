@@ -112,6 +112,41 @@ if test "x$have_python" != "xno" -a "x$enable_python" != "xno"; then
 fi 
 AM_CONDITIONAL([ENABLE_PYTHON],[test "x$enable_python" = "xyes"]) 
 
+dnl enable coverage analysis
+AC_MSG_CHECKING(whether to enable coverage analysis)
+AC_ARG_ENABLE(
+	coverage,
+	AS_HELP_STRING([--enable-coverage],[enable coverage analysis (default=no)]),
+	,
+	[enable_coverage="no"])
+AC_MSG_RESULT($enable_coverage)
+if test "$enable_coverage" = "yes"; then
+	COVERAGE_CFLAGS="-O0 -g -fprofile-arcs -ftest-coverage"
+	COVERAGE_LIBS="-lgcov"
+
+	AC_PATH_PROG(locv_path, [lcov], [no])
+	if test "x$lcov_path" != "xno" ; then
+		LCOV_VERSION=`lcov --version|head -n 1| $SED 's/^.* version //'`
+		LCOV_MAJOR=`echo $LCOV_VERSION | cut -d. -f1 | $SED s/[a-zA-Z\-].*//g`
+		LCOV_MINOR=`echo $LCOV_VERSION | cut -d. -f2 | $SED s/[a-zA-Z\-].*//g`
+		if [[ "$LCOV_MAJOR" -lt "1" ]]; then
+			AC_MSG_WARN([lcov >= 1.6 is required, you have $LCOV_VERSION])
+			lcov_path="no"
+		elif [[ "$LCOV_MAJOR" -eq "1" ] && \
+					[ "$LCOV_MINOR" -lt "6" ]]; then
+			AC_MSG_WARN([lcov >= 1.6 is required, you have $LCOV_VERSION])
+			lcov_path="no"
+		fi
+	fi
+else
+	COVERAGE_CFLAGS=""
+	COVERAGE_LIBS=""
+fi
+AM_CONDITIONAL(USE_LCOV, test ! x$lcov_path = xyes)
+
+SUMMER_CFLAGS="$COVERAGE_CFLAGS"
+SUMMER_LIBS="$COVERAGE_LIBS"
+
 AC_SUBST(SUMMER_CFLAGS)
 AC_SUBST(SUMMER_LIBS)
 

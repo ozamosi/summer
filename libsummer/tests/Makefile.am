@@ -3,14 +3,12 @@ include $(top_srcdir)/gtest.mk
 noinst_PROGRAMS = $(TEST_PROGS)
 
 INCLUDES = \
-	$(SUMMER_CFLAGS) \
 	$(GLIB_CFLAGS) \
 	$(SOUP_CFLAGS) \
 	-I$(top_srcdir)/libsummer \
 	-include $(CONFIG_HEADER)
 
 AM_LDFLAGS = \
-	$(SUMMER_LIBS) \
 	$(GLIB_LIBS) \
 	$(SOUP_LIBS) \
 	$(top_builddir)/libsummer/libsummer.la
