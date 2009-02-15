@@ -1,5 +1,6 @@
 #include <glib.h>
 #include <libsummer/summer.h>
+#include <libsummer/summer-download-torrent.h>
 
 static void
 init ()

@@ -21,6 +21,10 @@
 
 #include "summer.h"
 #include "summer-debug.h"
+#include "summer-download-torrent.h"
+#include "summer-download-youtube.h"
+#include "summer-download-web.h"
+#include "summer-feed-cache.h"
 
 /*
  * All functions in this file should use gmodule to find available

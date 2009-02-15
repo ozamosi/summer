@@ -21,8 +21,6 @@
 
 #include "summer-feed.h"
 #include "summer-download.h"
-#include "summer-download-torrent.hh"
-#include "summer-download-web.h"
 #include "summer-data-types.h"
 
 SummerDownload* summer_create_download (gchar *mime, gchar *url);

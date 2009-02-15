@@ -3,6 +3,8 @@ headers
 #include <Python.h>
 #include <pygobject.h>
 #include "summer.h"
+#include "summer-download-torrent.h"
+#include "summer-download-web.h"
 %%
 modulename summer
 %%
