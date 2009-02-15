@@ -220,8 +220,8 @@ summer_web_backend_class_init (SummerWebBackendClass *klass)
 	 * to disk, or to RAM. Note that either @save_path or @save_data is always 
 	 * %NULL, but both being %NULL signals an error.
 	 */
-	 g_signal_new (
-	 	"download-complete",
+	g_signal_new (
+		"download-complete",
 		SUMMER_TYPE_WEB_BACKEND,
 		G_SIGNAL_RUN_FIRST,
 		G_STRUCT_OFFSET (SummerWebBackendClass, download_complete),
@@ -231,19 +231,19 @@ summer_web_backend_class_init (SummerWebBackendClass *klass)
 		2,
 		G_TYPE_STRING, G_TYPE_STRING);
 
-	 /**
-	  * SummerWebBackend::download-chunk:
-	  * @web_backend: the %SummerWebBackend that emitted the signal
-	  * @received: the number of bytes of the file that has been downloaded. 
-	  * @length: the total number of bytes to be downloaded. %-1 if this is not
-	  * known.
-	  * @user_data: user provided data
-	  *
-	  * ::download-chunk is emitted every time a new block of the file has been
-	  * retrieved.
-	  */
-	 g_signal_new (
-	 	"download-chunk",
+	/**
+	 * SummerWebBackend::download-chunk:
+	 * @web_backend: the %SummerWebBackend that emitted the signal
+	 * @received: the number of bytes of the file that has been downloaded. 
+	 * @length: the total number of bytes to be downloaded. %-1 if this is not
+	 * known.
+	 * @user_data: user-provided data.
+	 *
+	 * ::download-chunk is emitted when a new block of the file has been
+	 * retrieved.
+	 */
+	g_signal_new (
+		"download-chunk",
 		SUMMER_TYPE_WEB_BACKEND,
 		G_SIGNAL_RUN_FIRST,
 		G_STRUCT_OFFSET (SummerWebBackendClass, download_chunk),
@@ -264,8 +264,8 @@ summer_web_backend_class_init (SummerWebBackendClass *klass)
 	 * subsequent calls to %summer_web_backend_fetch_head() or 
 	 * %summer_web_backend_fetch()
 	 */
-	 g_signal_new (
-	 	"headers-parsed",
+	g_signal_new (
+		"headers-parsed",
 		SUMMER_TYPE_WEB_BACKEND,
 		G_SIGNAL_RUN_FIRST,
 		G_STRUCT_OFFSET (SummerWebBackendClass, headers_parsed),
