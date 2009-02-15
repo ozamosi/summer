@@ -67,6 +67,7 @@ struct _SummerWebBackendPrivate {
 	gsize received;
 	gboolean fetch;
 	GFileOutputStream *outfile;
+	GFile *filehandle;
 	gboolean head_emitted;
 };
 #define SUMMER_WEB_BACKEND_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE((o), \
@@ -184,7 +185,7 @@ summer_web_backend_class_init (SummerWebBackendClass *klass)
 		"URL",
 		"Specifies a URL to download from.",
 		NULL,
-		G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
+		G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 	g_object_class_install_property (gobject_class, PROP_URL, pspec);
 
 	/**
@@ -322,6 +323,7 @@ summer_web_backend_finalize (GObject *self)
 SummerWebBackend*
 summer_web_backend_new (const gchar *save_dir, const gchar *url)
 {
+	g_return_val_if_fail (url != NULL, NULL);
 	return SUMMER_WEB_BACKEND(g_object_new(SUMMER_TYPE_WEB_BACKEND, "save-dir", save_dir, "url", url, NULL));
 }
 
@@ -333,18 +335,34 @@ on_downloaded (SoupSession *session, SoupMessage *msg, gpointer user_data)
 	g_return_if_fail (SOUP_IS_MESSAGE (msg));
 	SummerWebBackend *self = SUMMER_WEB_BACKEND (user_data);
 	SummerWebBackendPrivate *priv = self->priv;
+	GError *error = NULL;
+	
 	if (G_IS_OUTPUT_STREAM (priv->outfile) && !g_output_stream_is_closed (G_OUTPUT_STREAM (priv->outfile))) {
-		GError *error = NULL;
 		g_output_stream_close (G_OUTPUT_STREAM (priv->outfile), NULL, &error);
 		if (error) {
 			g_warning ("%s", error->message);
 			g_clear_error (&error);
 		}
 	}
+	if (G_IS_OUTPUT_STREAM (priv->outfile))
+		g_object_unref (priv->outfile);
+	
 	gchar *filepath = NULL;
 	if (priv->save_dir)
 		filepath = g_build_filename (priv->save_dir, priv->filename, NULL);
-	g_signal_emit_by_name (self, "download-complete", filepath, msg->response_body->data);
+
+	if (SOUP_STATUS_IS_SUCCESSFUL (msg->status_code)) {
+		g_signal_emit_by_name (self, "download-complete", filepath, msg->response_body->data);
+	} else {
+		if (filepath) {
+			g_file_delete (priv->filehandle, NULL, &error);
+			if (error) {
+				g_warning ("%s", error->message);
+				g_clear_error (&error);
+			}
+		}
+		g_signal_emit_by_name (self, "download-complete", NULL, NULL);
+	}
 }
 
 static void
@@ -412,7 +430,7 @@ on_got_headers (SoupMessage *msg, gpointer user_data)
 		soup_session_cancel_message (session, msg, SOUP_STATUS_CANCELLED);
 		return;
 	}
-	else if (msg->status_code < 300)
+	else if (! SOUP_STATUS_IS_REDIRECTION (msg->status_code))
 		priv->fetch = TRUE;
 
 	goffset length;
@@ -448,24 +466,24 @@ summer_web_backend_fetch (SummerWebBackend *self)
 
 	if (priv->save_dir != NULL) {
 		gchar *filepath = g_build_filename (priv->save_dir, priv->filename, NULL);
-		GFile *file = g_file_new_for_path (filepath);
+		priv->filehandle = g_file_new_for_path (filepath);
 		g_free (filepath);
 		GError *error = NULL;
-		GFile *directory = g_file_get_parent (file);
+		GFile *directory = g_file_get_parent (priv->filehandle);
 		if (!g_file_query_exists (directory, NULL)) {
 			if (!g_file_make_directory_with_parents (directory, NULL, &error)) {
 				g_warning ("Error creating directory for download: %s", error->message);
 				g_clear_error (&error);
 			}
 		}
+		g_object_unref (directory);
 
-		priv->outfile = g_file_replace (file, NULL, FALSE, G_FILE_CREATE_NONE, NULL, &error);
+		priv->outfile = g_file_replace (priv->filehandle, NULL, FALSE, G_FILE_CREATE_NONE, NULL, &error);
 		if (!priv->outfile) {
 			g_warning ("Error opening output stream: %s", error->message);
 			g_clear_error (&error);
 		}
 		priv->fetch = FALSE;
-		g_object_unref (file);
 
 		soup_message_body_set_accumulate (msg->response_body, FALSE);
 	}
@@ -489,6 +507,7 @@ summer_web_backend_fetch_head (SummerWebBackend *self)
 	g_return_if_fail (SUMMER_IS_WEB_BACKEND (self));
 
 	SoupMessage *msg = soup_message_new ("HEAD", self->priv->url);
+
 	g_signal_connect (msg, "got-headers", G_CALLBACK (on_got_headers), self);
 	soup_session_queue_message (session, msg, NULL, NULL);
 }

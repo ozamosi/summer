@@ -97,7 +97,7 @@ r404_response_cb (SummerWebBackend *web, gchar *save_path, gchar *save_data, gpo
 }
 
 static void
-response404 (WebFixture *fix, gconstpointer data)
+response404_ram (WebFixture *fix, gconstpointer data)
 {
 	loop = g_main_loop_new (NULL, TRUE);
 	gchar *url =  "http://localhost:52853/doesnotexist";
@@ -106,6 +106,30 @@ response404 (WebFixture *fix, gconstpointer data)
 	g_signal_connect (web, "download-complete", G_CALLBACK (r404_response_cb), NULL);
 	summer_web_backend_fetch (web);
 	g_main_loop_run (loop);
+	g_object_unref (web);
+	g_main_loop_unref (loop);
+}
+
+static void
+response404_disk_complete (SummerWebBackend *web, gchar *save_path, gchar *save_data, gpointer user_data) {
+	g_assert (!g_file_test (g_build_filename (g_get_tmp_dir (), "doesnotexist", NULL), G_FILE_TEST_EXISTS));
+}
+
+static void
+response404_disk (WebFixture *fix, gconstpointer data)
+{
+	loop = g_main_loop_new (NULL, TRUE);
+	gchar *path = g_strdup (g_get_tmp_dir ());
+	gchar *url =  "http://localhost:52853/doesnotexist";
+	SummerWebBackend *web = summer_web_backend_new (path, url);
+	g_signal_connect (web, "download-chunk", G_CALLBACK (not_reached), NULL);
+	g_signal_connect (web, "download-complete", G_CALLBACK (r404_response_cb), NULL);
+	g_signal_connect (web, "download-complete", G_CALLBACK (response404_disk_complete), NULL);
+	summer_web_backend_fetch (web);
+	g_main_loop_run (loop);
+	g_object_unref (web);
+	g_remove (path);
+	g_free (path);
 	g_main_loop_unref (loop);
 }
 
@@ -187,7 +211,8 @@ int main (int argc, char *argv[]) {
 
 	g_test_add ("/web-backend/to-ram", WebFixture, 0, web_setup, to_ram, web_teardown);
 	g_test_add ("/web-backend/to-disk", WebFixture, 0, web_setup, to_disk, web_teardown);
-	g_test_add ("/web-backend/response404", WebFixture, 0, web_setup, response404, web_teardown);
+	g_test_add ("/web-backend/response404-ram", WebFixture, 0, web_setup, response404_ram, web_teardown);
+	g_test_add ("/web-backend/response404-disk", WebFixture, 0, web_setup, response404_disk, web_teardown);
 	g_test_add_func ("/web-backend/serverdown", serverdown);
 	g_test_add ("/web-backend/redirect", WebFixture, 0, web_setup, redirect, web_teardown);
 	g_test_add ("/web-backend/head", WebFixture, 0, web_setup, head, web_teardown);
