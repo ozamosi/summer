@@ -43,6 +43,8 @@ settings ()
 	g_object_get (G_OBJECT (dl), "save-dir", &save_dir, "tmp-dir", &tmp_dir, NULL);
 	g_assert_cmpstr (save_dir, ==, g_get_home_dir ());
 	g_assert_cmpstr (tmp_dir, ==, g_get_tmp_dir ());
+	g_free (save_dir);
+	g_free (tmp_dir);
 	g_object_unref (dl);
 }
 

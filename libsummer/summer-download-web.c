@@ -119,6 +119,7 @@ on_download_complete (SummerWebBackend *web_backend, gchar *save_path, gchar *sa
 
 	g_signal_emit_by_name (self, "download-complete", destpath);
 	g_object_unref (self);
+	g_free (destpath);
 }
 
 static gboolean
@@ -178,6 +179,7 @@ on_headers_parsed (SummerWebBackend *web, gpointer user_data)
 	g_object_set (self, "filename", filename, NULL);
 	g_object_get (self, "save-dir", &save_dir, NULL);
 	gchar *final_path = g_build_filename (save_dir, filename, NULL);
+	g_free (filename);
 
 	g_signal_connect (priv->web, "download-chunk", G_CALLBACK (on_download_chunk), self);
 	g_signal_connect (priv->web, "download-complete", G_CALLBACK (on_download_complete), self);
