@@ -104,7 +104,7 @@ if test "x$have_python" != "xno"; then
 	AC_MSG_RESULT([$PYGOBJECT_DEFSDIR])
 
 	AC_MSG_CHECKING([for pygobject codegen])
-	PYGOBJECT_CODEGEN="$PYTHON `$PKG_CONFIG --variable=codegendir pygtk-2.0`/codegen.py"
+	PYGOBJECT_CODEGEN="$PYTHON `$PKG_CONFIG --variable=codegendir pygobject-2.0`/codegen.py"
 	AC_MSG_RESULT([$PYGOBJECT_CODEGEN])
 	
 	AC_SUBST([PYGOBJECT_DEFSDIR])
