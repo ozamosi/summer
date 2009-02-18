@@ -363,6 +363,8 @@ on_downloaded (SoupSession *session, SoupMessage *msg, gpointer user_data)
 		}
 		g_signal_emit_by_name (self, "download-complete", NULL, NULL);
 	}
+	if (filepath)
+		g_free (filepath);
 }
 
 static void

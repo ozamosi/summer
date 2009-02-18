@@ -34,6 +34,8 @@ disk_downloaded_cb (SummerWebBackend *web, gchar *save_path, gchar *save_data, g
 	g_file_get_contents ("epicfu", &orig_contents, &orig_length, NULL);
 	g_file_get_contents (save_path, &rec_contents, &rec_length, NULL);
 	g_assert_cmpstr (orig_contents, ==, rec_contents);
+	g_free (orig_contents);
+	g_free (rec_contents);
 	g_remove (save_path);
 	g_main_loop_quit (loop);
 	last_received = 0.0;
@@ -50,6 +52,8 @@ to_disk (WebFixture *fix, gconstpointer data)
 	g_free (path);
 	g_object_get (G_OBJECT (web), "save-dir", &path, NULL);
 	g_assert_cmpstr (path, ==, orig_path);
+	g_free (orig_path);
+	g_free (path);
 
 	g_signal_connect (web, "download-chunk", G_CALLBACK (chunk_cb), NULL);
 	g_signal_connect (web, "download-complete", G_CALLBACK (disk_downloaded_cb), NULL);
@@ -67,6 +71,7 @@ ram_downloaded_cb (SummerWebBackend *web, gchar *save_path, gchar *save_data, gp
 	gsize length = 0;
 	g_file_get_contents ("epicfu", &contents, &length, NULL);
 	g_assert_cmpstr (save_data, ==, contents);
+	g_free (contents);
 	g_main_loop_quit (loop);
 	last_received = 0.0;
 }
@@ -112,7 +117,9 @@ response404_ram (WebFixture *fix, gconstpointer data)
 
 static void
 response404_disk_complete (SummerWebBackend *web, gchar *save_path, gchar *save_data, gpointer user_data) {
-	g_assert (!g_file_test (g_build_filename (g_get_tmp_dir (), "doesnotexist", NULL), G_FILE_TEST_EXISTS));
+	gchar *filename = g_build_filename (g_get_tmp_dir (), "doesnotexist", NULL);
+	g_assert (!g_file_test (filename, G_FILE_TEST_EXISTS));
+	g_free (filename);
 }
 
 static void
@@ -156,6 +163,7 @@ redirect_response_cb (SummerWebBackend *web, gchar *save_path, gchar *save_data,
 	gsize length;
 	g_file_get_contents (save_path, &contents, &length, NULL);
 	g_assert_cmpstr (contents, ==, "dummy_video_content");
+	g_free (contents);
 	g_remove (save_path);
 	g_main_loop_quit (loop);
 	last_received = 0.0;
@@ -212,6 +220,7 @@ slash_complete (SummerWebBackend *web, gchar *path, gchar *data, gpointer *user_
 	g_object_get (web, "filename", &reported_name, NULL);
 	g_assert_cmpstr (correct_name, ==, reported_name);
 	g_remove (path);
+	g_free (reported_name);
 	g_main_loop_quit (loop);
 }
 
