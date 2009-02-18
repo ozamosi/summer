@@ -321,11 +321,16 @@ on_downloaded (SummerWebBackend *web, gchar *save_path, gchar *save_data, gpoint
 		for (i = 0; i < sizeof (parsers) / sizeof (*parsers); i++) {
 			g_object_unref (parsers[i]);
 		}
+		xmlTextReaderClose (reader);
+		xmlFreeTextReader (reader);
+		xmlFreeParserInputBuffer (buffer);
 	}
 
 	SummerFeedCache *cache = summer_feed_cache_get ();
 	summer_feed_cache_filter_old_items (cache, &priv->feed_data->items);
 	g_object_unref (cache);
+
+	g_object_unref (web);
 
 	if (priv->feed_data->items != NULL)
 		g_signal_emit_by_name (self, "new-entries");
@@ -390,6 +395,7 @@ summer_feed_set_default (const gchar *cache_dir, const gint frequency)
 		gchar *cache_file;
 		cache_file = g_build_filename (default_cache_dir, "seen_objects", NULL);
 		g_object_set (cache, "cache-file", cache_file, NULL);
+		g_free (cache_file);
 		g_object_unref (cache);
 	}
 	if (frequency != 0)
@@ -596,4 +602,18 @@ GList *
 summer_feed_get_items (SummerFeed *self)
 {
 	return g_list_copy (self->priv->feed_data->items);
+}
+
+/**
+ * summer_feed_shutdown:
+ *
+ * Cleans global resources allocated by the component
+ */
+
+void
+summer_feed_shutdown ()
+{
+	xmlCleanupParser ();
+	if (default_cache_dir)
+		g_free (default_cache_dir);
 }

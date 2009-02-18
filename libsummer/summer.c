@@ -73,4 +73,5 @@ void
 summer_shutdown ()
 {
 	summer_download_torrent_shutdown ();
+	summer_feed_shutdown ();
 }

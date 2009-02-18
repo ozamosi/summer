@@ -220,7 +220,7 @@ handle_item_node (SummerFeedParser *self, xmlTextReaderPtr node, SummerFeedData 
 				dl->mime = (gchar *)xmlTextReaderValue (node);
 			} else if (r > 0 && xmlStrEqual (xmlTextReaderConstLocalName (node),
 					BAD_CAST ("length"))) {
-				dl->length = atoi ((char *)xmlTextReaderValue (node));
+				dl->length = atoi ((char *)xmlTextReaderConstValue (node));
 			}
 		}
 		item->downloadables = g_list_append (item->downloadables, dl);

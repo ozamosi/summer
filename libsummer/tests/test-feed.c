@@ -6,20 +6,9 @@ static GMainLoop *loop;
 
 static void
 on_new_entries (SummerFeed *feed, gconstpointer data) {
-	GValueArray *items;
-	gchar *author, *description, *id, *title, *web_url;
-	glong updated;
-	g_object_get (feed, 
-		"author", &author,
-		"description", &description,
-		"id", &id,
-		"items", &items,
-		"title", &title,
-		"updated", &updated,
-		"web-url", &web_url,
-		NULL);
-	int i;
-	g_assert_cmpint (items->n_values, ==, 20);
+	GList *items = summer_feed_get_items (feed);
+	g_assert_cmpint (g_list_length (items), ==, 20);
+	g_list_free (items);
 	g_main_loop_quit (loop);
 }
 
@@ -63,6 +52,7 @@ int main (int argc, char *argv[]) {
 
 	g_test_add ("/feed/create", WebFixture, 0, web_setup, create, web_teardown);
 	g_test_add ("/feed/settings", WebFixture, 0, web_setup, settings, web_teardown);
+	summer_shutdown ();
 
 	return g_test_run ();
 }

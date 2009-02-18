@@ -69,6 +69,7 @@ feed_server (SoupServer *server, SoupMessage *msg, const char *path,
 		soup_message_set_status (msg, SOUP_STATUS_OK);
 		if (g_strcmp0 (msg->method, "HEAD"))
 			soup_message_set_response (msg, mime_type, SOUP_MEMORY_COPY, contents, length);
+		g_free (contents);
 		return;
 	}
 	if (!g_strcmp0 (path, "/feeds/atom")) {

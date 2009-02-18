@@ -10,6 +10,7 @@ feedburner ()
 		SUMMER_FEED_PARSER (summer_atom_parser_new ())};
 	xmlTextReaderPtr reader = xmlNewTextReaderFilename ("epicfu");
 	SummerFeedData *feed_data = summer_feed_parser_parse (parsers, sizeof (parsers) / sizeof (*parsers), reader);
+	xmlFreeTextReader (reader);
 
 	g_assert_cmpstr (feed_data->title, ==, "EPIC FU (Quicktime)");
 	g_assert_cmpstr (feed_data->description, ==, "art . music . tech");
@@ -40,6 +41,7 @@ parse ()
 	SummerFeedParser *parsers[] = {SUMMER_FEED_PARSER (summer_rss2_parser_new ())};
 	xmlTextReaderPtr reader = xmlNewTextReaderFilename ("rss2sample.xml");
 	SummerFeedData *feed_data = summer_feed_parser_parse (parsers, sizeof (parsers) / sizeof (*parsers), reader);
+	xmlFreeTextReader (reader);
 	g_assert_cmpstr (feed_data->title, ==, "Liftoff News");
 	g_assert_cmpstr (feed_data->description, ==, "Liftoff to Space Exploration.");
 	g_assert_cmpstr (feed_data->id, ==, NULL);

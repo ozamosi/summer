@@ -8,6 +8,7 @@ parse ()
 	SummerFeedParser *parsers[] = {SUMMER_FEED_PARSER (summer_atom_parser_new ())};
 	xmlTextReaderPtr reader = xmlNewTextReaderFilename ("atom_feed");
 	SummerFeedData *feed_data = summer_feed_parser_parse (parsers, sizeof (parsers) / sizeof (*parsers), reader);
+	xmlFreeTextReader (reader);
 	g_assert_cmpstr (feed_data->title, ==, "Example Feed");
 	g_assert_cmpstr (feed_data->description, ==, NULL);
 	g_assert_cmpstr (feed_data->id, ==, "urn:uuid:60a76c80-d399-11d9-b93C-0003939e0af6");
@@ -34,6 +35,7 @@ broken_title ()
 	SummerFeedParser *parsers[] = {SUMMER_FEED_PARSER (summer_atom_parser_new ())};
 	xmlTextReaderPtr reader = xmlNewTextReaderFilename ("atom_feed_nolink");
 	SummerFeedData *feed_data = summer_feed_parser_parse (parsers, sizeof (parsers) / sizeof (parsers), reader);
+	xmlFreeTextReader (reader);
 	g_assert_cmpstr (feed_data->title, ==, "Example Feed");
 	GTimeVal time;
 	g_time_val_from_iso8601 ("2003-12-13T18:30:02Z", &time);
