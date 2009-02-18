@@ -413,7 +413,12 @@ get_filename (SoupMessage *msg)
 			if (*(filename_start + length - 1) == '"')
 				length--;
 			
-			return g_strndup (filename_start, length);
+			gchar *result = g_strndup (filename_start, length);
+			gchar *slash;
+			while ((slash = g_utf8_strchr (result, length, '/'))) {
+				*slash = '_';
+			}
+			return result;
 		}
 	}
 	return NULL;

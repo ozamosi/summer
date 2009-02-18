@@ -43,6 +43,15 @@ video_server (SoupServer *server, SoupMessage *msg, const char *path,
 		soup_message_set_response (msg, "text/html", SOUP_MEMORY_COPY, page_contents, length);
 		return;
 	}
+
+	if (!g_strcmp0 (path, "/video/file_with_slash")) {
+		gchar *page_contents = "dummy";
+		gsize length = g_utf8_strlen ("dummy", -1);
+		soup_message_set_status (msg, SOUP_STATUS_OK);
+		soup_message_set_response (msg, "video/none", SOUP_MEMORY_COPY, page_contents, length);
+		soup_message_headers_replace (msg->response_headers, "Content-Disposition", "attachment; filename=\"dir/file.vid\";");
+		return;
+	}
 	soup_message_set_status (msg, SOUP_STATUS_NOT_FOUND);
 }
 

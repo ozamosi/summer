@@ -204,6 +204,29 @@ head (WebFixture *fix, gconstpointer data)
 	g_main_loop_unref (loop);
 }
 
+static void
+slash_complete (SummerWebBackend *web, gchar *path, gchar *data, gpointer *user_data)
+{
+	gchar *correct_name = "dir_file.vid";
+	gchar *reported_name;
+	g_object_get (web, "filename", &reported_name, NULL);
+	g_assert_cmpstr (correct_name, ==, reported_name);
+	g_remove (path);
+	g_main_loop_quit (loop);
+}
+
+static void
+slash (WebFixture *fix, gconstpointer data)
+{
+	loop = g_main_loop_new (NULL, TRUE);
+	gchar *url = "http://localhost:52853/video/file_with_slash";
+	SummerWebBackend *web = summer_web_backend_new (g_get_tmp_dir (), url);
+	g_signal_connect (web, "download-complete", G_CALLBACK (slash_complete), NULL);
+	summer_web_backend_fetch (web);
+	g_main_loop_run (loop);
+	g_main_loop_unref (loop);
+}
+
 int main (int argc, char *argv[]) {
 	g_type_init ();
 	g_thread_init (NULL);
@@ -216,6 +239,6 @@ int main (int argc, char *argv[]) {
 	g_test_add_func ("/web-backend/serverdown", serverdown);
 	g_test_add ("/web-backend/redirect", WebFixture, 0, web_setup, redirect, web_teardown);
 	g_test_add ("/web-backend/head", WebFixture, 0, web_setup, head, web_teardown);
-
+	g_test_add ("/web-backend/slash", WebFixture, 0, web_setup, slash, web_teardown);
 	return g_test_run ();
 }
