@@ -1,0 +1,2109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/1999/REC-html401-19991224/loose.dtd">
+
+
+	<html lang="sv">
+
+<!-- machid: 550 -->
+<head>
+
+
+	
+	<title>YouTube - Aaron Carter - Crazy little party girl</title>
+
+		<script type="text/javascript">
+			window.google={kHL:"sv"};
+		</script>
+
+		<link rel="stylesheet" href="http://s.ytimg.com/yt/cssbin/www-core-vfl77361.css" type="text/css">
+
+
+
+
+
+
+		<script type="text/javascript" src="http://s.ytimg.com/yt/js/base_all_with_bidi-vfl77344.js"></script>
+
+
+		<script type="text/javascript">
+			var gIsGoogleAnalyticsEnabled = false;
+			
+	var gXSRF_token = '';
+	var gXSRF_field_name = '';
+	var gXSRF_ql_pair = '';
+	var onLoadFunctionList = onLoadFunctionList || [];
+
+		gXSRF_token = 'KWyCl9wwtqyYdj34L1L2fVJgrWh8MTIzNDQ2MTI2Mg==';
+		gXSRF_field_name = 'session_token';
+		onLoadFunctionList.push(function() { populate_session_token() });
+
+		gXSRF_ql_pair = 'session_token=knB8SvWfGFBnHpZb_VTsEABqfn98MA==';
+
+
+		</script>
+
+
+
+
+	<script type="text/vbscript">
+	Sub movie_player_FSCommand(ByVal command, ByVal args)
+		call movie_player_DoFSCommand(command, args)
+	End Sub
+	</script>
+
+	<script type="text/javascript">
+		var MSG_Hide = 'Dölj';
+		var MSG_Show = 'Visa';
+		var MSG_Login = 'Logga in för att genomföra den här åtgärden.';
+		var MSG_Loading = 'Läser in...';
+		var MSG_ShowingAll = 'Visa alla videoklipp';
+		var MSG_LoginFavorites = 'Du måste vara inloggad för att kunna lägga till det här videoklippet i dina favoriter';
+		var MSG_LoginAddPlaylist = 'Du måste vara inloggad för att kunna lägga till det här videoklippet i en spellista.';
+		var MSG_LoginReportConcern = 'Du måste vara inloggad för att kunna rapportera ett problem.';
+		var MSG_FlagDefault = 'Välj en orsak';
+
+		var isLoggedIn =  false ;
+		
+
+		var swfUrl = canPlayV9Swf() ? 'http://s.ytimg.com/yt/swf/watch-vfl76660.swf' : 'http://s.ytimg.com/yt/swf/watch_v8-vfl76660.swf';
+		var swfArgs = {"usef": 0, "fexp": "900107", "vq": null, "video_id": "SiYurfwzyuY", "l": 210, "sk": "RHqyJeR5jxKnyknr-RMHiSTY8RUmU8UxC", "fmt_map": "34/0/9/0/115", "t": "OEgsToPDskKXW-a0xV_cWmZPIuzD1xgp", "hl": "sv", "plid": "AARiqEsvmKwbqloOAAAAoAAQAAA", "cr": "SE"};
+
+		var additionalStatsHonorsUrl = '/watch_ajax?v=SiYurfwzyuY&action_get_statistics_and_data=1&l=EN';
+		var fullscreenUrl = '/watch_fullscreen?fs=1&fexp=900107&vq=None&video_id=SiYurfwzyuY&l=210&sk=RHqyJeR5jxKnyknr-RMHiSTY8RUmU8UxC&fmt_map=34%2F0%2F9%2F0%2F115&t=OEgsToPDskKXW-a0xV_cWmZPIuzD1xgp&hl=sv&plid=AARiqEsvmKwbqloOAAAAoAAQAAA&cr=SE&title=Aaron Carter - Crazy little party girl';
+		var watchGamUrl = null;
+		var watchDCUrl = null;
+		var watchTrackWithHitbox = false;
+		var watchIsPlayingAll = false;
+		var isWidescreen = false;
+		var isHDAvailable = false;
+		var watchUsername = 'airhead03031989';
+		var pageVideoId = 'SiYurfwzyuY';
+		var pageVideoSearchQueryStr = ' Music Video';
+		var pageFillRelatedVideoStartIndex = 14;
+		var pageFillRelatedVideoEndIndex = 58;
+		var relatedVideoListUrl = '/related_ajax?action_get_related=1&video_id=SiYurfwzyuY&view_type=L&watch3=1&search=%20Music%20Video';
+		var playnextFrom = '';
+		var playnextCount = '0';
+		var qlAutoscrollDestination = 0;
+		var watchSetWmode = false;
+		var embedUrl = 'http://www.youtube.com/v/SiYurfwzyuY&hl=sv&fs=1';
+		var ytLocale = 'sv_SE';
+		var isPlaylistCssAndJsLoaded = false;
+
+	
+		var ad_eurl = null;
+
+
+		var axc = '';
+		var subscribeaxc = '';
+		
+
+
+
+
+
+			function showCommentReplyForm(form_id, reply_parent_id, is_main_comment_form) {
+		var msg = new Object();
+		msg["post"] = "Logga in för att lägga upp en kommentar.";
+		showCommentReplyForm_js(form_id, reply_parent_id, is_main_comment_form, msg);
+	}
+
+	function updateCharCount(charCount_id, label_id, textArea) {
+		var msg = new Object();
+		msg["exceeded"] = "Antal tecken över gränsen:";
+		msg["remaining"] = "Återstående antal tecken:"; 
+		updateCharCount_js(charCount_id, label_id, textArea, 500, msg)
+	}
+
+	function loginMsg(div_id, display_val) {
+		var msg = new Object();
+		msg["login"] = 'Logga in';
+		loginMsg_js(div_id, display_val, msg);
+	}
+
+	function printCommentReplyForm(form_id, reply_parent_id, is_main_comment_form) {
+		var msg = new Object();
+		msg["post"] = "Lägg upp kommentar";
+		msg["remaining"] = "Återstående antal tecken:";
+		msg["discard"] = "Förkasta"; 
+		printCommentReplyForm_js(form_id, reply_parent_id, is_main_comment_form, 'V', 'top.goog.i18n.bidi.setDirAttribute(event,this)', 'video_id', 'SiYurfwzyuY', '', 500, msg);
+	}
+
+	function postThreadedComment(comment_form_id) {
+		var msg = new Object();
+		msg["add"] = "Lägger till kommentar...";
+		postThreadedComment_js(comment_form_id, msg);
+	}
+
+	function commentApproved(xmlHttpRequest) {
+		alert("Kommentaren är godkänd.")
+	}
+
+	function ThreadedCommentHandler(comment_form, comment_form_id) {
+		var msg = new Object();
+		msg["empty"] = "Du måste ange en kommentar.";
+		msg["toolong"] = "Kommentarer får inte innehålla mer än 500 tecken!";
+		return ThreadedCommentHandler_js(comment_form, comment_form_id, msg);
+	}
+
+	function commentResponse(xmlHttpRequest) {
+		var msg = new Object();
+		msg["ok"] = "Kommentaren är upplagd!";
+		msg["pending"] = "Kommentaren väntar på godkännande!";
+		msg["toolong"] = "Din kommentar är för lång. Gränsen går vid 500 tecken. Skriv en kortare kommentar och försök igen.";
+		msg["tooshort"] = "Din kommentar är för kort. Skriv en längre kommentar och försök igen.";
+		msg["toosoon"] = "Gränsen för kommentar har överskridits";
+		msg["email"] = "Du måste bekräfta din e-postadress innan du kan skicka kommentarer. Klicka på OK för att bekräfta din e-postadress.";
+		msg["captchFail"] = "Bokstäverna i captchan återgavs inte korrekt, försök igen.";
+		msg["default"] = "Lägg upp kommentar"; 
+		commentResponse_js(xmlHttpRequest, msg);
+	}
+
+
+
+
+
+
+
+		
+
+
+		onLoadFunctionList.push(function() { applyUserPrefs() });
+
+
+
+
+
+		onLoadFunctionList.push(function() { enableVideoQualityDisplay()});
+
+		// single favorite action, forwarded from /login
+		onLoadFunctionList.push(function(event) {
+			url = document.location.href;
+			if (url.match('#fav')) {
+				document.location.href = url.replace('#fav', '#');
+				addToFaves('addToFavesForm', event);
+			}
+		});
+	</script>
+	
+	
+
+
+
+
+
+
+	
+
+
+
+	<link rel="search" type="application/opensearchdescription+xml" href="/opensearch?locale=sv_SE" title="YouTubes videosökning">
+	<link rel="icon" href="http://s.ytimg.com/yt/favicon-vfl1123.ico" type="image/x-icon">
+	<link rel="shortcut icon" href="http://s.ytimg.com/yt/favicon-vfl1123.ico" type="image/x-icon">
+
+
+		<link rel="alternate" media="handheld" href="http://m.youtube.com/watch?desktop_uri=%2Fwatch%3Fv%3DSiYurfwzyuY&v=SiYurfwzyuY&gl=SE">
+
+
+		<meta name="title" content="Aaron Carter - Crazy little party girl">
+
+		<meta name="description" content="mtv">
+
+	<meta name="keywords" content="Music, Video">
+
+</head>
+
+
+<body onload="performOnLoadFunctions();" class="sv_SE not-english" onunload="performOnUnloadFunctions();">
+
+
+<div id="baseDiv" class="date-20090211 video-info">
+	
+
+	
+	<div id="masthead">
+		<a href="/" onmousedown="urchinTracker('/Events/Header_3/YouTubeLogo');" id="logo"><button onclick="window.location.href='/'" class="master-sprite" title=""></button></a>
+		<div id="lang-locale-picker-links-wrapper">
+			<button id="slogan" class="master-sprite" title=""></button>
+			
+		<span class="util-item first with-flag"><a href="#" class="contentRegionPickerLink hLink" onclick="loadFlagImgs('contentRegionPickerBox');return false;" onmousedown="urchinTracker('/Events/Header/UtilLinks/I18n/text');">Sverige</a></span>
+		<span class="util-item"><a href="#" class="uiLanguagePickerLink hLink" onclick="loadFlagImgs('uiLanguagePickerBox');return false;" onmousedown="urchinTracker('/Events/Header/UtilLinks/I18n/text');">Svenska</a></span>
+
+		</div>
+		<div class="user-info">
+				
+
+
+
+
+	<div id="util-links" class="normal-utility-links">
+
+		<span class="util-item first"><b><a class="hLink" href="		/signup?next=/watch%3Fv%3DSiYurfwzyuY
+
+" onclick="_hbLink('SignUp','UtilityLinks');" onmousedown="urchinTracker('/Events/Header/UtilLinks/SignUp');">Registrera dig</a></b></span>
+		<span class="util-item"><a class="hLink" href="/watch_queue?all" onmousedown="urchinTracker('/Events/Header/UtilLinks/QuickList');">Snabblista</a> (<span id="quicklist-utility">0</span>)</span>
+		<span class="util-item"><a class="hLink" href="http://help.youtube.com/support/youtube/bin/static.py?page=start.cs&hl=sv-SE" onmousedown="urchinTracker('/Events/Header/UtilLinks/Help');">Hjälp</a></span>
+			<span class="util-item"><a class="hLink" href="	/login?next=/watch%3Fv%3DSiYurfwzyuY
+" onmousedown="urchinTracker('/Events/Header/UtilLinks/SignIn');">Logga in</a></span>
+	</div>
+
+	<form name="logoutForm" method="post" target="_top" action="/index">
+		<input type="hidden" name="action_logout" value="1">
+	</form>
+
+
+		</div>
+		<div id="masthead-content-and-ui-picker-box">Läser in...</div>
+
+		<div id="bar" class="master-sprite">
+				<div id="upload-wrapper"><div class="masthead-button-wrapper">
+				<a class="yt-button yt-button-urgent" id="upload-button" style="" href="/my_videos_upload" onclick="urchinTracker('/Events/Header/UploadButton');"><span>Ladda upp</span></a>
+  
+	</div></div>
+
+				<form autocomplete="off" class="search-form" action="/results" method="get" name="searchForm">
+
+		<input id="search-type-masthead" name="search_type" type="hidden" value="">
+		<input id="masthead-search-term" class="search-term" name="search_query" type="text" tabindex="1" onkeyup = "top.goog.i18n.bidi.setDirAttribute(event,this)"  value="" maxlength="128"  onfocus="addClass(this, 'search-term-focus')" onblur="removeClass(this, 'search-term-focus')">
+		<div class="masthead-button-wrapper">
+				<a class="yt-button yt-button-primary" id="" style="" href="#" onclick="document.searchForm.submit(); return false;"><span>Sök</span></a>
+
+		</div>
+	</form>
+
+
+			<a class="master-sprite nav-item" href="/" onmousedown="urchinTracker('/Events/Header_3/MainTabs/HomeTab');">Hem</a>
+			<a class="master-sprite nav-item" href="/browse" onmousedown="urchinTracker('/Events/Header_3/MainTabs/VideosTab');">Videoklipp</a>
+			
+			<a class="master-sprite nav-item" href="/members" onmousedown="urchinTracker('/Events/Header_3/MainTabs/ChannelsTab');">Kanaler</a>
+			<a class="master-sprite nav-item" href="/community" onmousedown="urchinTracker('/Events/Header_3/MainTabs/CommunityTab');">Community</a>
+		</div>
+
+		<div class="clear"></div>
+	</div> 
+
+	
+			<style type="text/css">
+		.errorParagraph {
+			margin-top: 0px;
+			margin-bottom: 10px;
+		}
+	</style>
+	<div id="default-language-box" style="margin: 10px 0 20px 0; text-align: left; padding: 8px 10px; background-color: #e6efff; border: 1px solid #aeaed5; font-size: 13px;">
+		<div id="default-language-top">
+			<div class="box-close-link"><a href="/watch?v=SiYurfwzyuY&hl=sv&persist_hl=1&gl=SE&persist_gl=1&opt_out_ackd=1" class="eLink">Stäng</a><img alt="Stäng" src="http://s.ytimg.com/yt/img/pixel-vfl73.gif" onclick="hideDiv('default-language-box');"></div>
+			<div id="default-language-translated">
+					<p class="errorParagraph"><strong>Välkommen till YouTube!</strong> </p>
+					
+					<p class="errorParagraph"><strong>Föreslaget språk (enligt våra inställningar):</strong>  Svenska</p>
+					
+					<p class="errorParagraph"><strong>Föreslaget landsfilter (enligt våra inställningar):</strong>  Sverige</p>
+					
+					<p class="errorParagraph">Landsfiltret innebär att populära videoklipp från det valda landet visas i listor som <a href="/browse?s=mp">Mest sedda</a> och i sökresultaten. Om du vill ändra någon av dessa inställningar använder du länken bredvid YouTube-logotypen högst upp på sidan.</p>
+					
+					<p class="errorParagraph">Klicka på "OK" om du vill godkänna inställningarna eller på "Avbryt" om du vill ändra språk till "engelska (USA)" och ditt landsfilter till "Hela världen (alla)".</p>
+				<div style="padding-left: 350px;">
+					<div style="width: 250px;">
+								<a class="yt-button yt-button-urgent" id="" style="" href="/watch?v=SiYurfwzyuY&amp;hl=sv&amp;persist_hl=1&amp;gl=SE&amp;persist_gl=1&amp;opt_out_ackd=1" onclick=""><span>OK</span></a>
+
+								<a class="yt-button" id="" style="" href="/watch?v=SiYurfwzyuY&amp;hl=en&amp;persist_hl=1&amp;gl=US&amp;persist_gl=1&amp;opt_out_ackd=1" onclick=""><span>Avbryt</span></a>
+
+					</div>
+				</div>
+			</div>
+			<div id="default-language-english" style="display: none;">
+				<br>
+					<p class="errorParagraph"><strong>Welcome to YouTube!</strong> </p>
+					
+					<p class="errorParagraph"><strong>Suggested Language (we have set your preference to this):</strong> Swedish</p>
+					
+					<p class="errorParagraph"><strong>Suggested Country Filter (we have set your preference to this):</strong> Sweden</p>
+					
+					<p class="errorParagraph">The country filter shows you popular videos from the selected country on lists like <a href="/browse?s=mp">Most Viewed</a> and in search results. If you would like to change either of these preferences, please use the links next to the YouTube logo at the top of the page.</p>
+					
+					<p class="errorParagraph">Click &quot;OK&quot; to accept these settings, or click &quot;Cancel&quot; to set your language preference to &quot;English (US)&quot; and your country filter to &quot;Worldwide (All)&quot;.</p>
+				<div style="padding-left: 350px;">
+					<div style="width: 250px;">
+								<a class="yt-button yt-button-urgent" id="" style="" href="/watch?v=SiYurfwzyuY&amp;hl=sv&amp;persist_hl=1&amp;gl=SE&amp;persist_gl=1&amp;opt_out_ackd=1" onclick=""><span>OK</span></a>
+
+								<a class="yt-button" id="" style="" href="/watch?v=SiYurfwzyuY&amp;hl=en&amp;persist_hl=1&amp;gl=US&amp;persist_gl=1&amp;opt_out_ackd=1" onclick=""><span>Cancel</span></a>
+
+						</div>
+				</div>
+			</div>
+				<div id="default-language-english-show-link">
+					<a href="#" style="font-size: 10px; text-decoration: none;" onclick="toggleDisplay2('default-language-english-show-link'); toggleDisplay2('default-language-english-hide-link'); toggleDisplay2('default-language-english'); return false;">Show message in English</a>
+				</div>
+				<div id="default-language-english-hide-link" style="display: none;">
+					<a href="#" style="font-size: 10px; text-decoration: none;" onclick="toggleDisplay2('default-language-english-hide-link'); toggleDisplay2('default-language-english'); toggleDisplay2('default-language-english-show-link'); return false;">Hide message in English</a>
+				</div>
+			<div class="clear"></div>
+		</div>
+	</div>
+
+
+	
+	
+	
+
+
+
+
+<div id="watch-vid-title" class="title">
+	<h1 >Aaron Carter - Crazy little party girl</h1>
+
+</div>
+
+
+<div id="watch-this-vid">
+
+
+			<div id="watch-player-div" class="flash-player">
+				<div id="watch-noplayer-div">
+					<noscript>Hej! Du har antingen inaktiverat Javascript eller så har du en gammal version av Adobes Flash-spelare. <a href="http://www.adobe.com/go/getflashplayer/" onmousedown="urchinTracker('/Events/VideoWatch/GetFlash');">Hämta den senaste Flash-spelaren</a>.</noscript>
+					<script type="text/javascript">
+						document.write('Hej! Du har antingen inaktiverat Javascript eller så har du en gammal version av Adobes Flash-spelare. <a href=\"http://www.adobe.com/go/getflashplayer/\" onmousedown=\"urchinTracker(\'/Events/VideoWatch/GetFlash\');\">Hämta den senaste Flash-spelaren</a>.');
+					</script>
+				</div>
+			</div> 			<script type="text/javascript">
+				var fo = writeMoviePlayer("watch-player-div");
+			</script>
+
+</div>
+
+
+
+<div id="watch-other-vids" >
+
+
+
+
+	<div id="watch-channel-vids-div" class="vcard">
+		<div id="watch-channel-vids-top">
+			<div id="watch-channel-icon" class="user-thumb-medium"><div>
+				<a class="url" href="/user/airhead03031989" onmousedown="urchinTracker('/Events/VideoWatch/ChannelIconLink');"><img src="http://i4.ytimg.com/vi/_LAxNjX0Dp8/default.jpg" class="photo" alt="Kanalikon"></a>
+			</div></div>
+			<div id="watch-channel-subscribe">
+				<div id="subscribeDiv">
+						<a class="yt-button yt-button-urgent" id="" style="" href="#" onclick="subscribe(watchUsername, subscribeaxc, true); return false;"><span>Prenumerera</span></a>
+
+				</div>
+				<div id="unsubscribeDiv" class="hid">
+						<a class="yt-button" id="" style="" href="#" onclick="unsubscribe(watchUsername, subscribeaxc); return false;"><span>Avbryt prenumerationen</span></a>
+
+				</div>
+				<div id="watch-badges">
+					
+				</div>
+			</div>
+			<div id="watch-channel-stats">
+				<a href="/user/airhead03031989" onmousedown="urchinTracker('/Events/VideoWatch/ChannelNameLink');" class="hLink fn n contributor">airhead03031989</a><br>
+
+				<span class="watch-video-added post-date">17 november, 2007</span><br/>
+
+				<div id="watch-video-details-toggle" class="expand-panel">
+					<div class="collapse-content">
+						(<a id="watch-video-desc-toggle-more" href="#" class="eLink" onClick="togglePanel(ref('watch-video-details')); togglePanel(ref('watch-video-details-toggle')); urchinTracker('/Events/VideoWatch/VideoDescMoreInfo'); return false;">mer info</a>)
+					</div>
+					<div class="expand-content">
+						(<a href="#" class="eLink" onClick="togglePanel(ref('watch-video-details')); togglePanel(ref('watch-video-details-toggle')); urchinTracker('/Events/VideoWatch/VideoDescLessInfo'); return false;">mindre information</a>)
+					</div>
+				</div>
+			</div>
+			<div class="clear"></div>
+		</div> 		<div id="subscribeMessage"></div>
+
+		<div id="subscribeLoginInvite" style="border: 1px solid rgb(153, 153, 153); padding: 5px; background-color:#ffffff;margin:8px 5px 0 5px;display:none;">
+			
+		<div style="border: 1px solid rgb(204, 204, 204); padding: 4px; background: #eee; text-align: center;">
+			<strong>Vill du prenumerera?</strong><br/>
+
+				<a href="	/login?next=/watch%3Fv%3DSiYurfwzyuY
+"><strong>Logga in på YouTube nu!</strong></a>
+
+			<div style="border-bottom: 1px dotted #999; margin-bottom: 5px; margin-top: 5px;"></div>
+			<span class="grayText smallText">
+			<a href="https://www.google.com/accounts/ServiceLogin?service=youtube&amp;hl=sv_SE&amp;passive=true&amp;skipll=true&amp;continue=http%3A//www.youtube.com/signup%3Fhl%3Dsv_SE%26warned%3D%26nomobiletemp%3D1&amp;">Logga in med ditt Google-konto!</a>
+			</span>
+
+		<a href="#" onClick="window.open('/t/help_gaia','login_help','width=580,height=480,resizable=yes,scrollbars=yes,status=0').focus();" rel="nofollow"><img src="http://s.ytimg.com/yt/img/pixel-vfl73.gif" border="0" alt="" style="background: transparent url(http://s.ytimg.com/yt/img/help-vfl69806.png) no-repeat scroll 0 0; width: 16px; height: 16px;vertical-align: middle;"></a>
+	</div>  
+
+		</div>
+
+		
+
+
+	<div id="watch-video-details" class="expand-panel">
+		<div id="watch-video-details-inner">
+
+			<div class="collapse-content">
+
+				<div  class="watch-video-desc">
+					<span  class="description">mtv </span>
+				</div>
+			</div>
+
+			<div class="expand-content">
+
+				<div  class="watch-video-desc description">
+					<span >mtv </span>
+				</div>
+
+				<div id="watch-category">
+					<span class="watch-channel-stat">Kategori:&nbsp;</span>
+					<a id="watch-video-category" href="/browse?s=mp&amp;t=t&amp;c=24" class="hLink category" onmousedown="urchinTracker('/Events/VideoWatch/VideoCategoryLink');">Nöje</a><br/>
+				</div>
+
+				<div id="watch-video-tags-div">
+					<div class="floatL">
+						<span class="watch-channel-stat">Taggar:&nbsp;</span>
+					</div>
+					<div id="watch-video-tags" class="floatL">
+							<a href="/results?search_query=Music&amp;search=tag" class="hLink">Music</a>&nbsp;
+							<a href="/results?search_query=Video&amp;search=tag" class="hLink">Video</a>&nbsp;
+
+					</div>
+					<div class="clearL"></div>
+				</div>
+
+
+
+			</div> 
+						<div id="watch-url-div">
+				<form action="" name="urlForm" id="urlForm">
+					<label for="watch-url-field">Webbadress</label>
+					<input name="video_link" id="watch-url-field" type="text" class="email-video-url" value="http://www.youtube.com/watch?v=SiYurfwzyuY" onClick="javascript:document.urlForm.video_link.focus();document.urlForm.video_link.select();" onmousedown="urchinTracker('/Events/VideoWatch/CopyPasteLinkFromMoreInfo');" readonly>
+					<div class="clearL"></div>
+				</form>
+			</div>
+
+
+
+			<div id="watch-embed-div">
+				<form action="" name="embedForm" id="embedForm">
+					<label for="embed_code">Bädda in</label>
+					<div>
+						<input id="embed_code" name="embed_code" type="text" value="&lt;object width=&quot;425&quot; height=&quot;344&quot;&gt;&lt;param name=&quot;movie&quot; value=&quot;http://www.youtube.com/v/SiYurfwzyuY&amp;hl=sv&amp;fs=1&quot;&gt;&lt;/param&gt;&lt;param name=&quot;allowFullScreen&quot; value=&quot;true&quot;&gt;&lt;/param&gt;&lt;param name=&quot;allowscriptaccess&quot; value=&quot;always&quot;&gt;&lt;/param&gt;&lt;embed src=&quot;http://www.youtube.com/v/SiYurfwzyuY&amp;hl=sv&amp;fs=1&quot; type=&quot;application/x-shockwave-flash&quot; allowscriptaccess=&quot;always&quot; allowfullscreen=&quot;true&quot; width=&quot;425&quot; height=&quot;344&quot;&gt;&lt;/embed&gt;&lt;/object&gt;" onClick="javascript:document.embedForm.embed_code.focus();document.embedForm.embed_code.select();" readonly />
+						<span id="watch-embed-customize-wrapper" class="tooltip-wrapper">
+							<button id="watch-embed-customize" onclick="customizeEmbed(isWidescreen); urchinTracker('/Events/VideoWatch/CustomizeEmbed'); return false;" class="master-sprite" title="" onmouseover="toggleSimpleTooltip(this, true)" onmouseout="toggleSimpleTooltip(this, false)"></button>
+							<div class="tooltip-wrapper-box hid"><div class="tooltip-box">Anpassa</div><img class="tooltip-box-bot" src="http://s.ytimg.com/yt/img/pixel-vfl73.gif"></div>
+						</span>
+
+					</div>
+					<div class="clearL"></div>
+				</form>
+			</div> 
+		</div> 
+			<form id="watch-customize-embed-div" name="embedCustomizeForm">Läser in...</form>
+
+
+
+
+
+
+
+
+	</div> 
+
+
+	</div> 
+
+
+
+
+
+			<div id="watch-channel-videos-panel" class="watch-discoverbox-wrapper expand-panel " onExpanded="toggleChannelVideos('airhead03031989');">
+		<a href="#" onclick="togglePanel(this.parentNode); this.blur(); return false;" class="expand-header"><button title="" class="master-sprite watch-arrow"></button>
+Mer från: airhead03031989
+					</a>
+		<div id="watch-channel-vids-body" class="watch-discoverbox-body mini-list-view expand-content">
+Läser in...
+		</div>
+		<div class="clearL"></div>
+	</div>
+
+
+
+ 	
+ 	<div id="quicklistDiv" class="hid">
+		
+	<div id="quicklist-panel" class="expand-panel expanded" style="margin-bottom: 10px">
+		<div class="expand-content floatR">
+			<span id="playall_QL" class="smallText watch-playlist-action ">
+				<a href="#" onclick="return autoNext('QL');">Spela upp alla</a>
+			</span>
+			<span id="playingall_QL" class="smallText watch-playlist-action hid">
+				<a href="#" onclick="return autoNextOff('QL');">Avbryt automatisk uppspelning</a>
+			</span>
+			<span class="smallText grayText">|</span>
+			<span class="smallText">
+				<span class="grayText" id="QL_no_next_video" style="display:none"
+					>Spela nästa</span>
+				<a href="#" id="QL_next_video" 
+					onclick="playnextFrom='QL';gotoNext(false, null, true); return false;">Spela nästa</a>
+			</span>
+		</div>
+
+
+
+		<a class="expand-header" href="#" onClick="togglePanel(this.parentNode); return false;"><button title="" class="master-sprite watch-arrow"></button><span >Snabblista</span> <span class="watch-quicklist-count">(<span id="playlistVideoCount_QL">0</span>)</span></a>
+
+
+
+
+
+		<div id="playlistContainer_QL" class="expand-content watch-playlist-container watch-playlist-auto-height">
+			<div id="playlistRows_QL">
+							<div id="playlistRow_placeholder_QL" class="hid watch-playlist-row  	
+ ">
+		<a href="" class="watch-playlist-row-link">
+			<div class="watch-playlist-index">
+					<span id="playlistRowIndex_placeholder_QL" class="phIndex">1</span>
+			</div>
+			<div class="watch-playlist-row-left"><div class="v50WrapperOuter"><div class="v50WrapperInner">
+				<img class="vimg50" src="http://s.ytimg.com/yt/img/pixel-vfl73.gif" alt="" title="">
+			</div></div></div>
+			<div class="watch-playlist-row-middle">
+					<div class="vtitle" title=""  style="text-decoration: underline;">
+						
+					</div>
+					<div class="vfacets phUsername" style="color: #000;">
+						
+					</div>
+			</div>
+		</a>
+		<div class="watch-playlist-row-right">
+			<span class="watch-playlist-item-duration">
+				
+			</span>
+				<img class="watch-playlist-row-deleter" src="http://s.ytimg.com/yt/img/pixel-vfl73.gif" onclick="watchRemoveVideo('QL', this)" alt="">
+		</div>
+	</div>
+
+	
+	
+	
+	
+
+
+			</div>
+		</div>
+
+		<div id="watch-playlist-actions" class="expand-content">
+				<span class="smallText">
+					<a href="#" onClick="clearWatchQueue(); urchinTracker('/Events/VideoWatch/QuickList+ClearLink'); return false;" title="Ta bort alla videoklipp från Snabblista" rel="nofollow">Rensa</a> <span class="smallText grayText">|</span>
+					<a href="/edit_playlist_info?watch_queue=1" title="Spara alla videoklipp i en permanent spellista" onmousedown="urchinTracker('/Events/VideoWatch/QuickList+SaveLink');" rel="nofollow">Spara</a>
+				</span>
+
+		</div>
+
+	</div> 
+ 	</div>
+	
+			<div id="watch-related-videos-panel" class="watch-discoverbox-wrapper expand-panel expanded" >
+		<a href="#" onclick="togglePanel(this.parentNode); this.blur(); return false;" class="expand-header"><button title="" class="master-sprite watch-arrow"></button>
+Liknande videoklipp
+					</a>
+		<div id="watch-related-vids-body" class="watch-discoverbox-body mini-list-view expand-content">
+					<div class="watch-discoverbox" style="height:302px" onscroll="performDelayLoad('related')">
+					<div class="video-entry">
+		<div class="v90WideEntry"><div class="v90WrapperOuter"><div class="v90WrapperInner"><a href="/watch?v=NxhuXwlLt6E&amp;feature=related" rel="nofollow"><img title="im gonna miss you forever" src="http://i3.ytimg.com/vi/NxhuXwlLt6E/default.jpg" class="vimg90" qlicon="NxhuXwlLt6E" alt="im gonna miss you forever"></a><div class="addtoQL90"><a href="#" ql="NxhuXwlLt6E" title="Lägg till videoklippet till snabblistan"><button title="" class="master-sprite wasinline QLIconImg"
+	onclick="return onQuickAddClick(this, this.parentNode.getAttribute('ql'), 'http://i3.ytimg.com/vi/NxhuXwlLt6E/default.jpg', 'im gonna miss you forever')"
+	onmouseover="mouseOverQuickAdd(this)"
+	onmouseout="mouseOutQuickAdd(this)"
+	onmousedown="urchinTracker('/Events/VideoWatch/QuickList+AddTo')"></button></a><div class="hid quicklist-inlist"><a href="/watch_queue?all">Tillagd</a></div></div><div class="video-time"><span>3:39</span></div></div></div></div>
+		<div class="video-main-content">
+			<div  class="video-mini-title"><a href="/watch?v=NxhuXwlLt6E&amp;feature=related" title="im gonna miss you forever" rel="nofollow">im gonna miss you forever</a></div>
+			<div class="video-view-count">122778 visningar</div>
+			<div class="video-username"><a href="/user/silverspearow">silverspearow</a></div>
+		</div>
+		<div class="video-clear-list-left"></div>
+	</div>
+
+			<div class="video-entry">
+		<div class="v90WideEntry"><div class="v90WrapperOuter"><div class="v90WrapperInner"><a href="/watch?v=frWuiaD9XYM&amp;feature=related" rel="nofollow"><img title="Surfin USA" src="http://i3.ytimg.com/vi/frWuiaD9XYM/default.jpg" class="vimg90" qlicon="frWuiaD9XYM" alt="Surfin USA"></a><div class="addtoQL90"><a href="#" ql="frWuiaD9XYM" title="Lägg till videoklippet till snabblistan"><button title="" class="master-sprite wasinline QLIconImg"
+	onclick="return onQuickAddClick(this, this.parentNode.getAttribute('ql'), 'http://i3.ytimg.com/vi/frWuiaD9XYM/default.jpg', 'Surfin USA')"
+	onmouseover="mouseOverQuickAdd(this)"
+	onmouseout="mouseOutQuickAdd(this)"
+	onmousedown="urchinTracker('/Events/VideoWatch/QuickList+AddTo')"></button></a><div class="hid quicklist-inlist"><a href="/watch_queue?all">Tillagd</a></div></div><div class="video-time"><span>2:44</span></div></div></div></div>
+		<div class="video-main-content">
+			<div  class="video-mini-title"><a href="/watch?v=frWuiaD9XYM&amp;feature=related" title="Surfin USA" rel="nofollow">Surfin USA</a></div>
+			<div class="video-view-count">62369 visningar</div>
+			<div class="video-username"><a href="/user/masterofpuppets80">masterofpuppets80</a></div>
+		</div>
+		<div class="video-clear-list-left"></div>
+	</div>
+
+			<div class="video-entry">
+		<div class="v90WideEntry"><div class="v90WrapperOuter"><div class="v90WrapperInner"><a href="/watch?v=dEyuUt3D35k&amp;feature=related" rel="nofollow"><img title="i want candy" src="http://i1.ytimg.com/vi/dEyuUt3D35k/default.jpg" class="vimg90" qlicon="dEyuUt3D35k" alt="i want candy"></a><div class="addtoQL90"><a href="#" ql="dEyuUt3D35k" title="Lägg till videoklippet till snabblistan"><button title="" class="master-sprite wasinline QLIconImg"
+	onclick="return onQuickAddClick(this, this.parentNode.getAttribute('ql'), 'http://i1.ytimg.com/vi/dEyuUt3D35k/default.jpg', 'i want candy')"
+	onmouseover="mouseOverQuickAdd(this)"
+	onmouseout="mouseOutQuickAdd(this)"
+	onmousedown="urchinTracker('/Events/VideoWatch/QuickList+AddTo')"></button></a><div class="hid quicklist-inlist"><a href="/watch_queue?all">Tillagd</a></div></div><div class="video-time"><span>3:15</span></div></div></div></div>
+		<div class="video-main-content">
+			<div  class="video-mini-title"><a href="/watch?v=dEyuUt3D35k&amp;feature=related" title="i want candy" rel="nofollow">i want candy</a></div>
+			<div class="video-view-count">1194504 visningar</div>
+			<div class="video-username"><a href="/user/kikaoff">kikaoff</a></div>
+		</div>
+		<div class="video-clear-list-left"></div>
+	</div>
+
+			<div class="video-entry">
+		<div class="v90WideEntry"><div class="v90WrapperOuter"><div class="v90WrapperInner"><a href="/watch?v=LWyJqI4OZvQ&amp;feature=related" rel="nofollow"><img title="Aaron Carter Aaron's Party Come Get It" src="http://i1.ytimg.com/vi/LWyJqI4OZvQ/default.jpg" class="vimg90" qlicon="LWyJqI4OZvQ" alt="Aaron Carter Aaron's Party Come Get It"></a><div class="addtoQL90"><a href="#" ql="LWyJqI4OZvQ" title="Lägg till videoklippet till snabblistan"><button title="" class="master-sprite wasinline QLIconImg"
+	onclick="return onQuickAddClick(this, this.parentNode.getAttribute('ql'), 'http://i1.ytimg.com/vi/LWyJqI4OZvQ/default.jpg', 'Aaron Carter Aaron\'s Party Come Get It')"
+	onmouseover="mouseOverQuickAdd(this)"
+	onmouseout="mouseOutQuickAdd(this)"
+	onmousedown="urchinTracker('/Events/VideoWatch/QuickList+AddTo')"></button></a><div class="hid quicklist-inlist"><a href="/watch_queue?all">Tillagd</a></div></div><div class="video-time"><span>3:09</span></div></div></div></div>
+		<div class="video-main-content">
+			<div  class="video-mini-title"><a href="/watch?v=LWyJqI4OZvQ&amp;feature=related" title="Aaron Carter Aaron's Party Come Get It" rel="nofollow">Aaron Carter Aaron's Party Come Get It</a></div>
+			<div class="video-view-count">43365 visningar</div>
+			<div class="video-username"><a href="/user/TroypayandZashley">TroypayandZashley</a></div>
+		</div>
+		<div class="video-clear-list-left"></div>
+	</div>
+
+			<div class="video-entry">
+		<div class="v90WideEntry"><div class="v90WrapperOuter"><div class="v90WrapperInner"><a href="/watch?v=NYASWeyURMk&amp;feature=related" rel="nofollow"><img title="Aaron Carter - Crush On You" src="http://i3.ytimg.com/vi/NYASWeyURMk/default.jpg" class="vimg90" qlicon="NYASWeyURMk" alt="Aaron Carter - Crush On You"></a><div class="addtoQL90"><a href="#" ql="NYASWeyURMk" title="Lägg till videoklippet till snabblistan"><button title="" class="master-sprite wasinline QLIconImg"
+	onclick="return onQuickAddClick(this, this.parentNode.getAttribute('ql'), 'http://i3.ytimg.com/vi/NYASWeyURMk/default.jpg', 'Aaron Carter - Crush On You')"
+	onmouseover="mouseOverQuickAdd(this)"
+	onmouseout="mouseOutQuickAdd(this)"
+	onmousedown="urchinTracker('/Events/VideoWatch/QuickList+AddTo')"></button></a><div class="hid quicklist-inlist"><a href="/watch_queue?all">Tillagd</a></div></div><div class="video-time"><span>3:54</span></div></div></div></div>
+		<div class="video-main-content">
+			<div  class="video-mini-title"><a href="/watch?v=NYASWeyURMk&amp;feature=related" title="Aaron Carter - Crush On You" rel="nofollow">Aaron Carter - Crush On You</a></div>
+			<div class="video-view-count">792621 visningar</div>
+			<div class="video-username"><a href="/user/blondibonj">blondibonj</a></div>
+		</div>
+		<div class="video-clear-list-left"></div>
+	</div>
+
+			<div class="video-entry">
+		<div class="v90WideEntry"><div class="v90WrapperOuter"><div class="v90WrapperInner"><a href="/watch?v=Ytl27FcUHug&amp;feature=related" rel="nofollow"><img title="Aaron Carter-Do you remember" src="http://s.ytimg.com/yt/img/pixel-vfl73.gif" class="vimg90" onload="delayLoad('related', this, 'http://i2.ytimg.com/vi/Ytl27FcUHug/default.jpg')" qlicon="Ytl27FcUHug" alt="Aaron Carter-Do you remember"></a><div class="addtoQL90"><a href="#" ql="Ytl27FcUHug" title="Lägg till videoklippet till snabblistan"><button title="" class="master-sprite wasinline QLIconImg"
+	onclick="return onQuickAddClick(this, this.parentNode.getAttribute('ql'), 'http://i2.ytimg.com/vi/Ytl27FcUHug/default.jpg', 'Aaron Carter-Do you remember')"
+	onmouseover="mouseOverQuickAdd(this)"
+	onmouseout="mouseOutQuickAdd(this)"
+	onmousedown="urchinTracker('/Events/VideoWatch/QuickList+AddTo')"></button></a><div class="hid quicklist-inlist"><a href="/watch_queue?all">Tillagd</a></div></div><div class="video-time"><span>4:05</span></div></div></div></div>
+		<div class="video-main-content">
+			<div  class="video-mini-title"><a href="/watch?v=Ytl27FcUHug&amp;feature=related" title="Aaron Carter-Do you remember" rel="nofollow">Aaron Carter-Do you remember</a></div>
+			<div class="video-view-count">1124974 visningar</div>
+			<div class="video-username"><a href="/user/Loser003">Loser003</a></div>
+		</div>
+		<div class="video-clear-list-left"></div>
+	</div>
+
+			<div class="video-entry">
+		<div class="v90WideEntry"><div class="v90WrapperOuter"><div class="v90WrapperInner"><a href="/watch?v=gdyWgCMbmMk&amp;feature=related" rel="nofollow"><img title="Aaron carter-- sugar sugar" src="http://s.ytimg.com/yt/img/pixel-vfl73.gif" class="vimg90" onload="delayLoad('related', this, 'http://i4.ytimg.com/vi/gdyWgCMbmMk/default.jpg')" qlicon="gdyWgCMbmMk" alt="Aaron carter-- sugar sugar"></a><div class="addtoQL90"><a href="#" ql="gdyWgCMbmMk" title="Lägg till videoklippet till snabblistan"><button title="" class="master-sprite wasinline QLIconImg"
+	onclick="return onQuickAddClick(this, this.parentNode.getAttribute('ql'), 'http://i4.ytimg.com/vi/gdyWgCMbmMk/default.jpg', 'Aaron carter-- sugar sugar')"
+	onmouseover="mouseOverQuickAdd(this)"
+	onmouseout="mouseOutQuickAdd(this)"
+	onmousedown="urchinTracker('/Events/VideoWatch/QuickList+AddTo')"></button></a><div class="hid quicklist-inlist"><a href="/watch_queue?all">Tillagd</a></div></div><div class="video-time"><span>2:00</span></div></div></div></div>
+		<div class="video-main-content">
+			<div  class="video-mini-title"><a href="/watch?v=gdyWgCMbmMk&amp;feature=related" title="Aaron carter-- sugar sugar" rel="nofollow">Aaron carter-- sugar sugar</a></div>
+			<div class="video-view-count">147104 visningar</div>
+			<div class="video-username"><a href="/user/AngelGermany">AngelGermany</a></div>
+		</div>
+		<div class="video-clear-list-left"></div>
+	</div>
+
+			<div class="video-entry">
+		<div class="v90WideEntry"><div class="v90WrapperOuter"><div class="v90WrapperInner"><a href="/watch?v=c1pABjF7WfE&amp;feature=related" rel="nofollow"><img title="Miss you like crazy - Moffatts" src="http://s.ytimg.com/yt/img/pixel-vfl73.gif" class="vimg90" onload="delayLoad('related', this, 'http://i4.ytimg.com/vi/c1pABjF7WfE/default.jpg')" qlicon="c1pABjF7WfE" alt="Miss you like crazy - Moffatts"></a><div class="addtoQL90"><a href="#" ql="c1pABjF7WfE" title="Lägg till videoklippet till snabblistan"><button title="" class="master-sprite wasinline QLIconImg"
+	onclick="return onQuickAddClick(this, this.parentNode.getAttribute('ql'), 'http://i4.ytimg.com/vi/c1pABjF7WfE/default.jpg', 'Miss you like crazy - Moffatts')"
+	onmouseover="mouseOverQuickAdd(this)"
+	onmouseout="mouseOutQuickAdd(this)"
+	onmousedown="urchinTracker('/Events/VideoWatch/QuickList+AddTo')"></button></a><div class="hid quicklist-inlist"><a href="/watch_queue?all">Tillagd</a></div></div><div class="video-time"><span>3:13</span></div></div></div></div>
+		<div class="video-main-content">
+			<div  class="video-mini-title"><a href="/watch?v=c1pABjF7WfE&amp;feature=related" title="Miss you like crazy - Moffatts" rel="nofollow">Miss you like crazy - Moffatts</a></div>
+			<div class="video-view-count">501781 visningar</div>
+			<div class="video-username"><a href="/user/geeahne">geeahne</a></div>
+		</div>
+		<div class="video-clear-list-left"></div>
+	</div>
+
+			<div class="video-entry">
+		<div class="v90WideEntry"><div class="v90WrapperOuter"><div class="v90WrapperInner"><a href="/watch?v=wbX43ETgHTk&amp;feature=related" rel="nofollow"><img title="aaron carter" src="http://s.ytimg.com/yt/img/pixel-vfl73.gif" class="vimg90" onload="delayLoad('related', this, 'http://i4.ytimg.com/vi/wbX43ETgHTk/default.jpg')" qlicon="wbX43ETgHTk" alt="aaron carter"></a><div class="addtoQL90"><a href="#" ql="wbX43ETgHTk" title="Lägg till videoklippet till snabblistan"><button title="" class="master-sprite wasinline QLIconImg"
+	onclick="return onQuickAddClick(this, this.parentNode.getAttribute('ql'), 'http://i4.ytimg.com/vi/wbX43ETgHTk/default.jpg', 'aaron carter')"
+	onmouseover="mouseOverQuickAdd(this)"
+	onmouseout="mouseOutQuickAdd(this)"
+	onmousedown="urchinTracker('/Events/VideoWatch/QuickList+AddTo')"></button></a><div class="hid quicklist-inlist"><a href="/watch_queue?all">Tillagd</a></div></div><div class="video-time"><span>3:32</span></div></div></div></div>
+		<div class="video-main-content">
+			<div  class="video-mini-title"><a href="/watch?v=wbX43ETgHTk&amp;feature=related" title="aaron carter" rel="nofollow">aaron carter</a></div>
+			<div class="video-view-count">177132 visningar</div>
+			<div class="video-username"><a href="/user/knightrider707">knightrider707</a></div>
+		</div>
+		<div class="video-clear-list-left"></div>
+	</div>
+
+			<div class="video-entry">
+		<div class="v90WideEntry"><div class="v90WrapperOuter"><div class="v90WrapperInner"><a href="/watch?v=l4yAuL204zE&amp;feature=related" rel="nofollow"><img title="Aaron Carter - Oh Aaron." src="http://s.ytimg.com/yt/img/pixel-vfl73.gif" class="vimg90" onload="delayLoad('related', this, 'http://i1.ytimg.com/vi/l4yAuL204zE/default.jpg')" qlicon="l4yAuL204zE" alt="Aaron Carter - Oh Aaron."></a><div class="addtoQL90"><a href="#" ql="l4yAuL204zE" title="Lägg till videoklippet till snabblistan"><button title="" class="master-sprite wasinline QLIconImg"
+	onclick="return onQuickAddClick(this, this.parentNode.getAttribute('ql'), 'http://i1.ytimg.com/vi/l4yAuL204zE/default.jpg', 'Aaron Carter - Oh Aaron.')"
+	onmouseover="mouseOverQuickAdd(this)"
+	onmouseout="mouseOutQuickAdd(this)"
+	onmousedown="urchinTracker('/Events/VideoWatch/QuickList+AddTo')"></button></a><div class="hid quicklist-inlist"><a href="/watch_queue?all">Tillagd</a></div></div><div class="video-time"><span>3:17</span></div></div></div></div>
+		<div class="video-main-content">
+			<div  class="video-mini-title"><a href="/watch?v=l4yAuL204zE&amp;feature=related" title="Aaron Carter - Oh Aaron." rel="nofollow">Aaron Carter - Oh Aaron.</a></div>
+			<div class="video-view-count">972756 visningar</div>
+			<div class="video-username"><a href="/user/blondibonj">blondibonj</a></div>
+		</div>
+		<div class="video-clear-list-left"></div>
+	</div>
+
+			<div class="video-entry">
+		<div class="v90WideEntry"><div class="v90WrapperOuter"><div class="v90WrapperInner"><a href="/watch?v=UeOOfh3wWug&amp;feature=related" rel="nofollow"><img title="Aaron Carter Drunk Nude" src="http://s.ytimg.com/yt/img/pixel-vfl73.gif" class="vimg90" onload="delayLoad('related', this, 'http://i2.ytimg.com/vi/UeOOfh3wWug/default.jpg')" qlicon="UeOOfh3wWug" alt="Aaron Carter Drunk Nude"></a><div class="addtoQL90"><a href="#" ql="UeOOfh3wWug" title="Lägg till videoklippet till snabblistan"><button title="" class="master-sprite wasinline QLIconImg"
+	onclick="return onQuickAddClick(this, this.parentNode.getAttribute('ql'), 'http://i2.ytimg.com/vi/UeOOfh3wWug/default.jpg', 'Aaron Carter Drunk Nude')"
+	onmouseover="mouseOverQuickAdd(this)"
+	onmouseout="mouseOutQuickAdd(this)"
+	onmousedown="urchinTracker('/Events/VideoWatch/QuickList+AddTo')"></button></a><div class="hid quicklist-inlist"><a href="/watch_queue?all">Tillagd</a></div></div><div class="video-time"><span>0:30</span></div></div></div></div>
+		<div class="video-main-content">
+			<div  class="video-mini-title"><a href="/watch?v=UeOOfh3wWug&amp;feature=related" title="Aaron Carter Drunk Nude" rel="nofollow">Aaron Carter Drunk Nude</a></div>
+			<div class="video-view-count">61972 visningar</div>
+			<div class="video-username"><a href="/user/pimamotjo">pimamotjo</a></div>
+		</div>
+		<div class="video-clear-list-left"></div>
+	</div>
+
+			<div class="video-entry">
+		<div class="v90WideEntry"><div class="v90WrapperOuter"><div class="v90WrapperInner"><a href="/watch?v=tgXYmS2dyik&amp;feature=related" rel="nofollow"><img title="Making of I'm Gonna Miss You forever" src="http://s.ytimg.com/yt/img/pixel-vfl73.gif" class="vimg90" onload="delayLoad('related', this, 'http://i1.ytimg.com/vi/tgXYmS2dyik/default.jpg')" qlicon="tgXYmS2dyik" alt="Making of I'm Gonna Miss You forever"></a><div class="addtoQL90"><a href="#" ql="tgXYmS2dyik" title="Lägg till videoklippet till snabblistan"><button title="" class="master-sprite wasinline QLIconImg"
+	onclick="return onQuickAddClick(this, this.parentNode.getAttribute('ql'), 'http://i1.ytimg.com/vi/tgXYmS2dyik/default.jpg', 'Making of I\'m Gonna Miss You forever')"
+	onmouseover="mouseOverQuickAdd(this)"
+	onmouseout="mouseOutQuickAdd(this)"
+	onmousedown="urchinTracker('/Events/VideoWatch/QuickList+AddTo')"></button></a><div class="hid quicklist-inlist"><a href="/watch_queue?all">Tillagd</a></div></div><div class="video-time"><span>2:34</span></div></div></div></div>
+		<div class="video-main-content">
+			<div  class="video-mini-title"><a href="/watch?v=tgXYmS2dyik&amp;feature=related" title="Making of I'm Gonna Miss You forever" rel="nofollow">Making of I'm Gonna Miss You forever</a></div>
+			<div class="video-view-count">28119 visningar</div>
+			<div class="video-username"><a href="/user/sa130997">sa130997</a></div>
+		</div>
+		<div class="video-clear-list-left"></div>
+	</div>
+
+			<div class="video-entry">
+		<div class="v90WideEntry"><div class="v90WrapperOuter"><div class="v90WrapperInner"><a href="/watch?v=NnipXd6tyJw&amp;feature=related" rel="nofollow"><img title="Aaron Carter I'm All About You" src="http://s.ytimg.com/yt/img/pixel-vfl73.gif" class="vimg90" onload="delayLoad('related', this, 'http://i3.ytimg.com/vi/NnipXd6tyJw/default.jpg')" qlicon="NnipXd6tyJw" alt="Aaron Carter I'm All About You"></a><div class="addtoQL90"><a href="#" ql="NnipXd6tyJw" title="Lägg till videoklippet till snabblistan"><button title="" class="master-sprite wasinline QLIconImg"
+	onclick="return onQuickAddClick(this, this.parentNode.getAttribute('ql'), 'http://i3.ytimg.com/vi/NnipXd6tyJw/default.jpg', 'Aaron Carter I\'m All About You')"
+	onmouseover="mouseOverQuickAdd(this)"
+	onmouseout="mouseOutQuickAdd(this)"
+	onmousedown="urchinTracker('/Events/VideoWatch/QuickList+AddTo')"></button></a><div class="hid quicklist-inlist"><a href="/watch_queue?all">Tillagd</a></div></div><div class="video-time"><span>3:50</span></div></div></div></div>
+		<div class="video-main-content">
+			<div  class="video-mini-title"><a href="/watch?v=NnipXd6tyJw&amp;feature=related" title="Aaron Carter I'm All About You" rel="nofollow">Aaron Carter I'm All About You</a></div>
+			<div class="video-view-count">168940 visningar</div>
+			<div class="video-username"><a href="/user/TroypayandZashley">TroypayandZashley</a></div>
+		</div>
+		<div class="video-clear-list-left"></div>
+	</div>
+
+			<div class="video-entry">
+		<div class="v90WideEntry"><div class="v90WrapperOuter"><div class="v90WrapperInner"><a href="/watch?v=btdH4TWz2_A&amp;feature=related" rel="nofollow"><img title="Aaron Carter - I'm not too old, Not too Young" src="http://s.ytimg.com/yt/img/pixel-vfl73.gif" class="vimg90" onload="delayLoad('related', this, 'http://i3.ytimg.com/vi/btdH4TWz2_A/default.jpg')" qlicon="btdH4TWz2_A" alt="Aaron Carter - I'm not too old, Not too Young"></a><div class="addtoQL90"><a href="#" ql="btdH4TWz2_A" title="Lägg till videoklippet till snabblistan"><button title="" class="master-sprite wasinline QLIconImg"
+	onclick="return onQuickAddClick(this, this.parentNode.getAttribute('ql'), 'http://i3.ytimg.com/vi/btdH4TWz2_A/default.jpg', 'Aaron Carter - I\'m not too old, Not too Young')"
+	onmouseover="mouseOverQuickAdd(this)"
+	onmouseout="mouseOutQuickAdd(this)"
+	onmousedown="urchinTracker('/Events/VideoWatch/QuickList+AddTo')"></button></a><div class="hid quicklist-inlist"><a href="/watch_queue?all">Tillagd</a></div></div><div class="video-time"><span>3:08</span></div></div></div></div>
+		<div class="video-main-content">
+			<div  class="video-mini-title"><a href="/watch?v=btdH4TWz2_A&amp;feature=related" title="Aaron Carter - I'm not too old, Not too Young" rel="nofollow">Aaron Carter - I'm not too old, Not too Young</a></div>
+			<div class="video-view-count">854940 visningar</div>
+			<div class="video-username"><a href="/user/blondibonj">blondibonj</a></div>
+		</div>
+		<div class="video-clear-list-left"></div>
+	</div>
+
+
+		<div id="watch-related-video-list-loading-div" class="watch-discoverbox-more-link" style="display:none">Läser in...</div>
+			<div class="watch-discoverbox-more-link">
+				<a href="/results?search=related&amp;search_query=%20Music%20Video&amp;v=SiYurfwzyuY&amp;page=2">
+Se alla 58 videoklipp
+								</a>
+			</div>
+	</div>
+
+		</div>
+		<div class="clearL"></div>
+	</div>
+
+
+
+
+
+	<div class="expand-panel expanded">
+		<span class="expand-header">Utvalda videoklipp</span>
+		<div class="watch-body expand-content" id="watch-promoted-container">
+				<div class="watch-promoted-vid">
+						<div class="v75WideEntry">
+		<div class="v75WrapperOuter"><div class="v75WrapperInner"><a id="video-url-15LSmmjqn1M" href="/cthru?key=vco8hvbN-iNE0VFQFtLE9PN-0x7tkikikNPQb7BgbNjdxya6cKVqXIahzknyPsMfn0KJcAosyWgkrngc_DWOZIxLpIMUAHaB9W9Fk4WDlq4weQHNZQzvra1P73ItNlGKBPl3HDlhNDl0nHiNKtXs61YRnWjYAtYWIa40LC2oqbPN4ZWXmBQV-bTUMVKl7iG2AF97JljIRqff7wLGCVxczA=="  onmousedown="urchinTracker('/Events/VideoWatch/PromotedVideos');" rel="nofollow"><img title="SVT: Magnus Betnér om Volvo"    src="http://i2.ytimg.com/vi/15LSmmjqn1M/default.jpg" class="vimg75"  alt="SVT: Magnus Betnér om Volvo"></a></div></div>
+			<div >
+				<a href="/cthru?key=vco8hvbN-iNE0VFQFtLE9PN-0x7tkikikNPQb7BgbNjdxya6cKVqXIahzknyPsMfn0KJcAosyWgkrngc_DWOZIxLpIMUAHaB9W9Fk4WDlq4weQHNZQzvra1P73ItNlGKBPl3HDlhNDl0nHiNKtXs61YRnWjYAtYWIa40LC2oqbPN4ZWXmBQV-bTUMVKl7iG2AF97JljIRqff7wLGCVxczA==" title="SVT: Magnus Betnér om Volvo" target="_parent" name="&amp;lid=DV+-+SVTMagnusBetnéromVolvo+-+SVT&amp;lpos=Watch3-s0" class="bold hLink" rel="nofollow">SVT: Magnus Betnér om V...</a>
+			</div>
+			<span class="runtime" style="font-weight: normal">1:47</span>
+			<div>
+				<a href="/user/SVT" class="hLink" rel="nofollow">SVT</a>
+			</div>
+	</div>
+
+				</div>
+				<div class="watch-promoted-vid">
+						<div class="v75WideEntry">
+		<div class="v75WrapperOuter"><div class="v75WrapperInner"><a id="video-url-R0be-jmwKyM" href="/cthru?key=as1TqFN9DtdbmQ9Eq7ZdJ9j8MJbmk7stN3V2A8-4dnKfh3FCx8rcVC9V_iZ7o3OVJh2iw9ZdVzATFpuKubSRwrwbjKZV_zdAl973wtp_lUOmMFzwActJp2AaxDEL-fP1IlYmwkZd8CzColPZGKubJ6iqX4iv15ZEytrdkVGE_ItaeBeq18iOPaNTWV3nQge2BP9dz7lVFq5UVAGP37Kz6g=="  onmousedown="urchinTracker('/Events/VideoWatch/PromotedVideos');" rel="nofollow"><img title="SVT: På spåret (bortklippt) - Robert Aschberg drar en fräckis"    src="http://i3.ytimg.com/vi/R0be-jmwKyM/default.jpg" class="vimg75"  alt="SVT: På spåret (bortklippt) - Robert Aschberg drar en fräckis"></a></div></div>
+			<div >
+				<a href="/cthru?key=as1TqFN9DtdbmQ9Eq7ZdJ9j8MJbmk7stN3V2A8-4dnKfh3FCx8rcVC9V_iZ7o3OVJh2iw9ZdVzATFpuKubSRwrwbjKZV_zdAl973wtp_lUOmMFzwActJp2AaxDEL-fP1IlYmwkZd8CzColPZGKubJ6iqX4iv15ZEytrdkVGE_ItaeBeq18iOPaNTWV3nQge2BP9dz7lVFq5UVAGP37Kz6g==" title="SVT: På spåret (bortklippt) - Robert Aschberg drar en fräckis" target="_parent" name="&amp;lid=DV+-+SVTPåspåretbortklipptRobertAschbergdrarenfräckis+-+SVT&amp;lpos=Watch3-s1" class="bold hLink" rel="nofollow">SVT: På spåret (bortkli.. .</a>
+			</div>
+			<span class="runtime" style="font-weight: normal">1:58</span>
+			<div>
+				<a href="/user/SVT" class="hLink" rel="nofollow">SVT</a>
+			</div>
+	</div>
+
+				</div>
+				<div class="watch-promoted-vid">
+						<div class="v75WideEntry">
+		<div class="v75WrapperOuter"><div class="v75WrapperInner"><a id="video-url-jrrGzTUa-YI" href="/cthru?key=VSvvn_CnIO4IN1eMxO17yOHA0uQDAyYLzYlwDDBaHzlOJZqudMfUMhCIeNjpuCq5jpV4IJ9__J84HGRVHbNPWHFsbiTXReF-QoqfH0uUuqfPzcIISyhpJ-CRM-xJEpNg627A6eG3gcqgadV46a5GUlwRSiOzYPiIR_MiXTIyPCAHGEHsKRuoY-osdtNg2e93wdXuaJQ2790194xGDjcOQg=="  onmousedown="urchinTracker('/Events/VideoWatch/PromotedVideos');" rel="nofollow"><img title="Blondinbellas tv-dagbok del 11"    src="http://i3.ytimg.com/vi/jrrGzTUa-YI/default.jpg" class="vimg75"  alt="Blondinbellas tv-dagbok del 11"></a></div></div>
+			<div >
+				<a href="/cthru?key=VSvvn_CnIO4IN1eMxO17yOHA0uQDAyYLzYlwDDBaHzlOJZqudMfUMhCIeNjpuCq5jpV4IJ9__J84HGRVHbNPWHFsbiTXReF-QoqfH0uUuqfPzcIISyhpJ-CRM-xJEpNg627A6eG3gcqgadV46a5GUlwRSiOzYPiIR_MiXTIyPCAHGEHsKRuoY-osdtNg2e93wdXuaJQ2790194xGDjcOQg==" title="Blondinbellas tv-dagbok del 11" target="_parent" name="&amp;lid=DV+-+Blondinbellastvdagbokdel11+-+tv4&amp;lpos=Watch3-s2" class="bold hLink" rel="nofollow">Blondinbel las tv-dagbok. ..</a>
+			</div>
+			<span class="runtime" style="font-weight: normal">2:54</span>
+			<div>
+				<a href="/user/tv4" class="hLink" rel="nofollow">tv4</a>
+			</div>
+	</div>
+
+				</div>
+				<div class="watch-promoted-vid">
+						<div class="v75WideEntry">
+		<div class="v75WrapperOuter"><div class="v75WrapperInner"><a id="video-url-VgLkvxNprh0" href="/cthru?key=x3stGKmR5PslciyJCYSK8ML6SyA44YaFKjTAYlpdOwL8nNdVdzNmLf1DBYV4_rKRyjN0i6aLz1eEcGmEK6w7mli1y329kBdFE3GdEyc4plo1ETWxQepMOrmib9wSyFBmjhilu3PagvLFymDQSwyevnTdtRCh40ObDOsl6rB8Jcm_Ozrc_S3HhwHGyt2xi8XxgLz0Hav3pPb9Jbb-oS7vfQ=="  onmousedown="urchinTracker('/Events/VideoWatch/PromotedVideos');" rel="nofollow"><img title="Mode mot spindelfobi"    src="http://i3.ytimg.com/vi/VgLkvxNprh0/default.jpg" class="vimg75"  alt="Mode mot spindelfobi"></a></div></div>
+			<div >
+				<a href="/cthru?key=x3stGKmR5PslciyJCYSK8ML6SyA44YaFKjTAYlpdOwL8nNdVdzNmLf1DBYV4_rKRyjN0i6aLz1eEcGmEK6w7mli1y329kBdFE3GdEyc4plo1ETWxQepMOrmib9wSyFBmjhilu3PagvLFymDQSwyevnTdtRCh40ObDOsl6rB8Jcm_Ozrc_S3HhwHGyt2xi8XxgLz0Hav3pPb9Jbb-oS7vfQ==" title="Mode mot spindelfobi" target="_parent" name="&amp;lid=DV+-+Modemotspindelfobi+-+dn&amp;lpos=Watch3-s3" class="bold hLink" rel="nofollow">Mode mot spindelfob i</a>
+			</div>
+			<span class="runtime" style="font-weight: normal">2:03</span>
+			<div>
+				<a href="/user/dn" class="hLink" rel="nofollow">dn</a>
+			</div>
+	</div>
+
+				</div>
+
+			<div class="clearL"></div>
+		</div>
+	</div> 
+
+</div> 
+
+<div id="watch-this-vid-info">
+
+
+
+
+	<div id="watch-video-quality-setting">
+
+
+		<a id="watch-low-quality-link" href="#" class="hLink" onclick="changeVideoQuality(yt.VideoQualityConstants.LOW); urchinTracker('/Events/VideoWatch/QualityChangeToLow'); return false;">titta med normal kvalitet</a>
+		<a id="watch-high-quality-link" href="#" class="hLink" onclick="changeVideoQuality(yt.VideoQualityConstants.HIGH); urchinTracker('/Events/VideoWatch/QualityChangeToHigh'); return false;">titta i hög kvalitet</a>
+
+		<div class="clearL"></div>
+	</div>
+
+
+
+
+
+	<div id="watch-main-area">
+		<div id="watch-ratings-views">
+			<div id="watch-rating-div" class="ratingMultiline">
+				<div class="statLabel floatL">Rankning:</div>
+				
+
+		<script language="javascript">
+
+
+		document.getElementById('watch-rating-div').onmouseover = function() { hideDiv('defaultRatingMessage'); showDiv('hoverMessage'); };
+		document.getElementById('watch-rating-div').onmouseout = function() { showDiv('defaultRatingMessage'); hideDiv('hoverMessage'); };
+ 	
+		</script>
+
+<div id="ratingWrapper"><div class="floatL" onclick="urchinTracker('/Events/VideoWatch/Rated');"><div id="ratingStars" class="floatL">
+<button class="master-sprite ratingL ratingL-4.5" title="4.5"></button></div><div id="ratingMessage"><div id="defaultRatingMessage"><span class="smallText">203 rankningar</span></div><div id="hoverMessage" style="width:100%" class="hid"><a href="	/login?next=/watch%3Fv%3DSiYurfwzyuY
+">Logga in</a> för att ranka</div></div></div></div>
+
+			</div>
+
+			<div id="watch-views-div">
+				<div class="floatR">
+					<span class="statLabel number-of-views">Visningar:</span>
+					<span id="watch-view-count">137681</span>
+				</div>
+
+				<div class="clear"></div>
+			</div>
+
+			<div class="clear"></div>
+		</div>
+
+		<div id="watch-actions-area">
+			<table cellpadding="0" cellspacing="0" class="watch-tabs">
+				<tr>
+					<td id="watch-tab-share" onclick="if (hasClass(this, 'watch-tab-sel') && _gel('watch-share-video-div').style.display !='block') {urchinTracker('/Events/VideoWatch/ShareTab/OpensMore/sv_SE');processShareVideo('SiYurfwzyuY','watch-share-video-div', 'all');} else { resetSharing(); } watchSelectTab(this);" class="master-sprite watch-tab-sel watch-tab-first">
+						<a id="watch-action-share-link" href="#" class="watch-action-link" onclick="return false;">
+							<button id="watch-action-share" class="master-sprite" title="Dela"></button>
+							<span class="watch-action-text">Dela</span>
+						</a>
+						<button class="master-sprite watch-tab-arrow" title=""></button></td>
+					<td id="watch-tab-favorite" class="master-sprite" onclick="if (!hasClass(this, 'disabled')) { addToFaves('addToFavesForm',event); }">
+						<a id="watch-action-favorite-link" href="#" class="watch-action-link" onclick="return false;">
+							<button id="watch-action-favorite" class="master-sprite" title="Favorit"></button>
+							<span class="watch-action-text">Favorit</span>
+						</a>
+						<button class="master-sprite watch-tab-arrow" title=""></button></td>
+					<td id="watch-tab-playlists" class="master-sprite" onclick="addToPlaylist('SiYurfwzyuY',event);">
+						<a id="watch-action-playlists-link" href="#" class="watch-action-link" onclick="return false">
+							<button id="watch-action-playlists" class="master-sprite" title="Lägg till i spellistor"></button>
+							<span class="watch-action-text">Spellistor</span>
+						</a>
+						<button class="master-sprite watch-tab-arrow" title=""></button></td>
+					<td id="watch-tab-flag" class="master-sprite" onclick="if (!hasClass(this, 'disabled')) { reportConcern('SiYurfwzyuY',event); }" title="Rapportera videoklipp som olämpligt">
+						<a id="watch-action-flag-link" href="#" class="watch-action-link" onclick="return false">
+							<button id="watch-action-flag" class="master-sprite" title="Rapportera videoklipp som olämpligt"></button>
+							<span class="watch-action-text">Flagga</span>
+						</a>
+						<button class="master-sprite watch-tab-arrow" title=""></button></td>
+				</tr>
+			</table>
+			<div class="clear"></div>
+			<div class="watch-tab-contents">
+				<div id="watch-tab-share-body" class="watch-tab-body watch-tab-sel">
+					<div id="aggregationServicesDiv" class="alignC">
+									<div class="watch-recent-shares-div">
+				<div class="watch-recent-share">
+						<a href="http://www.facebook.com/sharer.php?u=http%3A//www.youtube.com/watch%3Fv%3DSiYurfwzyuY&amp;t=Aaron%20Carter%20-%20Crazy%20little%20party%20girl" target="_blank" onclick="recordServiceUsage('FACEBOOK', 'SiYurfwzyuY', 'sv_SE');openPopup('http://www.facebook.com/sharer.php?u=http%3A//www.youtube.com/watch%3Fv%3DSiYurfwzyuY&amp;t=Aaron%20Carter%20-%20Crazy%20little%20party%20girl', 'YouTube', 440, 620, true);urchinTracker('/Events/VideoWatch/ShareAggr/Facebook/sv_SE');return false;">
+<button class="master-sprite icn_share_promoted_facebook" title=""></button>
+							<span>Facebook</span>
+						</a>
+
+				</div>
+			</div>
+			<div class="watch-recent-shares-div">
+				<div class="watch-recent-share">
+						<a href="http://www.myspace.com/Modules/PostTo/Pages/?t=Aaron%20Carter%20-%20Crazy%20little%20party%20girl&amp;c=%3Cobject%20width%3D%22425%22%20height%3D%22355%22%3E%3Cparam%20name%3D%22movie%22%20value%3D%22http%3A//www.youtube.com/v/SiYurfwzyuY%26hl%3Dsv%26rel%3D0%22%3E%3C/param%3E%3Cembed%20src%3D%22http%3A//www.youtube.com/v/SiYurfwzyuY%26hl%3Dsv%26rel%3D0%22%20type%3D%22application/x-shockwave-flash%22%20width%3D%22425%22%20height%3D%22355%22%3E%3C/embed%3E%3C/object%3E&amp;u=http%3A//www.youtube.com/watch%3Fv%3DSiYurfwzyuY&amp;l=1" target="_blank" onclick="recordServiceUsage('MYSPACE', 'SiYurfwzyuY', 'sv_SE');openPopup('http://www.myspace.com/Modules/PostTo/Pages/?t=Aaron%20Carter%20-%20Crazy%20little%20party%20girl&amp;c=%3Cobject%20width%3D%22425%22%20height%3D%22355%22%3E%3Cparam%20name%3D%22movie%22%20value%3D%22http%3A//www.youtube.com/v/SiYurfwzyuY%26hl%3Dsv%26rel%3D0%22%3E%3C/param%3E%3Cembed%20src%3D%22http%3A//www.youtube.com/v/SiYurfwzyuY%26hl%3Dsv%26rel%3D0%22%20type%3D%22application/x-shockwave-flash%22%20width%3D%22425%22%20height%3D%22355%22%3E%3C/embed%3E%3C/object%3E&amp;u=http%3A//www.youtube.com/watch%3Fv%3DSiYurfwzyuY&amp;l=1', 'YouTube', 650, 1024, true);urchinTracker('/Events/VideoWatch/ShareAggr/MySpace/sv_SE');return false;">
+<button class="master-sprite icn_share_promoted_myspace" title=""></button>
+							<span>MySpace</span>
+						</a>
+
+				</div>
+			</div>
+			<div class="watch-recent-shares-div">
+				<div class="watch-recent-share">
+						<a href="http://digg.com/submit?phase=2&amp;url=http%3A//www.youtube.com/watch%3Fv%3DSiYurfwzyuY&amp;title=Aaron%20Carter%20-%20Crazy%20little%20party%20girl&amp;bodytext=mtv&amp;topic=videos_comedy" target="_blank" onclick="recordServiceUsage('DIGG', 'SiYurfwzyuY', 'sv_SE');openPopup('http://digg.com/submit?phase=2&amp;url=http%3A//www.youtube.com/watch%3Fv%3DSiYurfwzyuY&amp;title=Aaron%20Carter%20-%20Crazy%20little%20party%20girl&amp;bodytext=mtv&amp;topic=videos_comedy', 'YouTube', 650, 1024, true);urchinTracker('/Events/VideoWatch/ShareAggr/Digg/sv_SE');return false;">
+<button class="master-sprite icn_share_promoted_digg" title=""></button>
+							<span>Digg</span>
+						</a>
+
+				</div>
+			</div>
+
+
+
+	<div class="watch-sharetab-options grayText smallText">
+		<div class="watch-sharetab-options-txt" id="more-options"><a href="#" class="eLink" onclick="urchinTracker('/Events/VideoWatch/Share/MoreOptions/sv_SE');processShareVideo('SiYurfwzyuY', 'watch-share-video-div','all'); return false;" rel="nofollow">mer</a></div>
+		<div class="watch-sharetab-options-txt" style="display: none;" id="fewer-options"><a href="#" class="eLink" onclick="resetSharing(); return false;" rel="nofollow">mindre</a></div>
+
+	</div>
+
+						<div class="clear"></div>
+					</div> 					<div id="addToBlogResult" class="watch-action-result">Videoklippet kommer att synas på din blogg inom kort.</div>
+					<div id="watch-share-video-div" class="watch-more-action">Läser in...</div>
+					<div id="shareVideoEmailDiv" class="watch-more-action martT0">Läser in...</div>
+					<div id="shareMessageQuickDiv" class="watch-more-action">Läser in...</div>
+					<div id="watch-share-blog-quick" class="watch-more-action">Läser in...</div>
+					<div id="shareVideoResult" class="watch-action-result">Tack för att du delar med dig av det här videoklippet!</div>
+				</div>
+				<div id="watch-tab-favorite-body" class="watch-tab-body">
+					<div id="watch-add-faves-div" class="watch-more-action">
+						<form method="post" action="/watch_ajax?action_add_favorite_video=1" name="addToFavesForm">
+							
+							<input type="hidden" name="action_add_favorite_video" value="1" />
+							<input type="hidden" name="video_id" value="SiYurfwzyuY" />
+							<input type="checkbox" checked name="add_to_favorite" />
+						</form>
+					</div>
+					<div id="watch-add-faves-loading" class="watch-more-action">Sparar...</div>
+					<div id="watch-remove-faves-div" class="watch-more-action">
+						<form method="post" action="/watch_ajax" name="removeFromFavesForm">
+							
+							<input type="hidden" name="action_remove_favorite_video" value="1" />
+							<input type="hidden" name="video_id" value="SiYurfwzyuY" />
+							<input type="checkbox" checked name="remove_from_favorite" />
+						</form>
+					</div>
+					<div id="watch-add-faves-result" class="watch-more-action">
+						<div class="close"><a href="#" class="hLink" title="stäng detta lager" onclick="watchSelectTab(_gel('watch-tab-share')); return false;">stäng</a></div>
+						<div class="spacer">&nbsp;</div>
+						<div id="watch-remove-faves" class="watch-action-result">
+Det här videoklippet har lagts till bland dina <a href="/my_favorites">favoriter</a>.
+						</div>
+						<div id="watch-add-faves" class="watch-action-result">
+Det här videoklippet har tagits bort från dina <a href="/my_favorites">favoriter</a>.
+						</div>
+					</div>
+					<div id="watch-add-to-faves-switch" class="hid">
+						<div id="watch-remove-faves-wrapper">
+							<a class="yt-button" id="watch-remove-faves-btn" style="" href="#" onclick="removeFromFaves('removeFromFavesForm',event); return false;"><span>Ta bort från favoriter</span></a>
+
+						</div>
+						<div id="watch-add-faves-wrapper" class="hid">
+							<a class="yt-button" id="watch-add-faves-btn" style="" href="#" onclick="addToFaves('addToFavesForm',event); return false;"><span>Lägg till i favoriter</span></a>
+
+						</div>
+					</div>
+						<div id="addToFavesLogin" style="padding: 2px 8px 8px 8px;">
+						<div class="close"><a href="#" title="stäng detta lager" onclick="watchSelectTab(_gel('watch-tab-share')); return false;">stäng</a></div>
+						<div class="spacer">&nbsp;</div>
+						
+			<div style="border: 1px solid rgb(153, 153, 153); padding: 5px;">
+	<div style="border: 1px solid rgb(204, 204, 204); padding: 4px; background: #eee; text-align: center;">
+			<strong>Vill du lägga till Favoriter?</strong><br/>
+
+				<a href="	/login?next=/watch%3Fv%3DSiYurfwzyuY%23fav
+"><strong>Logga in på YouTube nu!</strong></a>
+
+			<div style="border-bottom: 1px dotted #999; margin-bottom: 5px; margin-top: 5px;"></div>
+			<span class="grayText smallText">
+			<a href="https://www.google.com/accounts/ServiceLogin?service=youtube&amp;hl=sv_SE&amp;passive=true&amp;skipll=true&amp;continue=http%3A//www.youtube.com/signup%3Fhl%3Dsv_SE%26warned%3D%26nomobiletemp%3D1%26next%3D/watch%253Fv%253DSiYurfwzyuY%2523fav&amp;">Logga in med ditt Google-konto!</a>
+			</span>
+
+		<a href="#" onClick="window.open('/t/help_gaia','login_help','width=580,height=480,resizable=yes,scrollbars=yes,status=0').focus();" rel="nofollow"><img src="http://s.ytimg.com/yt/img/pixel-vfl73.gif" border="0" alt="" style="background: transparent url(http://s.ytimg.com/yt/img/help-vfl69806.png) no-repeat scroll 0 0; width: 16px; height: 16px;vertical-align: middle;"></a>
+	</div>  		</div>  
+
+						</div>
+
+				</div>
+				<div id="watch-tab-playlists-body" class="watch-tab-body">
+					<div id="addToPlaylistDiv" class="watch-more-action">Läser in...</div>
+					<div id="addToPlaylistResult" class="watch-action-result">Videoklippet har lagts till i spellistan.</div>
+						<div id="addToPlaylistLogin" style="padding: 2px 8px 8px 8px;">
+						<div class="close"><a href="#" title="stäng detta lager" onclick="watchSelectTab(_gel('watch-tab-share')); return false;">stäng</a></div>
+						<div class="spacer">&nbsp;</div>
+						
+			<div style="border: 1px solid rgb(153, 153, 153); padding: 5px;">
+	<div style="border: 1px solid rgb(204, 204, 204); padding: 4px; background: #eee; text-align: center;">
+			<strong>Vill du lägga till i spellistor?</strong><br/>
+
+				<a href="	/login?next=/watch%3Fv%3DSiYurfwzyuY
+"><strong>Logga in på YouTube nu!</strong></a>
+
+			<div style="border-bottom: 1px dotted #999; margin-bottom: 5px; margin-top: 5px;"></div>
+			<span class="grayText smallText">
+			<a href="https://www.google.com/accounts/ServiceLogin?service=youtube&amp;hl=sv_SE&amp;passive=true&amp;skipll=true&amp;continue=http%3A//www.youtube.com/signup%3Fhl%3Dsv_SE%26warned%3D%26nomobiletemp%3D1&amp;">Logga in med ditt Google-konto!</a>
+			</span>
+
+		<a href="#" onClick="window.open('/t/help_gaia','login_help','width=580,height=480,resizable=yes,scrollbars=yes,status=0').focus();" rel="nofollow"><img src="http://s.ytimg.com/yt/img/pixel-vfl73.gif" border="0" alt="" style="background: transparent url(http://s.ytimg.com/yt/img/help-vfl69806.png) no-repeat scroll 0 0; width: 16px; height: 16px;vertical-align: middle;"></a>
+	</div>  		</div>  
+
+						</div>
+
+				</div>
+				<div id="watch-tab-flag-body" class="watch-tab-body">
+					<div id="inappropriateVidDiv" class="watch-more-action">Läser in...</div>
+					<div id="inappropriateMsgsDiv" class="hid"></div>
+						<div id="inappropriateMsgLogin" style="padding: 2px 8px 8px 8px;">
+						<div class="close"><a href="#" title="stäng detta lager" onclick="watchSelectTab(_gel('watch-tab-share')); return false;">stäng</a></div>
+						<div class="spacer">&nbsp;</div>
+						
+			<div style="border: 1px solid rgb(153, 153, 153); padding: 5px;">
+	<div style="border: 1px solid rgb(204, 204, 204); padding: 4px; background: #eee; text-align: center;">
+			<strong>Vill du flagga ett videoklipp?</strong><br/>
+
+				<a href="	/login?next=/watch%3Fv%3DSiYurfwzyuY
+"><strong>Logga in på YouTube nu!</strong></a>
+
+			<div style="border-bottom: 1px dotted #999; margin-bottom: 5px; margin-top: 5px;"></div>
+			<span class="grayText smallText">
+			<a href="https://www.google.com/accounts/ServiceLogin?service=youtube&amp;hl=sv_SE&amp;passive=true&amp;skipll=true&amp;continue=http%3A//www.youtube.com/signup%3Fhl%3Dsv_SE%26warned%3D%26nomobiletemp%3D1&amp;">Logga in med ditt Google-konto!</a>
+			</span>
+
+		<a href="#" onClick="window.open('/t/help_gaia','login_help','width=580,height=480,resizable=yes,scrollbars=yes,status=0').focus();" rel="nofollow"><img src="http://s.ytimg.com/yt/img/pixel-vfl73.gif" border="0" alt="" style="background: transparent url(http://s.ytimg.com/yt/img/help-vfl69806.png) no-repeat scroll 0 0; width: 16px; height: 16px;vertical-align: middle;"></a>
+	</div>  		</div>  
+
+						</div>
+
+				</div>
+			</div> 			<div class="spacer">&nbsp;</div>
+		</div> 
+	</div> 
+
+
+	
+
+
+
+
+	<div id="watch-comments-stats">
+		<table cellpadding="0" cellspacing="0" class="watch-tabs">
+			<tr>
+				<td id="watch-tab-commentary" onclick="watchSelectTab(this); urchinTracker('/Events/VideoWatch/InfoTab/Commentary');" class="master-sprite watch-tab-sel watch-tab-first">
+					<a href="#" onclick="return false">Kommentar</a>
+				</td>
+				<td id="watch-tab-stats" class="master-sprite" onclick="watchSelectTab(this); watchExpandStatBody(); urchinTracker('/Events/VideoWatch/InfoTab/Stats');">
+					<a href="#" onclick="return false">Statistik & data</a>
+				</td>
+			</tr>
+		</table>
+		<div class="watch-tab-contents">
+			<div id="watch-tab-commentary-body" class="watch-tab-body watch-tab-sel">
+					<div id="watch-comments-summary">
+Videosvar: <span id="watch-comments-numresponses">0</span>
+Textkommentarer: <span class="number-of-comments">186</span>
+	</div>
+
+	<div class="expand-panel  small-expand-panel">
+			<div class="floatR">
+					<a class="hLink bold" href="	/login?next=/video_response_upload%3Fv%3DSiYurfwzyuY
+" onclick="urchinTracker('/Events/VideoWatch/PostVideoResponseSignIn');">Logga in för att lägga upp ett videosvar</a>
+
+			</div>
+
+		<a href="#" onclick="togglePanel(this.parentNode); this.blur(); return false;" class="expand-header"><button title="" class="master-sprite watch-arrow"></button>Videosvar <span class="expand-header-stat">(0)</span></a>
+		<div id="watch-video-responses-none" class="expand-content">
+Detta videoklipp har <b>inga svar</b>. Bli först med att <a class="bold" href="/video_response_upload?v=SiYurfwzyuY">lägga upp ett videosvar</a>.
+		</div>
+
+		<div class="clear"></div>
+	</div>
+
+	<div id="watch-comment-panel" class="expand-panel expanded small-expand-panel" onexpanded="watchExpandComments('/watch_ajax?v=SiYurfwzyuY&amp;action_get_comments=1&amp;p=1&amp;commentthreshold=-5&amp;page_size=10', 186)" oncollapsed="watchCommentsPanelStateChange()">
+		<div id="watch-comment-post-comment">
+				<a href="#" class="hLink bold" onclick="showCommentReplyForm('main_comment2', '', false); urchinTracker('/Events/VideoWatch/PostTextCommentSignin'); return false;" id="post_text_comment_link" rel="nofollow">Logga in för att lägga upp en kommentar</a>
+
+		</div>
+
+		<a href="#" onclick="togglePanel(this.parentNode); this.blur(); return false;" class="expand-header"><button title="" class="master-sprite watch-arrow"></button>Textkommentarer <span class="expand-header-stat">(186)</span></a>
+		<div class="clear"></div>
+		<div class="expand-content">
+				<div id="watch-comment-filter">
+						<div style="margin:5px;">
+		<form action="" name="comments_filter">
+			<span class="smallText"><b>Visa:</b></span>
+			<select style="font-size: 10px;" name="commentthreshold" onChange="showLoading('recent_comments', this.value);getUrlXMLResponseAndFillDiv('/watch_ajax?v=SiYurfwzyuY&amp;savethreshold=yes&amp;action_get_comments=1&amp;p=1&amp;page_size=10&amp;commentthreshold='+this.value, 'recent_comments');">
+				<option  value="-1000">alla kommentarer</option>
+				<option  value="10">utmärkt (+10 eller bättre)</option>
+				<option  value="5">toppen (+5 eller bättre)</option>
+				<option  value="0">bra (0 eller bättre)</option>
+				<option  selected="selected"  value="-5">genomsnitt (-5 eller bättre)</option>
+				<option  value="-10">värdelöst (-10 eller bättre)</option>
+			</select> 
+			<span class="smallText">
+				<a href="#" class="eLink" onClick="return false;" onMouseover="showDiv('commentsHelp');return false;" onMouseout="hideDiv('commentsHelp');">Hjälp</a>
+				<span id="commentsHelp" class="smallText watch-comments-tooltip">
+Ändra detta för att bara se kommentarer över ett visst värde.<br> Ändra en kommentars värde genom att klicka på en miniatyr.
+				</span>
+			</span>
+		</form>
+	</div>
+
+				</div>
+
+
+			<div id="div_main_comment2"></div>
+
+			<div id="recent_comments" class="comments">								
+
+
+
+
+
+
+
+
+
+
+		
+
+	<div id="hDVtUiIsKvw" class="watch-comment-entry">
+
+
+
+
+		<div class="watch-comment-head">
+
+			<div class="watch-comment-info">
+				<a class="watch-comment-auth" href="/user/xupsiedasiex" rel="nofollow">xupsiedasiex</a>
+				<span class="watch-comment-time"> (1 dag sedan) </span>
+
+				<a id="show_link_hDVtUiIsKvw"  class="watch-comment-head-link" onclick="displayHideCommentLink('hDVtUiIsKvw')">Visa</a>
+				<a id="hide_link_hDVtUiIsKvw" class="watch-comment-head-link" onclick="displayShowCommentLink('hDVtUiIsKvw')">Dölj</a>
+			</div>
+					<div id="comment_vote_hDVtUiIsKvw" class="watch-comment-voting">
+
+	<span class="watch-comment-score watch-comment-gray">&nbsp;0</span>
+
+		<a href="	/login?next=/watch%3Fv%3DSiYurfwzyuY
+"><button class="master-sprite watch-comment-down" title="Värdelös kommentar" onMouseover="loginMsg('hDVtUiIsKvw', 1);" onMouseout="loginMsg('hDVtUiIsKvw', 0);"></button></a>
+		<a href="	/login?next=/watch%3Fv%3DSiYurfwzyuY
+"><button class="master-sprite watch-comment-up" title="Bra kommentar" onMouseover="loginMsg('hDVtUiIsKvw', 1);" onMouseout="loginMsg('hDVtUiIsKvw', 0);"></button></a>
+		<span id="comment_msg_hDVtUiIsKvw" class="watch-comment-msg"></span>
+
+	</div>
+
+
+			
+	<span id="comment_spam_bug_hDVtUiIsKvw" class="watch-comment-spam-bug">Markerat som skräppost</span>
+	<div id="reply_comment_form_id_hDVtUiIsKvw" class="watch-comment-action">
+			<a onclick="showCommentReplyForm('comment_form_id_hDVtUiIsKvw', 'hDVtUiIsKvw', false)">Svara</a> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	</div>
+
+			<div class="clearL"></div>
+		</div>
+
+			<div id="comment_body_hDVtUiIsKvw" >
+				<div class="watch-comment-body">
+					<div >
+
+						he shoud die﻿
+					</div>
+				</div>
+				<div id="div_comment_form_id_hDVtUiIsKvw"></div>
+			</div>
+
+
+
+
+
+	</div> 
+
+
+
+
+
+
+		
+
+	<div id="GbIOA5bl-Tk" class="watch-comment-entry">
+
+
+
+
+		<div class="watch-comment-head">
+
+			<div class="watch-comment-info">
+				<a class="watch-comment-auth" href="/user/redsoles87" rel="nofollow">redsoles87</a>
+				<span class="watch-comment-time"> (3 dagar sedan) </span>
+
+				<a id="show_link_GbIOA5bl-Tk"  class="watch-comment-head-link" onclick="displayHideCommentLink('GbIOA5bl-Tk')">Visa</a>
+				<a id="hide_link_GbIOA5bl-Tk" class="watch-comment-head-link" onclick="displayShowCommentLink('GbIOA5bl-Tk')">Dölj</a>
+			</div>
+					<div id="comment_vote_GbIOA5bl-Tk" class="watch-comment-voting">
+
+	<span class="watch-comment-score watch-comment-gray">&nbsp;0</span>
+
+		<a href="	/login?next=/watch%3Fv%3DSiYurfwzyuY
+"><button class="master-sprite watch-comment-down" title="Värdelös kommentar" onMouseover="loginMsg('GbIOA5bl-Tk', 1);" onMouseout="loginMsg('GbIOA5bl-Tk', 0);"></button></a>
+		<a href="	/login?next=/watch%3Fv%3DSiYurfwzyuY
+"><button class="master-sprite watch-comment-up" title="Bra kommentar" onMouseover="loginMsg('GbIOA5bl-Tk', 1);" onMouseout="loginMsg('GbIOA5bl-Tk', 0);"></button></a>
+		<span id="comment_msg_GbIOA5bl-Tk" class="watch-comment-msg"></span>
+
+	</div>
+
+
+			
+	<span id="comment_spam_bug_GbIOA5bl-Tk" class="watch-comment-spam-bug">Markerat som skräppost</span>
+	<div id="reply_comment_form_id_GbIOA5bl-Tk" class="watch-comment-action">
+			<a onclick="showCommentReplyForm('comment_form_id_GbIOA5bl-Tk', 'GbIOA5bl-Tk', false)">Svara</a> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	</div>
+
+			<div class="clearL"></div>
+		</div>
+
+			<div id="comment_body_GbIOA5bl-Tk" >
+				<div class="watch-comment-body">
+					<div >
+
+						ohhhhhhhhh
+					</div>
+				</div>
+				<div id="div_comment_form_id_GbIOA5bl-Tk"></div>
+			</div>
+
+
+
+
+
+	</div> 
+
+
+
+
+
+
+		
+
+	<div id="B_8lmO9WaEc" class="watch-comment-entry">
+
+
+
+
+		<div class="watch-comment-head">
+
+			<div class="watch-comment-info">
+				<a class="watch-comment-auth" href="/user/movielibuff" rel="nofollow">movielibuff</a>
+				<span class="watch-comment-time"> (5 dagar sedan) </span>
+
+				<a id="show_link_B_8lmO9WaEc"  class="watch-comment-head-link" onclick="displayHideCommentLink('B_8lmO9WaEc')">Visa</a>
+				<a id="hide_link_B_8lmO9WaEc" class="watch-comment-head-link" onclick="displayShowCommentLink('B_8lmO9WaEc')">Dölj</a>
+			</div>
+					<div id="comment_vote_B_8lmO9WaEc" class="watch-comment-voting">
+
+	<span class="watch-comment-score watch-comment-green">+1</span>
+
+		<a href="	/login?next=/watch%3Fv%3DSiYurfwzyuY
+"><button class="master-sprite watch-comment-down" title="Värdelös kommentar" onMouseover="loginMsg('B_8lmO9WaEc', 1);" onMouseout="loginMsg('B_8lmO9WaEc', 0);"></button></a>
+		<a href="	/login?next=/watch%3Fv%3DSiYurfwzyuY
+"><button class="master-sprite watch-comment-up" title="Bra kommentar" onMouseover="loginMsg('B_8lmO9WaEc', 1);" onMouseout="loginMsg('B_8lmO9WaEc', 0);"></button></a>
+		<span id="comment_msg_B_8lmO9WaEc" class="watch-comment-msg"></span>
+
+	</div>
+
+
+			
+	<span id="comment_spam_bug_B_8lmO9WaEc" class="watch-comment-spam-bug">Markerat som skräppost</span>
+	<div id="reply_comment_form_id_B_8lmO9WaEc" class="watch-comment-action">
+			<a onclick="showCommentReplyForm('comment_form_id_B_8lmO9WaEc', 'B_8lmO9WaEc', false)">Svara</a> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	</div>
+
+			<div class="clearL"></div>
+		</div>
+
+			<div id="comment_body_B_8lmO9WaEc" >
+				<div class="watch-comment-body">
+					<div >
+
+						ohh myy !! aaron, so cute! :D
+					</div>
+				</div>
+				<div id="div_comment_form_id_B_8lmO9WaEc"></div>
+			</div>
+
+
+
+
+
+	</div> 
+
+
+
+
+
+
+		
+
+	<div id="o9R08byMvKY" class="watch-comment-entry">
+
+
+
+
+		<div class="watch-comment-head">
+
+			<div class="watch-comment-info">
+				<a class="watch-comment-auth" href="/user/Charmz09" rel="nofollow">Charmz09</a>
+				<span class="watch-comment-time"> (6 dagar sedan) </span>
+
+				<a id="show_link_o9R08byMvKY"  class="watch-comment-head-link" onclick="displayHideCommentLink('o9R08byMvKY')">Visa</a>
+				<a id="hide_link_o9R08byMvKY" class="watch-comment-head-link" onclick="displayShowCommentLink('o9R08byMvKY')">Dölj</a>
+			</div>
+					<div id="comment_vote_o9R08byMvKY" class="watch-comment-voting">
+
+	<span class="watch-comment-score watch-comment-gray">&nbsp;0</span>
+
+		<a href="	/login?next=/watch%3Fv%3DSiYurfwzyuY
+"><button class="master-sprite watch-comment-down" title="Värdelös kommentar" onMouseover="loginMsg('o9R08byMvKY', 1);" onMouseout="loginMsg('o9R08byMvKY', 0);"></button></a>
+		<a href="	/login?next=/watch%3Fv%3DSiYurfwzyuY
+"><button class="master-sprite watch-comment-up" title="Bra kommentar" onMouseover="loginMsg('o9R08byMvKY', 1);" onMouseout="loginMsg('o9R08byMvKY', 0);"></button></a>
+		<span id="comment_msg_o9R08byMvKY" class="watch-comment-msg"></span>
+
+	</div>
+
+
+			
+	<span id="comment_spam_bug_o9R08byMvKY" class="watch-comment-spam-bug">Markerat som skräppost</span>
+	<div id="reply_comment_form_id_o9R08byMvKY" class="watch-comment-action">
+			<a onclick="showCommentReplyForm('comment_form_id_o9R08byMvKY', 'o9R08byMvKY', false)">Svara</a> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	</div>
+
+			<div class="clearL"></div>
+		</div>
+
+			<div id="comment_body_o9R08byMvKY" >
+				<div class="watch-comment-body">
+					<div >
+
+						lmao
+					</div>
+				</div>
+				<div id="div_comment_form_id_o9R08byMvKY"></div>
+			</div>
+
+
+
+
+
+	</div> 
+
+
+
+
+
+
+		
+
+	<div id="9KMhlHOzHTw" class="watch-comment-entry">
+
+
+
+
+		<div class="watch-comment-head">
+
+			<div class="watch-comment-info">
+				<a class="watch-comment-auth" href="/user/princesskazabella" rel="nofollow">princesskazabella</a>
+				<span class="watch-comment-time"> (1 vecka sedan) </span>
+
+				<a id="show_link_9KMhlHOzHTw"  class="watch-comment-head-link" onclick="displayHideCommentLink('9KMhlHOzHTw')">Visa</a>
+				<a id="hide_link_9KMhlHOzHTw" class="watch-comment-head-link" onclick="displayShowCommentLink('9KMhlHOzHTw')">Dölj</a>
+			</div>
+					<div id="comment_vote_9KMhlHOzHTw" class="watch-comment-voting">
+
+	<span class="watch-comment-score watch-comment-gray">&nbsp;0</span>
+
+		<a href="	/login?next=/watch%3Fv%3DSiYurfwzyuY
+"><button class="master-sprite watch-comment-down" title="Värdelös kommentar" onMouseover="loginMsg('9KMhlHOzHTw', 1);" onMouseout="loginMsg('9KMhlHOzHTw', 0);"></button></a>
+		<a href="	/login?next=/watch%3Fv%3DSiYurfwzyuY
+"><button class="master-sprite watch-comment-up" title="Bra kommentar" onMouseover="loginMsg('9KMhlHOzHTw', 1);" onMouseout="loginMsg('9KMhlHOzHTw', 0);"></button></a>
+		<span id="comment_msg_9KMhlHOzHTw" class="watch-comment-msg"></span>
+
+	</div>
+
+
+			
+	<span id="comment_spam_bug_9KMhlHOzHTw" class="watch-comment-spam-bug">Markerat som skräppost</span>
+	<div id="reply_comment_form_id_9KMhlHOzHTw" class="watch-comment-action">
+			<a onclick="showCommentReplyForm('comment_form_id_9KMhlHOzHTw', '9KMhlHOzHTw', false)">Svara</a> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	</div>
+
+			<div class="clearL"></div>
+		</div>
+
+			<div id="comment_body_9KMhlHOzHTw" >
+				<div class="watch-comment-body">
+					<div >
+
+						he looks about 5 years old! lol
+					</div>
+				</div>
+				<div id="div_comment_form_id_9KMhlHOzHTw"></div>
+			</div>
+
+
+
+
+
+	</div> 
+
+
+
+
+
+
+		
+
+	<div id="hxq9jEuFw7c" class="watch-comment-entry">
+
+
+
+
+		<div class="watch-comment-head">
+
+			<div class="watch-comment-info">
+				<a class="watch-comment-auth" href="/user/Hollywoodgirl1994" rel="nofollow">Hollywoodgirl1994</a>
+				<span class="watch-comment-time"> (1 vecka sedan) </span>
+
+				<a id="show_link_hxq9jEuFw7c"  class="watch-comment-head-link" onclick="displayHideCommentLink('hxq9jEuFw7c')">Visa</a>
+				<a id="hide_link_hxq9jEuFw7c" class="watch-comment-head-link" onclick="displayShowCommentLink('hxq9jEuFw7c')">Dölj</a>
+			</div>
+					<div id="comment_vote_hxq9jEuFw7c" class="watch-comment-voting">
+
+	<span class="watch-comment-score watch-comment-green">+3</span>
+
+		<a href="	/login?next=/watch%3Fv%3DSiYurfwzyuY
+"><button class="master-sprite watch-comment-down" title="Värdelös kommentar" onMouseover="loginMsg('hxq9jEuFw7c', 1);" onMouseout="loginMsg('hxq9jEuFw7c', 0);"></button></a>
+		<a href="	/login?next=/watch%3Fv%3DSiYurfwzyuY
+"><button class="master-sprite watch-comment-up" title="Bra kommentar" onMouseover="loginMsg('hxq9jEuFw7c', 1);" onMouseout="loginMsg('hxq9jEuFw7c', 0);"></button></a>
+		<span id="comment_msg_hxq9jEuFw7c" class="watch-comment-msg"></span>
+
+	</div>
+
+
+			
+	<span id="comment_spam_bug_hxq9jEuFw7c" class="watch-comment-spam-bug">Markerat som skräppost</span>
+	<div id="reply_comment_form_id_hxq9jEuFw7c" class="watch-comment-action">
+			<a onclick="showCommentReplyForm('comment_form_id_hxq9jEuFw7c', 'hxq9jEuFw7c', false)">Svara</a> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	</div>
+
+			<div class="clearL"></div>
+		</div>
+
+			<div id="comment_body_hxq9jEuFw7c" >
+				<div class="watch-comment-body">
+					<div >
+
+						very cool i Love this song !!!
+					</div>
+				</div>
+				<div id="div_comment_form_id_hxq9jEuFw7c"></div>
+			</div>
+
+
+
+
+
+	</div> 
+
+
+
+
+
+
+		
+
+	<div id="F8EAQv0H_gE" class="watch-comment-entry">
+
+
+
+
+		<div class="watch-comment-head">
+
+			<div class="watch-comment-info">
+				<a class="watch-comment-auth" href="/user/ArabianHaven" rel="nofollow">ArabianHaven</a>
+				<span class="watch-comment-time"> (1 vecka sedan) </span>
+
+				<a id="show_link_F8EAQv0H_gE"  class="watch-comment-head-link" onclick="displayHideCommentLink('F8EAQv0H_gE')">Visa</a>
+				<a id="hide_link_F8EAQv0H_gE" class="watch-comment-head-link" onclick="displayShowCommentLink('F8EAQv0H_gE')">Dölj</a>
+			</div>
+					<div id="comment_vote_F8EAQv0H_gE" class="watch-comment-voting">
+
+	<span class="watch-comment-score watch-comment-green">+2</span>
+
+		<a href="	/login?next=/watch%3Fv%3DSiYurfwzyuY
+"><button class="master-sprite watch-comment-down" title="Värdelös kommentar" onMouseover="loginMsg('F8EAQv0H_gE', 1);" onMouseout="loginMsg('F8EAQv0H_gE', 0);"></button></a>
+		<a href="	/login?next=/watch%3Fv%3DSiYurfwzyuY
+"><button class="master-sprite watch-comment-up" title="Bra kommentar" onMouseover="loginMsg('F8EAQv0H_gE', 1);" onMouseout="loginMsg('F8EAQv0H_gE', 0);"></button></a>
+		<span id="comment_msg_F8EAQv0H_gE" class="watch-comment-msg"></span>
+
+	</div>
+
+
+			
+	<span id="comment_spam_bug_F8EAQv0H_gE" class="watch-comment-spam-bug">Markerat som skräppost</span>
+	<div id="reply_comment_form_id_F8EAQv0H_gE" class="watch-comment-action">
+			<a onclick="showCommentReplyForm('comment_form_id_F8EAQv0H_gE', 'F8EAQv0H_gE', false)">Svara</a> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	</div>
+
+			<div class="clearL"></div>
+		</div>
+
+			<div id="comment_body_F8EAQv0H_gE" >
+				<div class="watch-comment-body">
+					<div >
+
+						Oh he is so adorable. I think that is so cute.
+					</div>
+				</div>
+				<div id="div_comment_form_id_F8EAQv0H_gE"></div>
+			</div>
+
+
+
+
+
+	</div> 
+
+
+
+
+
+
+		
+
+	<div id="X1Zobg-mfsg" class="watch-comment-entry">
+
+
+
+
+		<div class="watch-comment-head">
+
+			<div class="watch-comment-info">
+				<a class="watch-comment-auth" href="/user/TheGoose91" rel="nofollow">TheGoose91</a>
+				<span class="watch-comment-time"> (1 vecka sedan) </span>
+
+				<a id="show_link_X1Zobg-mfsg"  class="watch-comment-head-link" onclick="displayHideCommentLink('X1Zobg-mfsg')">Visa</a>
+				<a id="hide_link_X1Zobg-mfsg" class="watch-comment-head-link" onclick="displayShowCommentLink('X1Zobg-mfsg')">Dölj</a>
+			</div>
+					<div id="comment_vote_X1Zobg-mfsg" class="watch-comment-voting">
+
+	<span class="watch-comment-score watch-comment-red">&nbsp;-3</span>
+
+		<a href="	/login?next=/watch%3Fv%3DSiYurfwzyuY
+"><button class="master-sprite watch-comment-down" title="Värdelös kommentar" onMouseover="loginMsg('X1Zobg-mfsg', 1);" onMouseout="loginMsg('X1Zobg-mfsg', 0);"></button></a>
+		<a href="	/login?next=/watch%3Fv%3DSiYurfwzyuY
+"><button class="master-sprite watch-comment-up" title="Bra kommentar" onMouseover="loginMsg('X1Zobg-mfsg', 1);" onMouseout="loginMsg('X1Zobg-mfsg', 0);"></button></a>
+		<span id="comment_msg_X1Zobg-mfsg" class="watch-comment-msg"></span>
+
+	</div>
+
+
+			
+	<span id="comment_spam_bug_X1Zobg-mfsg" class="watch-comment-spam-bug">Markerat som skräppost</span>
+	<div id="reply_comment_form_id_X1Zobg-mfsg" class="watch-comment-action">
+			<a onclick="showCommentReplyForm('comment_form_id_X1Zobg-mfsg', 'X1Zobg-mfsg', false)">Svara</a> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	</div>
+
+			<div class="clearL"></div>
+		</div>
+
+			<div id="comment_body_X1Zobg-mfsg" >
+				<div class="watch-comment-body">
+					<div >
+
+						I lol'd at the first 10 seconds, then it was pretty mental. But I made it through it all...
+					</div>
+				</div>
+				<div id="div_comment_form_id_X1Zobg-mfsg"></div>
+			</div>
+
+
+
+
+
+	</div> 
+
+
+
+
+
+
+		
+
+	<div id="vVYmIO91Go0" class="watch-comment-entry">
+
+
+
+
+		<div class="watch-comment-head">
+
+			<div class="watch-comment-info">
+				<a class="watch-comment-auth" href="/user/MAsterKakashi6" rel="nofollow">MAsterKakashi6</a>
+				<span class="watch-comment-time"> (1 vecka sedan) </span>
+
+				<a id="show_link_vVYmIO91Go0"  class="watch-comment-head-link" onclick="displayHideCommentLink('vVYmIO91Go0')">Visa</a>
+				<a id="hide_link_vVYmIO91Go0" class="watch-comment-head-link" onclick="displayShowCommentLink('vVYmIO91Go0')">Dölj</a>
+			</div>
+					<div id="comment_vote_vVYmIO91Go0" class="watch-comment-voting">
+
+	<span class="watch-comment-score watch-comment-red">&nbsp;-4</span>
+
+		<a href="	/login?next=/watch%3Fv%3DSiYurfwzyuY
+"><button class="master-sprite watch-comment-down" title="Värdelös kommentar" onMouseover="loginMsg('vVYmIO91Go0', 1);" onMouseout="loginMsg('vVYmIO91Go0', 0);"></button></a>
+		<a href="	/login?next=/watch%3Fv%3DSiYurfwzyuY
+"><button class="master-sprite watch-comment-up" title="Bra kommentar" onMouseover="loginMsg('vVYmIO91Go0', 1);" onMouseout="loginMsg('vVYmIO91Go0', 0);"></button></a>
+		<span id="comment_msg_vVYmIO91Go0" class="watch-comment-msg"></span>
+
+	</div>
+
+
+			
+	<span id="comment_spam_bug_vVYmIO91Go0" class="watch-comment-spam-bug">Markerat som skräppost</span>
+	<div id="reply_comment_form_id_vVYmIO91Go0" class="watch-comment-action">
+			<a onclick="showCommentReplyForm('comment_form_id_vVYmIO91Go0', 'vVYmIO91Go0', false)">Svara</a> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	</div>
+
+			<div class="clearL"></div>
+		</div>
+
+			<div id="comment_body_vVYmIO91Go0" >
+				<div class="watch-comment-body">
+					<div >
+
+						This is just like softcore﻿ porn and Barbie Girl intermixed.
+					</div>
+				</div>
+				<div id="div_comment_form_id_vVYmIO91Go0"></div>
+			</div>
+
+
+
+
+
+	</div> 
+
+
+
+
+
+
+		
+
+	<div id="-zZGt2l8GA4" class="watch-comment-entry">
+
+
+
+
+		<div class="watch-comment-head">
+
+			<div class="watch-comment-info">
+				<a class="watch-comment-auth" href="/user/Kytall" rel="nofollow">Kytall</a>
+				<span class="watch-comment-time"> (1 vecka sedan) </span>
+
+				<a id="show_link_-zZGt2l8GA4"  class="watch-comment-head-link" onclick="displayHideCommentLink('-zZGt2l8GA4')">Visa</a>
+				<a id="hide_link_-zZGt2l8GA4" class="watch-comment-head-link" onclick="displayShowCommentLink('-zZGt2l8GA4')">Dölj</a>
+			</div>
+					<div id="comment_vote_-zZGt2l8GA4" class="watch-comment-voting">
+
+	<span class="watch-comment-score watch-comment-red">&nbsp;-1</span>
+
+		<a href="	/login?next=/watch%3Fv%3DSiYurfwzyuY
+"><button class="master-sprite watch-comment-down" title="Värdelös kommentar" onMouseover="loginMsg('-zZGt2l8GA4', 1);" onMouseout="loginMsg('-zZGt2l8GA4', 0);"></button></a>
+		<a href="	/login?next=/watch%3Fv%3DSiYurfwzyuY
+"><button class="master-sprite watch-comment-up" title="Bra kommentar" onMouseover="loginMsg('-zZGt2l8GA4', 1);" onMouseout="loginMsg('-zZGt2l8GA4', 0);"></button></a>
+		<span id="comment_msg_-zZGt2l8GA4" class="watch-comment-msg"></span>
+
+	</div>
+
+
+			
+	<span id="comment_spam_bug_-zZGt2l8GA4" class="watch-comment-spam-bug">Markerat som skräppost</span>
+	<div id="reply_comment_form_id_-zZGt2l8GA4" class="watch-comment-action">
+			<a onclick="showCommentReplyForm('comment_form_id_-zZGt2l8GA4', '-zZGt2l8GA4', false)">Svara</a> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	</div>
+
+			<div class="clearL"></div>
+		</div>
+
+			<div id="comment_body_-zZGt2l8GA4" >
+				<div class="watch-comment-body">
+					<div >
+
+						24 seconds.<br/><br/>There needs to be an epic rage comic over this.
+					</div>
+				</div>
+				<div id="div_comment_form_id_-zZGt2l8GA4"></div>
+			</div>
+
+
+
+
+
+	</div> 
+
+
+
+
+		<div class="watch-comment-pagination">
+<div class="floatR">
+
+
+<span class="watch-comment-pnum"><a href="#" onclick="showLoading('recent_comments');getUrlXMLResponseAndFillDiv('/watch_ajax?v=SiYurfwzyuY&amp;action_get_comments=1&amp;p=2&amp;commentthreshold=-5&amp;page_size=10', 'recent_comments'); return false;">Nästa</a></span>
+
+</div>
+
+<div class="floatL">
+	<span class="watch-comment-pnum">Sidor:</span>
+
+
+
+			<span class="watch-comment-pnum">1</span>
+
+			<span class="watch-comment-pnum"><a href="#" onclick="showLoading('recent_comments');getUrlXMLResponseAndFillDiv('/watch_ajax?v=SiYurfwzyuY&amp;action_get_comments=1&amp;p=2&amp;commentthreshold=-5&amp;page_size=10', 'recent_comments'); return false;">2</a></span>
+
+			<span class="watch-comment-pnum"><a href="#" onclick="showLoading('recent_comments');getUrlXMLResponseAndFillDiv('/watch_ajax?v=SiYurfwzyuY&amp;action_get_comments=1&amp;p=3&amp;commentthreshold=-5&amp;page_size=10', 'recent_comments'); return false;">3</a></span>
+
+
+		&#160;...&#160;
+
+		</b>
+
+</div>
+
+<div class="clear"></div>
+</div>
+
+
+
+
+</div>
+
+
+			<div id="watch-comment-view-all"><a href="/comment_servlet?all_comments&amp;v=SiYurfwzyuY&amp;fromurl=/watch%3Fv%3DSiYurfwzyuY" class="hLink" onmousedown="urchinTracker('/Events/VideoWatch/ViewAllComments');" rel="nofollow">Öppna alla 186 kommentarer</a></div>
+
+				<div id="watch-comment-post">
+					<h2>Vill du kommentera?</h2>
+					<div>
+<a href="/signup?next=/watch%3Fv%3DSiYurfwzyuY">Registrera dig på YouTube</a> för ett gratis konto eller <a href="	/login?next=/watch%3Fv%3DSiYurfwzyuY
+">logga in</a> om du redan är medlem.
+					</div>
+
+				</div> <!-- end post a comment section -->
+
+				<div id="div_main_comment"></div>
+
+		</div> 	</div> 
+
+			</div>
+			<div id="watch-tab-stats-body" class="watch-tab-body">Läser in...</div>
+		</div>
+	</div>
+
+</div> 
+
+
+
+
+
+
+
+<div id='toolbar'>
+	<div id='toolbar_playing_controls'>
+	</div>
+	<div id='toolbar_presence'>
+	</div>
+</div>
+
+		<div class="clear"></div>
+	
+	<div id="footer">
+		<div class="search">
+			<table width="100%" cellspacing="0" cellpadding="0">
+				<tr>
+					<td>
+						<div id="igoogle-footer">
+							<a href="http://www.google.se/webmasters/igoogle/youtube.html"><button onclick="window.location.href='http://www.google.se/webmasters/igoogle/youtube.html'" class="master-sprite" title=""></button><span class="hLink">Lägg till på iGoogle</span></a>
+						</div>
+					</td>
+
+					<td>
+							<form autocomplete="off" class="search-form" action="/results" method="get" name="footer-search-form">
+
+		<input id="search-type-footer" name="search_type" type="hidden" value="">
+		<input id="footer-search-term" class="search-term" name="search_query" type="text"  onkeyup = "top.goog.i18n.bidi.setDirAttribute(event,this)"  value="" maxlength="128"  onfocus="addClass(this, 'search-term-focus')" onblur="removeClass(this, 'search-term-focus')">
+		<div class="footer-button-wrapper">
+				<a class="yt-button yt-button-primary" id="" style="" href="#" onclick="document.searchForm.submit(); return false;"><span>Sök</span></a>
+
+		</div>
+	</form>
+
+					</td>
+
+					<td>
+					</td>
+
+				</tr>
+			</table>
+
+		</div>
+		<div class="links">
+			<table cellpadding="0" cellspacing="0">
+				<tr>
+					<th colspan="2">Ditt konto</th>
+					<th class="separator" colspan="2">Hjälp och information</th>
+					<th class="separator" colspan="2">YouTube</th>
+				</tr>
+				<tr>
+					<td><a href="/my_videos">Videoklipp</a></td>
+					<td><a href="/inbox">Inkorg</a></td>
+					<td class="separator"><a href="http://help.youtube.com/support/youtube/bin/static.py?page=start.cs&hl=sv-SE">Hjälpresurser</a></td>
+					<td><a href="/t/yt_handbook_home">Handbok för YouTube</a></td>
+					<td class="separator"><a href="/t/about">Företagsinformation</a></td>
+					<td><a href="/press_room">Press</a></td>
+				</tr>
+				<tr>
+					<td><a href="/my_favorites">Favoriter</a></td>
+					<td><a href="/my_subscriptions">Prenumerationer</a></td>
+											<td class="separator"><a href="/t/safety">Säkerhetstips</a></td>
+					<td><a href="/t/copyright_notice">Upphovsrättsanmälan</a></td>
+					<td class="separator"><a href="/testtube">TestTube</a></td>
+					<td><a href="/t/contact_us">Kontakt</a></td>
+				</tr>
+				<tr>
+					<td><a href="/my_playlists">Spellistor</a></td>
+					<td><a href="/my_account">mer...</a></td>
+					<td class="separator"><a href="/dev">API för utvecklare</a></td>
+					<td><a href="/t/community_guidelines">Riktlinjer för vårt community</a></td>
+						<td class="separator"><a href="/t/terms">Användarvillkor</a></td>
+					<td><a href="/blog">Blogg</a></td>
+				</tr>
+				<tr>
+					<td colspan="2">&nbsp;</td>
+					<td class="separator"><a href="/advertise">Annonsering</a></td>
+					<td><a href="/youtubeonyoursite">YouTube på din webbplats</a></td>
+					<td class="separator"><a href="/t/privacy">Sekretesspolicy</a></td>
+					<td>
+					</td>
+				</tr>
+
+			</table>
+		</div>
+	</div>
+	<div id="copyright">
+		&copy; 2009 YouTube, LLC
+	</div>
+
+
+
+
+
+
+<div id="preview-comment-swf-div" style="display:block"></div>
+
+
+</div> <!-- end baseDiv -->
+
+
+
+<a name="pageBottom"></a>
+
+</body>
+
+	<script type="text/javascript">
+		window.setTimeout('window.google.ac.install(document.searchForm,document.searchForm.search_query,"yt",true,"stäng",true,"Förslag")', 100);
+	</script>
+
+
+
+</html>

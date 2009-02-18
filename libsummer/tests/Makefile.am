@@ -41,4 +41,5 @@ EXTRA_DIST = \
 	atom_feed_nolink \
 	epicfu \
 	feed \
-	rss2sample.xml
+	rss2sample.xml \
+	watch?v=SiYurfwzyuY
