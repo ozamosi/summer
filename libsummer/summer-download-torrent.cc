@@ -60,6 +60,7 @@ struct _SummerDownloadTorrentPrivate {
 
 static libtorrent::session *session;
 static gint session_refs = 0;
+static guint session_event_handler;
 
 static gushort default_min_port = 6881;
 static gushort default_max_port = 6899;
@@ -78,13 +79,70 @@ enum {
 
 G_DEFINE_TYPE (SummerDownloadTorrent, summer_download_torrent, SUMMER_TYPE_DOWNLOAD);
 
+static SummerDownloadTorrent*
+get_download_torrent (libtorrent::torrent_handle handle) {
+	GSList *l;
+	for (l = downloads; l != NULL; l = l->next) {
+		if (SUMMER_DOWNLOAD_TORRENT (l->data)->priv->handle == handle)
+			break;
+	}
+
+	if (l == NULL) {
+		g_warning ("Have handle without download_torrent object");
+		return NULL;
+	}
+	return SUMMER_DOWNLOAD_TORRENT (l->data);
+}
+
 static gboolean
-check_done_seeding (gpointer data) {
+handle_alert (gpointer data)
+{
+	std::auto_ptr<libtorrent::alert> a;
+	a = session->pop_alert ();
+	libtorrent::alert *alert = a.get ();
+	if (alert == NULL)
+		return TRUE;
+
+	if (libtorrent::torrent_finished_alert *p = 
+			dynamic_cast<libtorrent::torrent_finished_alert*> (alert)) {
+		libtorrent::torrent_handle h = p->handle;
+		h.save_resume_data ();
+	} else if (libtorrent::save_resume_data_alert *p = 
+			dynamic_cast<libtorrent::save_resume_data_alert*> (alert)) {
+		SummerDownloadTorrent *dl = get_download_torrent (p->handle);
+		if (!dl) {
+			session->remove_torrent (p->handle);
+			return TRUE;
+		}
+		gchar *tmp_dir;
+		tmp_dir = summer_download_get_tmp_dir (SUMMER_DOWNLOAD (dl));
+		boost::filesystem::path out_path (tmp_dir);
+		g_free (tmp_dir);
+		out_path /= dl->priv->handle.get_torrent_info ().name () + ".fastresume";
+		summer_debug ("Saving fastresume to %s", out_path.string ().c_str ());
+		boost::filesystem::ofstream out (out_path, std::ios_base::binary);
+		out.unsetf (std::ios_base::skipws);
+		libtorrent::bencode (std::ostream_iterator<char> (out), 
+			*p->resume_data);
+	} else if (libtorrent::save_resume_data_failed_alert *p = 
+			dynamic_cast<libtorrent::save_resume_data_failed_alert*> (alert)) {
+		SummerDownloadTorrent *dl = get_download_torrent (p->handle);
+		if (!dl) {
+			session->remove_torrent (p->handle);
+			return TRUE;
+		}
+		g_object_unref (dl);
+	}
+	return TRUE;
+}
+
+static gboolean
+check_done_seeding (gpointer data)
+{
 	if (!SUMMER_IS_DOWNLOAD_TORRENT (data))
 		return FALSE;
 	SummerDownloadTorrent *self = SUMMER_DOWNLOAD_TORRENT (data);
 	libtorrent::torrent_status status = self->priv->handle.status ();
-
 	gchar *name;
 	g_object_get (self, "filename", &name, NULL);
 	
@@ -314,6 +372,9 @@ summer_download_torrent_init (SummerDownloadTorrent *self)
 	if (session_refs == 0) {
 		session = new libtorrent::session ();
 		session->listen_on (std::make_pair (default_min_port, default_max_port));
+		session->set_alert_mask (libtorrent::alert::storage_notification | libtorrent::alert::error_notification);
+		session_event_handler = g_timeout_add_seconds (2, 
+			(GSourceFunc) handle_alert, NULL);
 		summer_debug ("Listening on %u", session->listen_port ());
 	}
 	session_refs++;
@@ -409,7 +470,7 @@ create_autoresume ()
 {
 	std::vector<libtorrent::torrent_handle> handles = session->get_torrents ();
 	session->pause ();
-	session->set_alert_mask (libtorrent::alert::storage_notification | libtorrent::alert::error_notification);
+	g_source_remove (session_event_handler);
 	int num_resume_data = 0;
 	for (std::vector<libtorrent::torrent_handle>::iterator handle = handles.begin ();
 			handle != handles.end (); handle++) {
