@@ -79,4 +79,4 @@ libsummer_la_SOURCES = \
 	$(NOINST_H_FILES) \
 	$(INST_H_FILES)
 
-EXTRA_DIST = soup-marshal.list
+EXTRA_DIST = summer-marshal.list

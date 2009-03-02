@@ -16,7 +16,7 @@ summer_la_SOURCES = \
 
 summer_la_LDFLAGS = \
 	-module -avoid-version \
-	$(top_srcdir)/libsummer/libsummer.la \
+	$(top_builddir)/libsummer/libsummer.la \
 	$(PYGOBJECT_LIBS) \
 	$(GLIB_LIBS) \
 	$(SOUP_LIBS)

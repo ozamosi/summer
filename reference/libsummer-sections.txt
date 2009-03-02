@@ -88,6 +88,7 @@ SUMMER_DOWNLOAD_GET_CLASS
 <TITLE>SummerFeed</TITLE>
 SummerFeed
 summer_feed_new
+summer_feed_shutdown
 summer_feed_start
 summer_feed_get_author
 summer_feed_get_cache_dir
@@ -216,7 +217,6 @@ SummerWebBackend
 summer_web_backend_new
 summer_web_backend_fetch
 summer_web_backend_fetch_head
-summer_web_backend_fake_firefox
 <SUBSECTION Standard>
 SummerWebBackendClass
 SummerWebBackendPrivate
