@@ -59,6 +59,12 @@ summer_create_download (SummerItemData *item)
 		summer_debug ("Starting youtube download of '%s'", item->title);
 	else if ((dl = summer_download_web_new (item)))
 		summer_debug ("Starting web download of '%s'", item->title);
+	
+	if (dl == NULL) {
+		SummerFeedCache *cache = summer_feed_cache_get ();
+		summer_feed_cache_add_new_item (cache, item);
+		g_object_unref (cache);
+	}
 
 	return dl;
 }
