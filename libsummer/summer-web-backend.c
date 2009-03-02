@@ -148,7 +148,9 @@ constructor (GType gtype, guint n_properties, GObjectConstructParam *properties)
 	gchar** parts = g_strsplit (priv->url, "/", 0);
 	gchar** filename;
 	for (filename = parts; *filename != NULL; filename++) {}
-	priv->filename = g_strdup (*(--filename));
+	if (!g_strcmp0 (*(--filename), ""))
+		filename--;
+	priv->filename = g_strdup (*filename);
 	g_strfreev (parts);
 
 	return obj;
