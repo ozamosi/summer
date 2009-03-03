@@ -96,15 +96,3 @@ _wrap_summer_item_data_get_downloadables (PyGObject *self)
 	g_list_free (list);
 	return py_list;
 }
-%%
-override summer_download_start noargs
-static PyObject *
-_wrap_summer_download_start(PyGObject *self)
-{
-
-    summer_download_start(SUMMER_DOWNLOAD(self->obj));
-	g_object_ref (G_OBJECT (self->obj));
-
-    Py_INCREF(Py_None);
-    return Py_None;
-}
