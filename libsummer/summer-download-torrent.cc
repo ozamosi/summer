@@ -52,6 +52,7 @@ static void summer_download_torrent_finalize   (GObject *obj);
 struct _SummerDownloadTorrentPrivate {
 	libtorrent::torrent_handle handle;
 	gfloat max_ratio;
+	gboolean completing;
 };
 
 #define SUMMER_DOWNLOAD_TORRENT_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE((o), \
@@ -132,7 +133,16 @@ handle_alert (gpointer data)
 			return TRUE;
 		}
 		g_object_unref (dl);
+	} else if (libtorrent::storage_moved_alert *p =
+			dynamic_cast<libtorrent::storage_moved_alert *> (alert)) {
+		SummerDownloadTorrent *dl = get_download_torrent (p->handle);
+		if (dl->priv->completing) {
+			g_signal_emit_by_name (dl, "download-complete",
+				dl->priv->handle.save_path ().string ().c_str ());
+			dl->priv->completing = FALSE;
+		}
 	}
+
 	return TRUE;
 }
 
@@ -191,10 +201,13 @@ check_progress (gpointer data) {
 		g_object_get (self, "save-dir", &save_dir, NULL);
 		boost::filesystem::path boost_save_dir (save_dir);
 		g_free (save_dir);
-		if (boost_save_dir != priv->handle.save_path ())
+		if (boost_save_dir != priv->handle.save_path ()) {
 			priv->handle.move_storage (boost_save_dir);
-		g_signal_emit_by_name (self, "download-complete", //FIXME: will give the wrong path if save-dir and temp-dir are on different drives
-			priv->handle.save_path ().string ().c_str ());
+			priv->completing = TRUE;
+		} else {
+			g_signal_emit_by_name (self, "download-complete",
+				priv->handle.save_path ().string ().c_str ());
+		}
 		return FALSE;
 	}
 	return TRUE;
