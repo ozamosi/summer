@@ -33,8 +33,33 @@ fi
 GLIB_CFLAGS="$GLIB_CFLAGS -DG_DISABLE_SINGLE_INCLUDES"
 
 PKG_CHECK_MODULES(SOUP, libsoup-2.4 >= $LIBSOUP_REQUIRED)
-PKG_CHECK_MODULES(LIBTORRENT, libtorrent-rasterbar >= $LIBTORRENT_REQUIRED)
 PKG_CHECK_MODULES(LIBXML, libxml-2.0 >= $LIBXML_REQUIRED)
+
+# ***************
+# Torrent backend
+# ***************
+AC_MSG_CHECKING([whether bittorrent support is requested])
+AC_ARG_ENABLE([bittorrent],
+	AS_HELP_STRING([--enable-bittorrent],[Enable bittorrent support]),
+	[enable_bittorrent=$enableval],
+	[enable_bittorrent=autodetect])
+AC_MSG_RESULT([$enable_bittorrent])
+
+if test "x$enable_bittorrent" != "xno"; then
+	PKG_CHECK_MODULES(LIBTORRENT, libtorrent-rasterbar >= $LIBTORRENT_REQUIRED, [
+		enable_bittorrent=yes
+		SUMMER_CFLAGS+=-DENABLE_BITTORRENT
+	], [
+		if test "x$enable_bittorrent" = "xyes"; then
+			AC_MSG_ERROR([libtorrent-rasterbar not found])
+		else
+			AC_MSG_WARN([libtorrent-rasterbar not found, disabling bittorrent support])
+			enable_bittorrent=no
+		fi
+	])
+fi
+
+AM_CONDITIONAL([ENABLE_BITTORRENT],[test "x$enable_bittorrent" = "xyes"])
 
 # ******
 # Python
@@ -156,8 +181,8 @@ else
 fi
 AM_CONDITIONAL(USE_LCOV, test ! x$lcov_path = xyes)
 
-SUMMER_CFLAGS="$COVERAGE_CFLAGS"
-SUMMER_LIBS="$COVERAGE_LIBS"
+SUMMER_CFLAGS+="$COVERAGE_CFLAGS"
+SUMMER_LIBS+="$COVERAGE_LIBS"
 
 AC_SUBST(SUMMER_CFLAGS)
 AC_SUBST(SUMMER_LIBS)

@@ -23,6 +23,9 @@
 #include "summer-download-web.h"
 #include "summer-feed-cache.h"
 #include "summer-debug.h"
+
+#ifdef ENABLE_BITTORRENT
+
 #include <libtorrent/session.hpp>
 #include <libtorrent/torrent_info.hpp>
 #include <libtorrent/alert_types.hpp>
@@ -44,9 +47,11 @@
  *
  * A %SummerDownload-based class for files that's available on bittorrent.
  */
+#endif
 
 static void summer_download_torrent_class_init (SummerDownloadTorrentClass *klass);
 static void summer_download_torrent_init       (SummerDownloadTorrent *obj);
+#ifdef ENABLE_BITTORRENT
 static void summer_download_torrent_finalize   (GObject *obj);
 
 struct _SummerDownloadTorrentPrivate {
@@ -69,6 +74,7 @@ static gint default_max_up_speed = -1;
 static gfloat default_max_ratio = 5;
 
 static GSList *downloads;
+#endif
 
 enum {
 	PROP_0,
@@ -80,6 +86,7 @@ enum {
 
 G_DEFINE_TYPE (SummerDownloadTorrent, summer_download_torrent, SUMMER_TYPE_DOWNLOAD);
 
+#ifdef ENABLE_BITTORRENT
 static SummerDownloadTorrent*
 get_download_torrent (libtorrent::torrent_handle handle) {
 	GSList *l;
@@ -328,6 +335,7 @@ get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 		break;
 	}
 }
+#endif
 
 static void
 summer_download_torrent_class_init (SummerDownloadTorrentClass *klass)
@@ -335,6 +343,7 @@ summer_download_torrent_class_init (SummerDownloadTorrentClass *klass)
 	GObjectClass *gobject_class;
 	gobject_class = (GObjectClass*) klass;
 
+#ifdef ENABLE_BITTORRENT
 	gobject_class->finalize = summer_download_torrent_finalize;
 	gobject_class->set_property = set_property;
 	gobject_class->get_property = get_property;
@@ -344,6 +353,7 @@ summer_download_torrent_class_init (SummerDownloadTorrentClass *klass)
 	download_class->start = start;
 
 	g_type_class_add_private (gobject_class, sizeof(SummerDownloadTorrentPrivate));
+#endif
 
 	GParamSpec *pspec;
 
@@ -380,6 +390,7 @@ summer_download_torrent_class_init (SummerDownloadTorrentClass *klass)
 static void
 summer_download_torrent_init (SummerDownloadTorrent *self)
 {
+#ifdef ENABLE_BITTORRENT
 	self->priv = SUMMER_DOWNLOAD_TORRENT_GET_PRIVATE(self);
 	
 	if (session_refs == 0) {
@@ -396,8 +407,10 @@ summer_download_torrent_init (SummerDownloadTorrent *self)
 	downloads = g_slist_prepend (downloads, self);
 
 	self->priv->max_ratio = default_max_ratio;
+#endif
 }
 
+#ifdef ENABLE_BITTORRENT
 static void
 summer_download_torrent_finalize (GObject *obj)
 {
@@ -414,6 +427,7 @@ summer_download_torrent_finalize (GObject *obj)
 	}
 	G_OBJECT_CLASS(summer_download_torrent_parent_class)->finalize (obj);
 }
+#endif
 
 /**
  * summer_download_torrent_new:
@@ -438,8 +452,14 @@ summer_download_torrent_new (SummerItemData *item)
 		downloadable = SUMMER_DOWNLOADABLE_DATA (dl->data);
 		gchar *mime = summer_downloadable_data_get_mime (downloadable);
 		if (!g_strcmp0(mime, "application/x-bittorrent")) {
+#ifdef ENABLE_BITTORRENT
 			return SUMMER_DOWNLOAD (g_object_new (SUMMER_TYPE_DOWNLOAD_TORRENT, 
 				"item", item, "downloadable", downloadable, NULL));
+#else
+			// Only download the metafile if torrent backend is disabled
+			return SUMMER_DOWNLOAD (g_object_new (SUMMER_TYPE_DOWNLOAD_WEB,
+				"item", item, "downloadable", downloadable, NULL));
+#endif
 		}
 	}
 	return NULL;
@@ -468,6 +488,7 @@ summer_download_torrent_set_default (
 	gint max_up_speed,
 	gfloat max_ratio)
 {
+#ifdef ENABLE_BITTORRENT
 	if (min_port != 0)
 		default_min_port = min_port;
 	if (max_port != 0)
@@ -476,8 +497,10 @@ summer_download_torrent_set_default (
 		default_max_up_speed = max_up_speed;
 	if (max_ratio != 0.0)
 		default_max_ratio = max_ratio;
+#endif
 }
 
+#ifdef ENABLE_BITTORRENT
 void
 create_autoresume ()
 {
@@ -541,6 +564,7 @@ create_autoresume ()
 	}
 }
 
+#endif
 /**
  * summer_download_torrent_shutdown:
  *
@@ -549,9 +573,11 @@ create_autoresume ()
 void
 summer_download_torrent_shutdown ()
 {
+#ifdef ENABLE_BITTORRENT
 	if (session_refs > 0) {
 		create_autoresume ();
 		delete session;
 		session_refs = 0;
 	}
+#endif
 }

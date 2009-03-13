@@ -10,7 +10,9 @@ init ()
 	summer_item_data_append_downloadable (item, 
 		"http://localhost", "application/x-bittorrent", 0);
 	dl = summer_create_download (item);
+#ifdef ENABLE_TORRENT
 	g_assert (SUMMER_IS_DOWNLOAD_TORRENT (dl));
+#endif
 	g_object_unref (item);
 }
 
