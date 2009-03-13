@@ -44,13 +44,13 @@ struct _SummerFeedParser {
 
 struct _SummerFeedParserClass {
 	GObjectClass parent_class;
-	gint (*handle_node) (SummerFeedParser *self, xmlTextReaderPtr node, SummerFeedData *feed, gboolean *is_item);
+	gint (*handle_node) (SummerFeedParser *self, xmlTextReader *node, SummerFeedData *feed, gboolean *is_item);
 };
 
 GType        summer_feed_parser_get_type    (void) G_GNUC_CONST;
 
-gint summer_feed_parser_handle_node (SummerFeedParser *self, xmlTextReaderPtr node, SummerFeedData *feed, gboolean *is_item);
-SummerFeedData* summer_feed_parser_parse (SummerFeedParser **parsers, int num_parsers, xmlTextReaderPtr reader);
+gint summer_feed_parser_handle_node (SummerFeedParser *self, xmlTextReader *node, SummerFeedData *feed, gboolean *is_item);
+SummerFeedData* summer_feed_parser_parse (SummerFeedParser **parsers, int num_parsers, xmlTextReader* reader);
 /**
  * SAVE_TEXT_CONTENTS():
  * @element_name: the name of the element you're looking for
