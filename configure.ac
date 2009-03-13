@@ -1,4 +1,4 @@
-AC_INIT([libsummer], [0.1.0], [ozamosi@flukkost.nu], [libsummer])
+AC_INIT([libsummer], [0.1.0], [http://wrya.net/services/trac/summer], [libsummer])
 AC_CONFIG_SRCDIR([libsummer/summer.h])
 AC_CONFIG_HEADERS(config.h)
 AM_INIT_AUTOMAKE([dist-bzip2])
@@ -28,13 +28,17 @@ LIBXML_REQUIRED=2.6
 
 AM_PATH_GLIB_2_0($GLIB_REQUIRED,,,gobject gio gmodule)
 if test "$GLIB_LIBS" = ""; then
-	   AC_MSG_ERROR(GLIB $GLIB_REQUIRED or later is required to build libsummer)
+	AC_MSG_ERROR(GLIB $GLIB_REQUIRED or later is required to build libsummer)
 fi
 GLIB_CFLAGS="$GLIB_CFLAGS -DG_DISABLE_SINGLE_INCLUDES"
 
 PKG_CHECK_MODULES(SOUP, libsoup-2.4 >= $LIBSOUP_REQUIRED)
 PKG_CHECK_MODULES(LIBTORRENT, libtorrent-rasterbar >= $LIBTORRENT_REQUIRED)
 PKG_CHECK_MODULES(LIBXML, libxml-2.0 >= $LIBXML_REQUIRED)
+
+# ******
+# Python
+# ******
 
 AC_MSG_CHECKING([whether python support is requested])
 AC_ARG_ENABLE([python],
@@ -117,7 +121,10 @@ if test "x$have_python" != "xno" -a "x$enable_python" != "xno"; then
 fi 
 AM_CONDITIONAL([ENABLE_PYTHON],[test "x$enable_python" = "xyes"]) 
 
-dnl enable coverage analysis
+# *****************
+# coverage analysis
+# *****************
+
 AC_MSG_CHECKING(whether to enable coverage analysis)
 AC_ARG_ENABLE(
 	coverage,
@@ -159,8 +166,19 @@ AC_CONFIG_FILES([Makefile
 	libsummer/Makefile
 	libsummer/tests/Makefile
 	libsummer-1.0.pc
+	libsummer-1.0-uninstalled.pc
 	reference/Makefile
 	bindings/Makefile
 	bindings/python/Makefile])
 
 AC_OUTPUT
+
+echo "
+Libsummer was configured with the following options:
+
+	Bittorrent support:     $enable_bittorrent
+	Python bindings:        $enable_python
+	Vala bindings:          $enable_vala
+	Gtk-Doc Support:        $enable_gtk_doc
+	Test Coverage Analysis: $enable_coverage
+"

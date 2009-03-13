@@ -5,7 +5,7 @@ abs_top_builddir=@abs_top_builddir@
 
 Name: libsummer (uninstalled copy)
 Description: Generic Broadcatching library
-Requires.private: glib-2.0 gobject-2.0 gmodule-2.0 libsoup-2.4
+Requires: glib-2.0 gobject-2.0 libxml-2.0 libsoup-2.4
 Version: @VERSION@
 Libs: ${abs_top_builddir}/libsummer/libsummer.la
 Cflags: -I${abs_top_srcdir} -I${abs_top_builddir}
