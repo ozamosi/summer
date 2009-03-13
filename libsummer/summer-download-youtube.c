@@ -24,6 +24,7 @@
 
 #include "summer-download-youtube.h"
 #include "summer-web-backend.h"
+#include "summer-feed-cache.h"
 #include <glib.h>
 #include <string.h>
 #include <gio/gio.h>
@@ -105,7 +106,6 @@ on_file_downloaded (SummerWebBackend *web, gchar *saved_path, gchar *saved_data,
 	gchar *filename = g_strdup_printf ("%s.%s",
 		summer_item_data_get_title (item),
 		quality[self->priv->quality][1]);
-	g_object_unref (item);
 
 	GFile *src = g_file_new_for_path (saved_path);
 	gchar *destpath, *save_dir;
@@ -131,8 +131,15 @@ on_file_downloaded (SummerWebBackend *web, gchar *saved_path, gchar *saved_data,
 	g_object_unref (src);
 	g_object_unref (dest);
 	g_free (save_dir);
+
+	SummerFeedCache *cache = summer_feed_cache_get ();
+	summer_feed_cache_add_new_item (cache, item);
+	g_object_unref (G_OBJECT (cache));
+	g_object_unref (item);
 	g_object_unref (web);
 	g_signal_emit_by_name (self, "download-complete", destpath);
+	g_object_unref (self);
+	g_free (destpath);
 }
 
 static void
