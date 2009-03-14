@@ -166,7 +166,12 @@ check_done_seeding (gpointer data)
 	gfloat ratio = status.all_time_upload / 
 		(gfloat) (status.all_time_download > status.total_wanted_done ? 
 			status.all_time_download : status.total_wanted_done);
-	summer_debug ("%s: %i uploaded, %i downloaded. Ratio: %f", name, (gint) status.all_time_upload, (gint) status.all_time_download, ratio);
+	summer_debug ("%s: %" G_GINT64_FORMAT " uploaded, %" G_GINT64_FORMAT
+		" downloaded. Ratio: %f", 
+		name, 
+		(gint64) status.all_time_upload, 
+		(gint64) status.all_time_download, 
+		ratio);
 	g_free (name);
 	
 	if ((status.state == libtorrent::torrent_status::seeding ||
