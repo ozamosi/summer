@@ -96,6 +96,16 @@ on_file_downloaded (SummerWebBackend *web, gchar *saved_path, gchar *saved_data,
 			g_object_unref (web);
 			return;
 		}
+		
+		SummerItemData *item;
+		g_object_get (self, "item", &item, NULL);
+		gchar *filename = g_strdup_printf ("%s.%s", 
+			summer_item_data_get_title (item),
+			quality[self->priv->quality][1]);
+		g_object_set (self, "filename", filename, NULL);
+		g_free (filename);
+		g_object_unref (item);
+
 		g_object_set (web, "url", create_youtube_url (self), NULL);
 		summer_web_backend_fetch (web);
 		return;
@@ -179,6 +189,15 @@ on_webpage_downloaded (SummerWebBackend *web, gchar *path, gchar *web_data,
 		save_dir, 
 		create_youtube_url (self));
 	g_free (save_dir);
+
+	SummerItemData *item;
+	g_object_get (self, "item", &item, NULL);
+	gchar *filename = g_strdup_printf ("%s.%s", 
+		summer_item_data_get_title (item),
+		quality[self->priv->quality][1]);
+	g_object_set (self, "filename", filename, NULL);
+	g_free (filename);
+	g_object_unref (item);
 
 	g_signal_connect (web, "download-chunk",
 		G_CALLBACK (on_download_chunk), self);
