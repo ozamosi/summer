@@ -172,7 +172,8 @@ check_done_seeding (gpointer data)
 	if ((status.state == libtorrent::torrent_status::seeding ||
 				status.state == libtorrent::torrent_status::finished) &&
 			ratio > self->priv->max_ratio) {
-		self->priv->handle.pause ();
+		session->remove_torrent (self->priv->handle);
+		downloads = g_slist_remove (downloads, self);
 		
 		SummerItemData *item;
 		g_object_get (self, "item", &item, NULL);
