@@ -419,13 +419,7 @@ summer_download_torrent_finalize (GObject *obj)
 	session->remove_torrent (SUMMER_DOWNLOAD_TORRENT (obj)->priv->handle);
 	if (session_refs == 0)
 		delete session;
-	GSList *l;
-	for (l = downloads; l != NULL; l = l->next) {
-		if (l->data == obj) {
-			downloads = g_slist_delete_link (downloads, l);
-			break;
-		}
-	}
+	downloads = g_slist_remove (downloads, obj);
 	G_OBJECT_CLASS(summer_download_torrent_parent_class)->finalize (obj);
 }
 #endif
