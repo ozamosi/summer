@@ -29,3 +29,5 @@ coverage::
 	genhtml -o ./coverage --num-spaces 2 ./coverage/$(PACKAGE).info
 endif
 
+dist-hook:
+	python gen-changelog.py > ChangeLog
