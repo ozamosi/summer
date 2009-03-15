@@ -1,0 +1,6 @@
+Summer cheader_filename="libsummer/summer.h"
+
+summer_download_set_default.tmp_dir nullable="1"
+summer_download_set_default.save_dir nullable="1"
+summer_feed_set_default.cache_dir nullable="1"
+summer_feed_get_items hidden="1"

@@ -48,6 +48,7 @@ GLIB_REQUIRED=2.18.0
 LIBSOUP_REQUIRED=2.24
 LIBTORRENT_REQUIRED=0.14
 LIBXML_REQUIRED=2.6
+VALA_REQUIRED=0.5.0
 
 AM_PATH_GLIB_2_0($GLIB_REQUIRED,,,gobject gio gmodule)
 if test "$GLIB_LIBS" = ""; then
@@ -169,6 +170,39 @@ if test "x$have_python" != "xno" -a "x$enable_python" != "xno"; then
 fi 
 AM_CONDITIONAL([ENABLE_PYTHON],[test "x$enable_python" = "xyes"]) 
 
+# ***
+# Vala
+# ***
+
+AC_MSG_CHECKING([whether vala support is requested])
+AC_ARG_ENABLE([vala],
+	AS_HELP_STRING([--enable-vala],[Enable vala support]),
+	[enable_vala=$enableval],
+	[enable_vala=autodetect])
+AC_MSG_RESULT([$enable_vala])
+
+if test "x$enable_vala" != "xno"; then
+	PKG_CHECK_MODULES(VALA, vala-1.0 >= $VALA_REQUIRED, [
+		VAPIGEN="$($PKG_CONFIG --variable=vapigen vala-1.0)"
+		VALA_GEN_INTROSPECT="$($PKG_CONFIG --variable=vala_gen_introspect vala-1.0)"
+		VAPIDIR="$($PKG_CONFIG --variable=vapidir vala-1.0)"
+		AC_SUBST(VAPIDIR)
+		AC_SUBST(VAPIGEN)
+		AC_SUBST(VALA_GEN_INTROSPECT)
+		enable_vala=yes
+	], [
+		if test "x$enable_vala" = "xyes"; then
+			AC_MSG_ERROR([Vala not found])
+		else
+			AC_MSG_WARN([Vala not found, disabling vala support])
+			enable_vala=no
+		fi
+	])
+fi
+
+AM_CONDITIONAL([ENABLE_VALA],[test "x$enable_vala" = "xyes"])
+
+
 # *****************
 # coverage analysis
 # *****************
@@ -219,7 +253,8 @@ AC_CONFIG_FILES([Makefile
 	docs/reference/Makefile
 	docs/reference/summer/Makefile
 	bindings/Makefile
-	bindings/python/Makefile])
+	bindings/python/Makefile
+	bindings/vala/Makefile])
 
 AC_OUTPUT
 
@@ -228,6 +263,7 @@ Libsummer was configured with the following options:
 
 	Bittorrent support:     $enable_bittorrent
 	Python bindings:        $enable_python
+	Vala bindings:          $enable_vala
 	Gtk-Doc Support:        $enable_gtk_doc
 	Test Coverage Analysis: $enable_coverage
 "
