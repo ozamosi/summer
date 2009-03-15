@@ -21,9 +21,9 @@ create (WebFixture *fix, gconstpointer data)
 	g_signal_connect (feed, "new-entries", G_CALLBACK (on_new_entries), NULL);
 	summer_feed_start (feed, "http://localhost:52853/feeds/epicfu");
 	g_assert (feed != NULL);
+	g_object_unref (feed);
 	g_main_loop_run (loop);
 	g_main_loop_unref (loop);
-	g_object_unref (feed);
 }
 
 static void

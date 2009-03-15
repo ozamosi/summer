@@ -307,6 +307,7 @@ summer_feed_new ()
 static void
 on_downloaded (SummerWebBackend *web, gchar *save_path, gchar *save_data, gpointer user_data)
 {
+	g_return_if_fail (SUMMER_IS_FEED (user_data));
 	SummerFeed *self = SUMMER_FEED (user_data);
 	SummerFeedPrivate *priv = self->priv;
 	if (save_data) {
@@ -334,14 +335,14 @@ on_downloaded (SummerWebBackend *web, gchar *save_path, gchar *save_data, gpoint
 
 	if (priv->feed_data->items != NULL)
 		g_signal_emit_by_name (self, "new-entries");
+	
+	if (priv->frequency <= 0)
+		g_object_unref (self);
 }
 
 static gboolean
 download_timeout (gpointer data) {
-	if (!SUMMER_IS_FEED (data)) {
-		g_object_unref (data);
-		return FALSE;
-	}
+	g_return_val_if_fail (SUMMER_IS_FEED (data), FALSE);
 	SummerFeed *self = SUMMER_FEED (data);
 	SummerWebBackend *web = summer_web_backend_new (NULL, self->priv->url);
 	g_signal_connect (web, "download-complete", G_CALLBACK (on_downloaded), self);
@@ -360,8 +361,8 @@ download_timeout (gpointer data) {
 void
 summer_feed_start (SummerFeed *self, gchar *url) {
 	g_object_set (self, "url", url, NULL);
+	g_object_ref (self);
 	if (self->priv->frequency > 0) {
-		g_object_ref (self);
 		g_timeout_add_seconds (self->priv->frequency, 
 			(GSourceFunc) download_timeout,
 			self);
