@@ -3,6 +3,8 @@ include $(top_srcdir)/gtest.mk
 noinst_PROGRAMS = $(TEST_PROGS)
 
 INCLUDES = \
+	$(CFLAGS) \
+	$(SUMMER_CFLAGS) \
 	$(GLIB_CFLAGS) \
 	$(SOUP_CFLAGS) \
 	-I$(top_srcdir)/libsummer \
@@ -28,7 +30,7 @@ TEST_PROGS += \
 
 test_web_backend_SOURCES = test-web-backend.c server.c server.h
 test_download_SOURCES = test-download.c server.c server.h
-test_download_torrent_SOURCES = test-download-torrent.c
+test_download_torrent_SOURCES = test-download-torrent.c server.c server.h
 test_download_youtube_SOURCES = test-download-youtube.c server.c server.h
 test_download_web_SOURCES = test-download-web.c server.c server.h
 test_atom_feed_SOURCES = test-atom-feed.c

@@ -26,6 +26,7 @@
 
 #ifdef ENABLE_BITTORRENT
 
+#include <exception>
 #include <libtorrent/session.hpp>
 #include <libtorrent/torrent_info.hpp>
 #include <libtorrent/alert_types.hpp>
@@ -239,8 +240,15 @@ on_metafile_downloaded (SummerDownloadWeb *dl, gchar *metafile_path, gpointer us
 	g_object_get (self, "tmp-dir", &tmp_dir, "save-dir", &save_dir, NULL);
 
 	libtorrent::add_torrent_params p;
-
-	p.ti = new libtorrent::torrent_info (metafile_path);
+	
+	try {
+		p.ti = new libtorrent::torrent_info (metafile_path);
+	} catch (std::exception& e) {
+		g_warning ("Couldn't add torrent: %s", e.what ());
+		g_free (tmp_dir);
+		g_free (save_dir);
+		return;
+	}
 
 	boost::filesystem::path fastresume (tmp_dir);
 	fastresume /= p.ti->name () + ".fastresume";
@@ -331,7 +339,10 @@ get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 		g_value_set_int (value, session->upload_rate_limit ());
 		break;
 	case PROP_FILENAME:
-		g_value_set_string (value, priv->handle.name ().c_str ());
+		if (priv->handle.is_valid ())
+			g_value_set_string (value, priv->handle.name ().c_str ());
+		else
+			g_value_set_string (value, NULL);
 		break;
 	case PROP_MAX_RATIO:
 		g_value_set_float (value, priv->max_ratio);
@@ -421,7 +432,14 @@ static void
 summer_download_torrent_finalize (GObject *obj)
 {
 	session_refs--;
-	session->remove_torrent (SUMMER_DOWNLOAD_TORRENT (obj)->priv->handle);
+	if (SUMMER_DOWNLOAD_TORRENT (obj)->priv->handle.is_valid ()) {
+		try {
+			session->remove_torrent (
+				SUMMER_DOWNLOAD_TORRENT (obj)->priv->handle);
+		} catch (std::exception& e) {
+			g_warning ("Couldn't remove torrent: %s", e.what ());
+		}
+	}
 	if (session_refs == 0)
 		delete session;
 	downloads = g_slist_remove (downloads, obj);
