@@ -53,8 +53,9 @@ basic (WebFixture *fix, gconstpointer data)
 	loop = g_main_loop_new (NULL, TRUE);
 	SummerDownload *dl;
 	SummerItemData *item = summer_item_data_new ();
-	summer_item_data_append_downloadable (item, 
-		"http://localhost:52853/feeds/epicfu", "video/mp4", 0);
+	gchar *url = g_strdup_printf ("http://localhost:%i/feeds/epicfu", PORT);
+	summer_item_data_append_downloadable (item, url, "video/mp4", 0);
+	g_free (url);
 	dl = summer_create_download (item);
 	g_object_unref (item);
 	g_signal_connect (dl, "download-complete", G_CALLBACK (complete_cb), NULL);
@@ -70,23 +71,26 @@ mimes ()
 {
 	SummerDownload *dl;
 	SummerItemData *item = summer_item_data_new ();
-	summer_item_data_append_downloadable (item, 
-		"http://localhost:52853/", "application/xml", 0);
+	gchar *url = g_strdup_printf ("http://localhost:%i/", PORT);
+	summer_item_data_append_downloadable (item, url, "application/xml", 0);
+	g_free (url);
 	dl = summer_create_download (item);
 	g_object_unref (item);
 	g_assert (!SUMMER_IS_DOWNLOAD_WEB (dl));
 
 	item = summer_item_data_new ();
-	summer_item_data_append_downloadable (item, 
-		"http://localhost:52853/", "application/flac", 0);
+	url = g_strdup_printf ("http://localhost:%i/", PORT);
+	summer_item_data_append_downloadable (item, url, "application/flac", 0);
+	g_free (url);
 	dl = summer_create_download (item);
 	g_object_unref (item);
 	g_assert (SUMMER_IS_DOWNLOAD_WEB (dl));
 	g_object_unref (dl);
 	
 	item = summer_item_data_new ();
-	summer_item_data_append_downloadable (item, 
-		"http://localhost:52853/video/dummy_mp4", "video/mp4", 0);
+	url = g_strdup_printf ("http://localhost:%i/video/dummy_mp4", PORT);
+	summer_item_data_append_downloadable (item, url, "video/mp4", 0);
+	g_free (url);
 	dl = summer_create_download (item);
 	g_object_unref (item);
 	g_assert (SUMMER_IS_DOWNLOAD_WEB (dl));

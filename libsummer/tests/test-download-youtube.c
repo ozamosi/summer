@@ -37,12 +37,14 @@ basic (WebFixture *fix, gconstpointer data)
 	item->web_url = "http://www.youtube.com/watch?v=SiYurfwzyuY";
 	SummerDownload *dl = summer_download_youtube_new (item);
 	g_assert (SUMMER_IS_DOWNLOAD_YOUTUBE (dl));
-	item->web_url = "http://localhost:52853/video/youtube";
+	item->web_url = g_strdup_printf ("http://localhost:%i/video/youtube", PORT);
 	g_signal_connect (dl, "download-complete", G_CALLBACK (complete_cb), NULL);
 	g_signal_connect (dl, "download-update", G_CALLBACK (update_cb), NULL);
 	//summer_download_start (dl);
 	//g_main_loop_run (loop);
 	g_main_loop_unref (loop);
+	g_object_unref (dl);
+	g_object_unref (item);
 }
 
 int main (int argc, char *argv[]) {

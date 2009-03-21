@@ -47,8 +47,9 @@ to_disk (WebFixture *fix, gconstpointer data)
 	loop = g_main_loop_new (NULL, TRUE);
 	gchar *path = g_strdup (g_get_tmp_dir ());
 	gchar *orig_path = g_strdup (path);
-	gchar *url =  "http://localhost:52853/feeds/epicfu";
+	gchar *url =  g_strdup_printf ("http://localhost:%i/feeds/epicfu", PORT);
 	SummerWebBackend *web = summer_web_backend_new (path, url);
+	g_free (url);
 	g_free (path);
 	g_object_get (G_OBJECT (web), "save-dir", &path, NULL);
 	g_assert_cmpstr (path, ==, orig_path);
@@ -80,8 +81,9 @@ static void
 to_ram (WebFixture *fix, gconstpointer data)
 {
 	loop = g_main_loop_new (NULL, TRUE);
-	gchar *url =  "http://localhost:52853/feeds/epicfu";
+	gchar *url =  g_strdup_printf ("http://localhost:%i/feeds/epicfu", PORT);
 	SummerWebBackend *web = summer_web_backend_new (NULL, url);
+	g_free (url);
 	gchar *save_dir;
 	g_object_get (G_OBJECT (web), "save-dir", &save_dir, NULL);
 	g_assert_cmpstr (save_dir, ==, NULL);
@@ -105,8 +107,9 @@ static void
 response404_ram (WebFixture *fix, gconstpointer data)
 {
 	loop = g_main_loop_new (NULL, TRUE);
-	gchar *url =  "http://localhost:52853/doesnotexist";
+	gchar *url =  g_strdup_printf ("http://localhost:%i/doesnotexist", PORT);
 	SummerWebBackend *web = summer_web_backend_new (NULL, url);
+	g_free (url);
 	g_signal_connect (web, "download-chunk", G_CALLBACK (not_reached), NULL);
 	g_signal_connect (web, "download-complete", G_CALLBACK (r404_response_cb), NULL);
 	summer_web_backend_fetch (web);
@@ -127,8 +130,9 @@ response404_disk (WebFixture *fix, gconstpointer data)
 {
 	loop = g_main_loop_new (NULL, TRUE);
 	gchar *path = g_strdup (g_get_tmp_dir ());
-	gchar *url =  "http://localhost:52853/doesnotexist";
+	gchar *url =  g_strdup_printf ("http://localhost:%i/doesnotexist", PORT);
 	SummerWebBackend *web = summer_web_backend_new (path, url);
+	g_free (url);
 	g_signal_connect (web, "download-chunk", G_CALLBACK (not_reached), NULL);
 	g_signal_connect (web, "download-complete", G_CALLBACK (r404_response_cb), NULL);
 	g_signal_connect (web, "download-complete", G_CALLBACK (response404_disk_complete), NULL);
@@ -144,8 +148,9 @@ static void
 serverdown ()
 {
 	loop = g_main_loop_new (NULL, TRUE);
-	gchar *url =  "http://localhost:52854";
+	gchar *url = g_strdup_printf ("http://localhost:%i", PORT+1);
 	SummerWebBackend *web = summer_web_backend_new (NULL, url);
+	g_free (url);
 	g_signal_connect (web, "download-chunk", G_CALLBACK (chunk_cb), NULL);
 	g_signal_connect (web, "download-complete", G_CALLBACK (r404_response_cb), NULL);
 	summer_web_backend_fetch (g_object_ref (web));
@@ -173,8 +178,9 @@ static void
 redirect (WebFixture *fix, gconstpointer data)
 {
 	loop = g_main_loop_new (NULL, TRUE);
-	gchar *url =  "http://localhost:52853/redirect/302";
+	gchar *url = g_strdup_printf ("http://localhost:%i/redirect/302", PORT);
 	SummerWebBackend *web = summer_web_backend_new (g_get_tmp_dir (), url);
+	g_free (url);
 	g_signal_connect (web, "download-complete", G_CALLBACK (redirect_response_cb), NULL);
 	summer_web_backend_fetch (web);
 	g_main_loop_run (loop);
@@ -202,8 +208,9 @@ static void
 head (WebFixture *fix, gconstpointer data)
 {
 	loop = g_main_loop_new (NULL, TRUE);
-	gchar *url = "http://localhost:52853/feeds/epicfu";
+	gchar *url = g_strdup_printf ("http://localhost:%i/feeds/epicfu", PORT);
 	SummerWebBackend *web = summer_web_backend_new (g_get_tmp_dir (), url);
+	g_free (url);
 	head_complete_id = g_signal_connect_data (web, "download-complete", G_CALLBACK (not_reached), NULL, NULL, 0);
 	head_chunk_id = g_signal_connect (web, "download-chunk", G_CALLBACK (not_reached), NULL);
 	g_signal_connect (web, "headers-parsed", G_CALLBACK (head_got_headers), NULL);
@@ -228,8 +235,10 @@ static void
 slash (WebFixture *fix, gconstpointer data)
 {
 	loop = g_main_loop_new (NULL, TRUE);
-	gchar *url = "http://localhost:52853/video/file_with_slash";
+	gchar *url = g_strdup_printf ("http://localhost:%i/video/file_with_slash",
+		PORT);
 	SummerWebBackend *web = summer_web_backend_new (g_get_tmp_dir (), url);
+	g_free (url);
 	g_signal_connect (web, "download-complete", G_CALLBACK (slash_complete), NULL);
 	summer_web_backend_fetch (web);
 	g_main_loop_run (loop);

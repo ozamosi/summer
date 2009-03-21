@@ -10,7 +10,7 @@ redirect_server (SoupServer *server, SoupMessage *msg, const char *path,
 	gsize length = strlen (contents);
 	if (!g_strcmp0 (path, "/redirect/302"))
 		soup_message_set_status (msg, 302);
-	soup_message_headers_append (msg->response_headers, "Location", "http://localhost:52853/video/dummy_mp4");
+	soup_message_headers_append (msg->response_headers, "Location", g_strdup_printf ("http://localhost:%i/video/dummy_mp4", PORT));
 	soup_message_set_response (msg, "text/plain", SOUP_MEMORY_COPY, contents, length);
 }
 
@@ -100,7 +100,14 @@ feed_server (SoupServer *server, SoupMessage *msg, const char *path,
 void
 web_setup (WebFixture *fix, gconstpointer data)
 {
-	fix->server = soup_server_new (SOUP_SERVER_PORT, 52853, NULL);
+	if (!PORT)
+		PORT = 52853;
+	fix->server = soup_server_new (SOUP_SERVER_PORT, PORT, NULL);
+	while (!SOUP_IS_SERVER (fix->server)) {
+		PORT++;
+		fix->server = soup_server_new (SOUP_SERVER_PORT, PORT, NULL);
+	}
+
 	soup_server_add_handler (fix->server, "/feeds/", feed_server, NULL, NULL);
 	soup_server_add_handler (fix->server, "/video/", video_server, NULL, NULL);
 	soup_server_add_handler (fix->server, "/redirect/", redirect_server, NULL, NULL);

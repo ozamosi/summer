@@ -7,22 +7,25 @@ create (WebFixture *fix, gconstpointer data)
 {
 	SummerDownload *dl;
 	SummerItemData *item = summer_item_data_new ();
-	summer_item_data_append_downloadable (item, 
-		"http://localhost:52853/feeds/epicfu", "text/html", 0);
+	gchar *url = g_strdup_printf ("http://localhost:%i/feeds/epicfu", PORT);
+	summer_item_data_append_downloadable (item, url, "text/html", 0);
+	g_free (url);
 	dl = summer_create_download (item);
 	g_assert (dl == NULL);
 	g_object_unref (item);
 
 	item = summer_item_data_new ();
-	summer_item_data_append_downloadable (item, 
-		"http://localhost:52853/does_not-exist", "text/html", 0);
+	url = g_strdup_printf ("http://localhost:%i/does_not-exist", PORT);
+	summer_item_data_append_downloadable (item, url, "text/html", 0);
+	g_free (url);
 	dl = summer_create_download (item);
 	g_assert (dl == NULL);
 	g_object_unref (item);
 
 	item = summer_item_data_new ();
-	summer_item_data_append_downloadable (item, 
-		"http://localhost:52853/video/dummy_mp4", "video/mp4", 0);
+	url = g_strdup_printf ("http://localhost:%i/video/dummy_mp4", PORT);
+	summer_item_data_append_downloadable (item, url, "video/mp4", 0);
+	g_free (url);
 	dl = summer_create_download (item);
 	g_assert (dl != NULL);
 	g_object_unref (dl);
@@ -35,8 +38,9 @@ settings ()
 	summer_download_set_default (g_get_tmp_dir (), g_get_home_dir ());
 	SummerDownload *dl;
 	SummerItemData *item = summer_item_data_new ();
-	summer_item_data_append_downloadable (item, 
-		"http://localhost:52853/video/dummy_mp4", "video/mp4", 0);
+	gchar *url = g_strdup_printf ("http://localhost:%i/video/dummy_mp4", PORT);
+	summer_item_data_append_downloadable (item, url, "video/mp4", 0);
+	g_free (url);
 	dl = summer_create_download (item);
 	g_object_unref (item);
 	gchar *save_dir, *tmp_dir;

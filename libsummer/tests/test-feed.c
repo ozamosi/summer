@@ -19,7 +19,9 @@ create (WebFixture *fix, gconstpointer data)
 	SummerFeed *feed;
 	feed = summer_feed_new ();
 	g_signal_connect (feed, "new-entries", G_CALLBACK (on_new_entries), NULL);
-	summer_feed_start (feed, "http://localhost:52853/feeds/epicfu");
+	gchar *url = g_strdup_printf ("http://localhost:%i/feeds/epicfu", PORT);
+	summer_feed_start (feed, url);
+	g_free (url);
 	g_assert (feed != NULL);
 	g_object_unref (feed);
 	g_main_loop_run (loop);
@@ -32,14 +34,17 @@ settings ()
 	summer_feed_set_default (g_get_tmp_dir (), 900);
 	SummerFeed *feed;
 	feed = summer_feed_new ();
-	summer_feed_start (feed, "http://localhost:52853/feeds/epicfu");
+	gchar *orig_url = g_strdup_printf ("http://localhost:%i/feeds/epicfu",
+		PORT);
+	summer_feed_start (feed, orig_url);
 	gchar *cache_dir;
 	gchar *url;
 	gint frequency;
 	g_object_get (feed, "cache-dir", &cache_dir, "frequency", &frequency, "url", &url, NULL);
 	g_assert_cmpstr (cache_dir, ==, g_get_tmp_dir ());
 	g_assert_cmpint (frequency, ==, 900);
-	g_assert_cmpstr (url, ==, "http://localhost:52853/feeds/epicfu");
+	g_assert_cmpstr (url, ==, orig_url);
+	g_free (orig_url);
 	g_free (cache_dir);
 	g_free (url);
 	g_object_unref (feed);
