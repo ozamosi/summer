@@ -203,7 +203,6 @@ Libsummer was configured with the following options:
 
 	Bittorrent support:     $enable_bittorrent
 	Python bindings:        $enable_python
-	Vala bindings:          $enable_vala
 	Gtk-Doc Support:        $enable_gtk_doc
 	Test Coverage Analysis: $enable_coverage
 "
