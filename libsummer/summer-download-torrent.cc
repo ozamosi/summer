@@ -203,8 +203,8 @@ check_progress (gpointer data) {
 	libtorrent::torrent_status status = priv->handle.status ();
 	if (status.state == libtorrent::torrent_status::downloading) {
 		g_signal_emit_by_name (self, "download-update", 
-			(gint) status.total_wanted_done,
-			(gint) status.total_wanted);
+			(guint64) status.total_wanted_done,
+			(guint64) status.total_wanted);
 	}
 	gchar *name;
 	g_object_get (self, "filename", &name, NULL);

@@ -7,7 +7,7 @@ static GMainLoop *loop;
 static gint last_received = 0;
 
 static void
-update_cb (SummerDownload *obj, gint received, gint length, gpointer user_data)
+update_cb (SummerDownload *obj, guint64 received, guint64 length, gpointer user_data)
 {
 	g_assert_cmpint (received, >, 0);
     g_assert_cmpint (received, >=, last_received);

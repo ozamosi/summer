@@ -63,8 +63,8 @@ struct _SummerWebBackendPrivate {
 	gchar *url;
 	const gchar *filename;
 	gchar *pretty_filename;
-	gsize length;
-	gsize received;
+	guint64 length;
+	guint64 received;
 	gboolean fetch;
 	GFileOutputStream *outfile;
 	GFile *filehandle;
@@ -127,7 +127,7 @@ get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 			g_value_set_string (value, priv->filename);
 		break;
 	case PROP_LENGTH:
-		g_value_set_uint (value, priv->length);
+		g_value_set_uint64 (value, priv->length);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -203,10 +203,10 @@ summer_web_backend_class_init (SummerWebBackendClass *klass)
 		G_PARAM_READABLE);
 	g_object_class_install_property (gobject_class, PROP_FILENAME, pspec);
 
-	pspec = g_param_spec_uint ("length",
+	pspec = g_param_spec_uint64 ("length",
 		"Length",
 		"The reported length of the file",
-		0, G_MAXUINT, 0,
+		0, G_MAXUINT64, 0,
 		G_PARAM_READABLE);
 	g_object_class_install_property (gobject_class, PROP_LENGTH, pspec);
 
@@ -250,10 +250,10 @@ summer_web_backend_class_init (SummerWebBackendClass *klass)
 		G_SIGNAL_RUN_FIRST,
 		G_STRUCT_OFFSET (SummerWebBackendClass, download_chunk),
 		NULL, NULL,
-		summer_marshal_VOID__INT_INT,
+		summer_marshal_VOID__UINT64_UINT64,
 		G_TYPE_NONE,
 		2,
-		G_TYPE_INT, G_TYPE_INT);
+		G_TYPE_UINT64, G_TYPE_UINT64);
 
 	/**
 	 * SummerWebBackend::headers-parsed:

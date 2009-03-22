@@ -14,7 +14,7 @@ not_reached (SummerWebBackend *web, ...)
 }
 
 static void
-chunk_cb (SummerWebBackend *web, gint received, gint length, gpointer user_data)
+chunk_cb (SummerWebBackend *web, guint64 received, guint64 length, gpointer user_data)
 {
 	g_assert_cmpint (received, >, 0);
 	g_assert_cmpint (received, >=, last_received);

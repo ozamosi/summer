@@ -61,7 +61,7 @@ struct _SummerDownloadWebPrivate {
 G_DEFINE_TYPE (SummerDownloadWeb, summer_download_web, SUMMER_TYPE_DOWNLOAD);
 
 static void
-on_download_chunk (SummerWebBackend *web_backend, gint received, gint length, gpointer user_data)
+on_download_chunk (SummerWebBackend *web_backend, guint64 received, guint64 length, gpointer user_data)
 {
 	g_return_if_fail (SUMMER_IS_DOWNLOAD_WEB (user_data));
 	SummerDownload *self = SUMMER_DOWNLOAD (user_data);

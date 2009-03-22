@@ -243,18 +243,18 @@ summer_download_class_init (SummerDownloadClass *klass)
 			G_SIGNAL_RUN_FIRST,
 			G_STRUCT_OFFSET (SummerDownloadClass, download_update),
 			NULL, NULL,
-			summer_marshal_VOID__INT_INT,
+			summer_marshal_VOID__UINT64_UINT64,
 			G_TYPE_NONE,
 			2,
-			G_TYPE_INT, G_TYPE_INT);
+			G_TYPE_UINT64, G_TYPE_UINT64);
 }
 
 static void
-print_update (SummerDownload *self, gint downloaded, gint length, gpointer user_data)
+print_update (SummerDownload *self, guint64 downloaded, guint64 length, gpointer user_data)
 {
 	gchar *name;
 	g_object_get (self, "filename", &name, NULL);
-	summer_debug ("%s: %f%% downloaded (%i of %i)", name, downloaded / (float) length * 100, downloaded, length);
+	summer_debug ("%s: %f%% downloaded (%" G_GUINT64_FORMAT " of %" G_GUINT64_FORMAT ")", name, downloaded / (float) length * 100, downloaded, length);
 	g_free (name);
 }
 
