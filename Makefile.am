@@ -6,7 +6,7 @@ ACLOCAL_AMFLAGS = -I m4
 
 SUBDIRS = \
 	libsummer \
-	reference \
+	docs \
 	bindings
 
 pkgconfigdir = $(libdir)/pkgconfig

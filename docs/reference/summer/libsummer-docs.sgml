@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+               "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<book id="index" xmlns:xi="http://www.w3.org/2003/XInclude">
+  <bookinfo>
+    <title>Summer Reference Manual</title>
+    <releaseinfo>
+      for libsummer 0.1
+      The latest version of this documentation can be found on-line at
+      <ulink role="online-location" url="http://wrya.net/services/build/summer/builds/latest/documentation/">http://wrya.net/services/build/summer/builds/latest/documentation/</ulink>.
+    </releaseinfo>
+  </bookinfo>
+
+  <chapter>
+    <title>Introduction</title>
+    <para>This chapter will give you a quick overview of the architecture of libsummer to help you get started.</para>
+    <para>There are only two types of objects library users should have to directly interact with: <link linkend="SummerFeed"><literal>SummerFeed</literal></link>, which is used to get items (also called posts or entries) from a web feed, and <link linkend="SummerDownload"><literal>SummerDownload</literal></link>, which is used to download multimedia attachments found in an item.</para>
+    <para>The first thing you need to do is setup the library. This is done by calling <link linkend="summer-download-set-default"><literal>summer_download_set_default</literal></link>, <link linkend="summer-feed-set-default"><literal>summer_feed_set_default</literal></link> and/or <link linkend="summer-download-torrent-set-default"><literal>summer_download_torrent_set_default</literal></link>. Each of them take arguments that changes the way a certain component of the library works &mdash; for instance, configuring where different types of files should be stored.</para>
+    <para>The second thing a user should do is to create a <link linkend="SummerFeed"><literal>SummerFeed</literal></link> object, and call <link linkend="summer-feed-start"><literal>summer_feed_start</literal></link> on it. The object will then retrieve the specified feed, and will continue to do so every <varname>frequency</varname> seconds, where <varname>frequency</varname> is set either by a call to <link linkend="summer-feed-set-default"><literal>summer_feed_set_default</literal></link> before the <link linkend="SummerFeed"><literal>SummerFeed</literal></link> object was created, or by calling <link linkend="summer-feed-set-frequency"><literal>summer_feed_set_frequency</literal></link>. If <varname>frequency</varname> is 0, it will not retrieve the feed more than once.</para>
+    <para>Before calling <link linkend="summer-feed-start"><literal>summer_feed_start</literal></link>, though, you most likely want to connect to the <link linkend="SummerFeed-new-entries"><literal>new-entries</literal></link> signal. In the callback, you can retrieve all new items by calling <link linkend="summer-feed-get-items"><literal>summer_feed_get_items</literal></link>, which will return a <link linkend="GList"><literal>GList*</literal></link> of <link linkend="SummeItemData"><literal>SummerItemData</literal></link> objects, that represents the items that were new the last time the feed was retrieved.</para>
+	<para>When you have a <link linkend="SummerItemData"><literal>SummerItemData</literal></link> object you want to download, you need to call <link linkend="summer-create-download"><literal>summer_create_download</literal></link> with the item object as the argument. This function is a factory, that will search for a <link linkend="SummerDownload"><literal>SummerDownload</literal></link> subclass that can download the item, and will return <link linkend="NULL--CAPS"><literal>NULL</literal></link> if none could be found.</para>
+	<para>When you have a <link linkend="SummerDownload"><literal>SummerDownload</literal></link> object, call <link linkend="summer-download-start"><literal>summer_download_start</literal></link> to start the transfer.  <link linkend="SummerDownload"><literal>SummerDownload</literal></link> objects steals a reference, and frees themselves after the transfer is complete, so you do not have to clean up from them. To find out when the transfer is complete, connect to their <link linkend="SummerDownload-download-complete"><literal>download-complete</literal></link> signal. To track the download process, connect to their <link linkend="SummerDownload-download-update"><literal>download-update</literal></link> signal.</para>
+  </chapter>
+
+  <chapter>
+    <title>API Reference</title>
+    <xi:include href="xml/summer.xml"/>
+    <xi:include href="xml/summer-download.xml"/>
+    <xi:include href="xml/summer-download-torrent.xml"/>
+    <xi:include href="xml/summer-download-youtube.xml"/>
+    <xi:include href="xml/summer-download-web.xml"/>
+    <xi:include href="xml/summer-feed.xml"/>
+    <xi:include href="xml/summer-feed-parser.xml"/>
+    <xi:include href="xml/summer-atom-parser.xml"/>
+    <xi:include href="xml/summer-rss2-parser.xml"/>
+    <xi:include href="xml/summer-data-types.xml"/>
+    <xi:include href="xml/summer-web-backend.xml"/>
+  </chapter>
+</book>

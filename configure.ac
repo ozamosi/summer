@@ -192,7 +192,9 @@ AC_CONFIG_FILES([Makefile
 	libsummer/tests/Makefile
 	libsummer-1.0.pc
 	libsummer-1.0-uninstalled.pc
-	reference/Makefile
+	docs/Makefile
+	docs/reference/Makefile
+	docs/reference/summer/Makefile
 	bindings/Makefile
 	bindings/python/Makefile])
 

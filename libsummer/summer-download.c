@@ -234,8 +234,8 @@ summer_download_class_init (SummerDownloadClass *klass)
 	 * @length: the total number of bytes to be downloaded. %-1 if this is not
 	 * known.
 	 *
-	 * ::download-chunk is emitted every time a new block of the file has been
-	 * retrieved.
+	 * ::download-update is emitted every time the downloader feels it has new
+	 * results to inform - the exact semantics is downloader specific.
 	 */
 	g_signal_new (
 			"download-update",
