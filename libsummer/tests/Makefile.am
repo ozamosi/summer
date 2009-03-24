@@ -7,15 +7,13 @@ INCLUDES = \
 	$(SUMMER_CFLAGS) \
 	$(GLIB_CFLAGS) \
 	$(SOUP_CFLAGS) \
-	-I$(top_srcdir)/libsummer \
+	-I$(top_srcdir) \
 	-include $(CONFIG_HEADER)
 
 AM_LDFLAGS = \
 	$(GLIB_LIBS) \
 	$(SOUP_LIBS) \
 	$(top_builddir)/libsummer/libsummer.la
-
-check-local: test
 
 TEST_PROGS += \
 	test_web_backend \
@@ -42,6 +40,5 @@ EXTRA_DIST = \
 	atom_feed \
 	atom_feed_nolink \
 	epicfu \
-	feed \
 	rss2sample.xml \
 	watch?v=SiYurfwzyuY

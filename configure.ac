@@ -1,9 +1,32 @@
-AC_INIT([libsummer], [0.1.0], [http://wrya.net/services/trac/summer], [libsummer])
+m4_define([summer_major_version], [0])
+m4_define([summer_minor_version], [1])
+m4_define([summer_micro_version], [0])
+m4_define([summer_version],
+          [summer_major_version.summer_minor_version.summer_micro_version])
+
+AC_INIT([libsummer], [summer_version], [http://wrya.net/services/trac/summer], [libsummer])
 AC_CONFIG_SRCDIR([libsummer/summer.h])
 AC_CONFIG_HEADERS(config.h)
 AM_INIT_AUTOMAKE([dist-bzip2])
 AM_MAINTAINER_MODE
 AC_CONFIG_MACRO_DIR([m4])
+
+SUMMER_MAJOR_VERSION=summer_major_version
+SUMMER_MINOR_VERSION=summer_minor_version
+SUMMER_MICRO_VERSION=summer_micro_version
+SUMMER_VERSION=summer_version
+
+AC_SUBST(SUMMER_MAJOR_VERSION)
+AC_SUBST(SUMMER_MINOR_VERSION)
+AC_SUBST(SUMMER_MICRO_VERSION)
+AC_SUBST(SUMMER_VERSION)
+
+AC_DEFINE(SUMMER_MAJOR_VERSION, [summer_major_version],
+      [Define to the SUMMER major version])
+AC_DEFINE(SUMMER_MINOR_VERSION, [summer_minor_version],
+      [Define to the SUMMER minor version])
+AC_DEFINE(SUMMER_MICRO_VERSION, [summer_micro_version],
+      [Define to the SUMMER micro version])
 
 AC_PROG_CC
 AC_PROG_CXX
