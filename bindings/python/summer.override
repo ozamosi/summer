@@ -51,21 +51,18 @@ _wrap_summer_feed_data_get_items (PyGObject *self)
 	list = summer_feed_data_get_items (SUMMER_FEED_DATA (self->obj));
 
 	if ((py_list = PyList_New (0)) == NULL) {
-		g_list_free (list);
 		return NULL;
 	}
 	for (tmp = list; tmp != NULL; tmp = tmp->next) {
 		PyObject *obj = pygobject_new (G_OBJECT (tmp->data));
 
 		if (obj == NULL) {
-			g_list_free (list);
 			Py_DECREF (py_list);
 			return NULL;
 		}
 		PyList_Append (py_list, obj);
 		Py_DECREF (obj);
 	}
-	g_list_free (list);
 	return py_list;
 }
 %%
@@ -79,20 +76,17 @@ _wrap_summer_item_data_get_downloadables (PyGObject *self)
 	list = summer_item_data_get_downloadables (SUMMER_ITEM_DATA (self->obj));
 
 	if ((py_list = PyList_New (0)) == NULL) {
-		g_list_free (list);
 		return NULL;
 	}
 	for (tmp = list; tmp != NULL; tmp = tmp->next) {
 		PyObject *obj = pygobject_new (G_OBJECT (tmp->data));
 
 		if (obj == NULL) {
-			g_list_free (list);
 			Py_DECREF (py_list);
 			return NULL;
 		}
 		PyList_Append (py_list, obj);
 		Py_DECREF (obj);
 	}
-	g_list_free (list);
 	return py_list;
 }
