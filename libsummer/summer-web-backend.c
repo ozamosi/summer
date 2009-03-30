@@ -145,6 +145,9 @@ constructor (GType gtype, guint n_properties, GObjectConstructParam *properties)
 	
 	/* Discover filename part of URL */
 	SummerWebBackendPrivate *priv = SUMMER_WEB_BACKEND (obj)->priv;
+	g_return_val_if_fail(
+		priv->url != NULL && g_utf8_strlen (priv->url, 1) != 0,
+		obj);
 	gchar** parts = g_strsplit (priv->url, "/", 0);
 	gchar** filename;
 	for (filename = parts; *filename != NULL; filename++) {}
@@ -280,7 +283,7 @@ summer_web_backend_class_init (SummerWebBackendClass *klass)
 static void
 summer_web_backend_init (SummerWebBackend *self)
 {
-	if (G_IS_OBJECT (session))
+	if (SOUP_IS_SESSION (session))
 		g_object_ref (session);
 	else {
 		session = soup_session_async_new_with_options (
@@ -469,9 +472,14 @@ void
 summer_web_backend_fetch (SummerWebBackend *self)
 {
 	g_return_if_fail (SUMMER_IS_WEB_BACKEND (self));
+	g_return_if_fail (!SOUP_IS_MESSAGE (self->priv->msg));
 	SummerWebBackendPrivate *priv = self->priv;
 
-	SoupMessage *msg = soup_message_new ("GET", priv->url);
+	priv->msg = soup_message_new ("GET", priv->url);
+	if (priv->msg == NULL) {
+		g_warning ("Could not parse URL: %s", priv->url);
+		return;
+	}
 
 	if (priv->save_dir != NULL) {
 		gchar *filepath = g_build_filename (priv->save_dir, priv->filename, NULL);
