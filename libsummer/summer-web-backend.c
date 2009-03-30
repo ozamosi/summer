@@ -472,11 +472,10 @@ void
 summer_web_backend_fetch (SummerWebBackend *self)
 {
 	g_return_if_fail (SUMMER_IS_WEB_BACKEND (self));
-	g_return_if_fail (!SOUP_IS_MESSAGE (self->priv->msg));
 	SummerWebBackendPrivate *priv = self->priv;
 
-	priv->msg = soup_message_new ("GET", priv->url);
-	if (priv->msg == NULL) {
+	SoupMessage *msg = soup_message_new ("GET", priv->url);
+	if (msg == NULL) {
 		g_warning ("Could not parse URL: %s", priv->url);
 		return;
 	}
