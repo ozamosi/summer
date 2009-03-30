@@ -326,12 +326,12 @@ on_downloaded (SummerWebBackend *web, gchar *save_path, gchar *save_data, gpoint
 		xmlFreeTextReader (reader);
 		xmlFreeParserInputBuffer (buffer);
 	
+		SummerFeedCache *cache = summer_feed_cache_get ();
+		summer_feed_cache_filter_old_items (cache, &priv->feed_data->items);
+		g_object_unref (cache);
+
 		g_signal_emit_by_name (self, "new-entries");
 	}
-
-	SummerFeedCache *cache = summer_feed_cache_get ();
-	summer_feed_cache_filter_old_items (cache, &priv->feed_data->items);
-	g_object_unref (cache);
 
 	g_object_unref (web);
 
