@@ -325,6 +325,8 @@ on_downloaded (SummerWebBackend *web, gchar *save_path, gchar *save_data, gpoint
 		xmlTextReaderClose (reader);
 		xmlFreeTextReader (reader);
 		xmlFreeParserInputBuffer (buffer);
+	
+		g_signal_emit_by_name (self, "new-entries");
 	}
 
 	SummerFeedCache *cache = summer_feed_cache_get ();
@@ -333,9 +335,6 @@ on_downloaded (SummerWebBackend *web, gchar *save_path, gchar *save_data, gpoint
 
 	g_object_unref (web);
 
-	if (priv->feed_data->items != NULL)
-		g_signal_emit_by_name (self, "new-entries");
-	
 	if (priv->frequency <= 0)
 		g_object_unref (self);
 }

@@ -160,6 +160,8 @@ check_done_seeding (gpointer data)
 	if (!SUMMER_IS_DOWNLOAD_TORRENT (data))
 		return FALSE;
 	SummerDownloadTorrent *self = SUMMER_DOWNLOAD_TORRENT (data);
+	if (!self->priv->handle.is_valid ())
+		return FALSE;
 	libtorrent::torrent_status status = self->priv->handle.status ();
 	gchar *name;
 	g_object_get (self, "filename", &name, NULL);
@@ -200,6 +202,8 @@ check_progress (gpointer data) {
 		return FALSE;
 	SummerDownload *self = SUMMER_DOWNLOAD (data);
 	SummerDownloadTorrentPrivate *priv = SUMMER_DOWNLOAD_TORRENT (self)->priv;
+	if (!priv->handle.is_valid ())
+		return FALSE;
 	libtorrent::torrent_status status = priv->handle.status ();
 	if (status.state == libtorrent::torrent_status::downloading) {
 		g_signal_emit_by_name (self, "download-update", 
