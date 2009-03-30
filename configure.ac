@@ -1,6 +1,6 @@
 m4_define([summer_major_version], [0])
 m4_define([summer_minor_version], [1])
-m4_define([summer_micro_version], [0])
+m4_define([summer_micro_version], [1])
 m4_define([summer_version],
           [summer_major_version.summer_minor_version.summer_micro_version])
 
