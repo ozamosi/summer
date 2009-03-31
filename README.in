@@ -1,7 +1,7 @@
 General Information
 ===================
 
-This is Summer version 0.2.0. Summer is a library that lets a developer quickly
+This is Summer version @SUMMER_VERSION@. Summer is a library that lets a developer quickly
 and easily create applications that can automatically download multimedia files
 from webfeeds, or, in other words, podcast clients and broadcatching
 applications.

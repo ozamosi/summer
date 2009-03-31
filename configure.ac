@@ -244,7 +244,8 @@ SUMMER_LIBS+="$COVERAGE_LIBS"
 AC_SUBST(SUMMER_CFLAGS)
 AC_SUBST(SUMMER_LIBS)
 
-AC_CONFIG_FILES([Makefile
+AC_CONFIG_FILES([README
+	Makefile
 	libsummer/Makefile
 	libsummer/tests/Makefile
 	libsummer-1.0.pc
@@ -252,6 +253,7 @@ AC_CONFIG_FILES([Makefile
 	docs/Makefile
 	docs/reference/Makefile
 	docs/reference/summer/Makefile
+	docs/reference/summer/version.xml
 	bindings/Makefile
 	bindings/python/Makefile
 	bindings/vala/Makefile])
