@@ -47,6 +47,15 @@ complete_cb (SummerDownload *obj, gchar *save_path, gpointer user_data)
 }
 
 static void
+started_cb (SummerDownload *dl, gconstpointer data)
+{
+	gchar *filename;
+	g_object_get (dl, "filename", &filename, NULL);
+	g_assert_cmpstr (filename, ==, "epicfu");
+	g_free (filename);
+}
+
+static void
 basic (WebFixture *fix, gconstpointer data)
 {
 	summer_download_set_default (g_get_tmp_dir (), g_get_home_dir ());
@@ -57,8 +66,15 @@ basic (WebFixture *fix, gconstpointer data)
 	gchar *url = g_strdup_printf ("http://localhost:%i/feeds/epicfu", PORT);
 	summer_item_data_append_downloadable (item, url, "video/mp4", 0);
 	g_free (url);
+	url = NULL;
 	dl = summer_create_download (item);
 	g_object_unref (feed);
+	gchar *filename;
+	g_object_get (dl, "filename", &filename, NULL);
+	g_assert_cmpstr (filename, ==, NULL);
+	g_free (filename);
+	filename = NULL;
+	g_signal_connect (dl, "download-started", G_CALLBACK (started_cb), NULL);
 	g_signal_connect (dl, "download-complete", G_CALLBACK (complete_cb), NULL);
 	g_signal_connect (dl, "download-update", G_CALLBACK (update_cb), NULL);
 	summer_download_start (dl);

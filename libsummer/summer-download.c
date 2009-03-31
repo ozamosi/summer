@@ -247,6 +247,23 @@ summer_download_class_init (SummerDownloadClass *klass)
 			G_TYPE_NONE,
 			2,
 			G_TYPE_UINT64, G_TYPE_UINT64);
+	/**
+	 * SummerDownload::download-started:
+	 * @obj: the %SummerDownload object that emitted the signal
+	 *
+	 * Some information, such as filesize or filename, may not be known by the
+	 * downloading backend initially. When this kind of information has been
+	 * collected, ::download-update is emitted.
+	 */
+	g_signal_new (
+			"download-started",
+			SUMMER_TYPE_DOWNLOAD,
+			G_SIGNAL_RUN_FIRST,
+			G_STRUCT_OFFSET (SummerDownloadClass, download_started),
+			NULL, NULL,
+			g_cclosure_marshal_VOID__VOID,
+			G_TYPE_NONE,
+			0);
 }
 
 static void

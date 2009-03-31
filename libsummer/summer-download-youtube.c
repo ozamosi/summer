@@ -58,6 +58,7 @@ struct _SummerDownloadYoutubePrivate {
 	gchar *t;
 	gchar *v;
 	gint quality;
+	SummerWebBackend *web;
 };
 #define SUMMER_DOWNLOAD_YOUTUBE_GET_PRIVATE(o)      (G_TYPE_INSTANCE_GET_PRIVATE((o), \
                                                      SUMMER_TYPE_DOWNLOAD_YOUTUBE, \
@@ -79,6 +80,23 @@ on_download_chunk (SummerWebBackend *web_backend, guint64 received, guint64 leng
 	g_return_if_fail (SUMMER_IS_DOWNLOAD_YOUTUBE (user_data));
 	SummerDownload *self = SUMMER_DOWNLOAD (user_data);
 	g_signal_emit_by_name (self, "download-update", received, length);
+}
+
+static void
+on_headers_parsed (SummerWebBackend *web, gpointer data)
+{
+	g_return_if_fail (SUMMER_IS_DOWNLOAD_YOUTUBE (data));
+	SummerDownloadYoutube *self = SUMMER_DOWNLOAD_YOUTUBE (data);
+	guint64 length;
+	g_object_get (web, "length", &length, NULL);
+	if (length) {
+		SummerDownloadableData *dlable;
+		g_object_get (self, "downloadable", &dlable, NULL);
+		dlable->length = length;
+		g_object_unref (dlable);
+	}
+
+	g_signal_emit_by_name (self, "download-started");
 }
 
 static void
@@ -203,6 +221,8 @@ on_webpage_downloaded (SummerWebBackend *web, gchar *path, gchar *web_data,
 		G_CALLBACK (on_download_chunk), self);
 	g_signal_connect (web, "download-complete", 
 		G_CALLBACK (on_file_downloaded), self);
+	g_signal_connect (web, "headers-parsed",
+		G_CALLBACK (on_headers_parsed), self);
 	summer_web_backend_fetch (web);
 }
 
@@ -210,13 +230,13 @@ static void
 start (SummerDownload *self)
 {
 	g_return_if_fail (SUMMER_IS_DOWNLOAD_YOUTUBE (self));
+	SummerDownloadYoutubePrivate *priv = SUMMER_DOWNLOAD_YOUTUBE (self)->priv;
 	SummerItemData *item;
 	g_object_get (self, "item", &item, NULL);
-	SummerWebBackend *web = summer_web_backend_new (NULL, 
-		summer_item_data_get_web_url (item));
+	priv->web = summer_web_backend_new (NULL, summer_item_data_get_web_url (item));
 	g_object_unref (item);
-	g_signal_connect (web, "download-complete", G_CALLBACK (on_webpage_downloaded), self);
-	summer_web_backend_fetch (web);
+	g_signal_connect (priv->web, "download-complete", G_CALLBACK (on_webpage_downloaded), self);
+	summer_web_backend_fetch (priv->web);
 }
 
 static void

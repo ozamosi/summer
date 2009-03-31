@@ -276,7 +276,17 @@ on_metafile_downloaded (SummerDownloadWeb *dl, gchar *metafile_path, gpointer us
 	g_free (tmp_dir);
 	
 	priv->handle = session->add_torrent (p);
-	libtorrent::torrent_info info = priv->handle.get_torrent_info ();
+
+	libtorrent::torrent_status status = priv->handle.status ();
+
+	if (status.total_wanted) {
+		SummerDownloadableData *dlable;
+		g_object_get (self, "downloadable", &dlable, NULL);
+		dlable->length = status.total_wanted;
+		g_object_unref (dlable);
+	}
+
+	g_signal_emit_by_name (self, "download-started");
 	g_timeout_add_seconds (5, (GSourceFunc) check_progress, self);
 	g_timeout_add_seconds (30, (GSourceFunc) check_done_seeding, self);
 }

@@ -178,12 +178,20 @@ on_headers_parsed (SummerWebBackend *web, gpointer user_data)
 	g_object_get (web, "filename", &filename, "length", &length, NULL);
 	g_object_set (self, "filename", filename, NULL);
 	g_object_get (self, "save-dir", &save_dir, NULL);
+	if (length) {
+		SummerDownloadableData *dlable;
+		g_object_get (self, "downloadable", &dlable, NULL);
+		dlable->length = length;
+		g_object_unref (dlable);
+	}
 	gchar *final_path = g_build_filename (save_dir, filename, NULL);
 	g_free (filename);
 
 	g_signal_connect (priv->web, "download-chunk", G_CALLBACK (on_download_chunk), self);
 	g_signal_connect (priv->web, "download-complete", G_CALLBACK (on_download_complete), self);
 	
+	g_signal_emit_by_name (self, "download-started");
+
 	if (is_downloaded (final_path, length)) {
 		g_signal_emit_by_name (self, "download-complete", final_path);
 	} else {
