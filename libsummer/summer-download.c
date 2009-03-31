@@ -52,6 +52,7 @@ struct _SummerDownloadPrivate {
 	gchar *filename;
 	SummerItemData *item;
 	SummerDownloadableData *downloadable;
+	gboolean completed;
 };
 #define SUMMER_DOWNLOAD_GET_PRIVATE(o)   (G_TYPE_INSTANCE_GET_PRIVATE((o), \
                                           SUMMER_TYPE_DOWNLOAD, \
@@ -67,7 +68,8 @@ enum {
 	PROP_URL,
 	PROP_FILENAME,
 	PROP_ITEM,
-	PROP_DOWNLOADABLE
+	PROP_DOWNLOADABLE,
+	PROP_COMPLETED
 };
 
 G_DEFINE_ABSTRACT_TYPE (SummerDownload, summer_download, G_TYPE_OBJECT);
@@ -104,6 +106,9 @@ set_property (GObject *object, guint prop_id, const GValue *value,
 			g_object_unref (priv->downloadable);
 		priv->downloadable = g_value_dup_object (value);
 		break;
+	case PROP_COMPLETED:
+		priv->completed = g_value_get_boolean (value);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -134,6 +139,9 @@ get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 		break;
 	case PROP_DOWNLOADABLE:
 		g_value_set_object (value, priv->downloadable);
+		break;
+	case PROP_COMPLETED:
+		g_value_set_boolean (value, priv->completed);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -208,6 +216,13 @@ summer_download_class_init (SummerDownloadClass *klass)
 		G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
 	g_object_class_install_property (gobject_class, PROP_DOWNLOADABLE, pspec);
 
+	pspec = g_param_spec_boolean ("completed",
+		"Completed",
+		"Whether the download is complete",
+		FALSE,
+		G_PARAM_READWRITE);
+	g_object_class_install_property (gobject_class, PROP_COMPLETED, pspec);
+
 	/**
 	 * SummerDownload::download-complete:
 	 * @obj: the %SummerDownload object that emitted the signal
@@ -276,10 +291,17 @@ print_update (SummerDownload *self, guint64 downloaded, guint64 length, gpointer
 }
 
 static void
+set_complete (SummerDownload *self, ...)
+{
+	summer_download_set_completed (self, TRUE);
+}
+
+static void
 summer_download_init (SummerDownload *self)
 {
 	self->priv = SUMMER_DOWNLOAD_GET_PRIVATE (self);
 	g_object_set (self, "save-dir", default_save_dir, "tmp-dir", default_tmp_dir, NULL);
+	g_signal_connect (self, "download-complete", G_CALLBACK (set_complete), NULL);
 	if (summer_debug (NULL)) {
 		g_signal_connect (self, "download-update", G_CALLBACK (print_update), NULL);
 	}
@@ -420,4 +442,35 @@ summer_download_get_tmp_dir (SummerDownload *self)
 	gchar *tmp_dir;
 	g_object_get (self, "tmp-dir", &tmp_dir, NULL);
 	return tmp_dir;
+}
+
+/**
+ * summer_download_set_completed:
+ * @self: a %SummerDownload instance
+ * @completed: whether the download is completed or not
+ *
+ * Sets whether the download is completed or not
+ */
+void
+summer_download_set_completed (SummerDownload *self, gboolean completed)
+{
+	g_return_if_fail (SUMMER_IS_DOWNLOAD (self));
+	g_object_set (self, "completed", completed, NULL);
+}
+
+/**
+ * summer_download_get_completed:
+ * @self: a %SummerDownload instance
+ *
+ * Returns whether the download is completed.
+ *
+ * Returns: %TRUE if the download is complete, otherwise %FALSE
+ */
+gboolean
+summer_download_get_completed (SummerDownload *self)
+{
+	g_return_val_if_fail (SUMMER_IS_DOWNLOAD (self), FALSE);
+	gboolean val;
+	g_object_get (self, "completed", &val, NULL);
+	return val;
 }

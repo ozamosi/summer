@@ -72,6 +72,8 @@ summer_download_get_tmp_dir
 summer_download_set_default
 summer_download_set_save_dir
 summer_download_set_tmp_dir
+summer_download_get_completed
+summer_download_set_completed
 <SUBSECTION Standard>
 SummerDownloadClass
 SummerDownloadPrivate
