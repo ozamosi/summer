@@ -274,6 +274,7 @@ on_metafile_downloaded (SummerDownloadWeb *dl, gchar *metafile_path, gpointer us
 		p.save_path = boost::filesystem::path (save_dir);
 	}
 	g_free (tmp_dir);
+	tmp_dir = NULL;
 	
 	priv->handle = session->add_torrent (p);
 

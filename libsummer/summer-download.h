@@ -38,8 +38,8 @@ typedef struct _SummerDownloadClass   SummerDownloadClass;
 typedef struct _SummerDownloadPrivate SummerDownloadPrivate;
 
 struct _SummerDownload {
-	 GObject parent;
-	 SummerDownloadPrivate *priv;
+	GObject parent;
+	SummerDownloadPrivate *priv;
 };
 
 struct _SummerDownloadClass {

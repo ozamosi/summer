@@ -186,6 +186,7 @@ on_headers_parsed (SummerWebBackend *web, gpointer user_data)
 	}
 	gchar *final_path = g_build_filename (save_dir, filename, NULL);
 	g_free (filename);
+	filename = NULL;
 
 	g_signal_connect (priv->web, "download-chunk", G_CALLBACK (on_download_chunk), self);
 	g_signal_connect (priv->web, "download-complete", G_CALLBACK (on_download_complete), self);
