@@ -82,7 +82,7 @@ struct _SummerDownloadableData {
 	SummerItemData *item;
 	gchar *url;
 	gchar *mime;
-	gint length;
+	guint64 length;
 };
 
 struct _SummerDownloadableDataClass {
@@ -115,7 +115,7 @@ SummerDownloadableData* summer_item_data_append_downloadable (SummerItemData *se
 
 gchar* summer_downloadable_data_get_url (SummerDownloadableData *self);
 gchar* summer_downloadable_data_get_mime (SummerDownloadableData *self);
-gint summer_downloadable_data_get_length (SummerDownloadableData *self);
+guint64 summer_downloadable_data_get_length (SummerDownloadableData *self);
 
 G_END_DECLS
 

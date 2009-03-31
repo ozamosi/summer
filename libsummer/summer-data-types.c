@@ -501,7 +501,7 @@ summer_downloadable_data_get_mime (SummerDownloadableData *self)
  *
  * Returns: The length of the downloadable.
  */
-gint
+guint64
 summer_downloadable_data_get_length (SummerDownloadableData *self)
 {
 	return self->length;

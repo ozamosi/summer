@@ -174,7 +174,7 @@ on_headers_parsed (SummerWebBackend *web, gpointer user_data)
 	SummerDownloadWebPrivate *priv = SUMMER_DOWNLOAD_WEB (self)->priv;
 
 	gchar *filename, *save_dir;
-	gsize length;
+	guint64 length;
 	g_object_get (web, "filename", &filename, "length", &length, NULL);
 	g_object_set (self, "filename", filename, NULL);
 	g_object_get (self, "save-dir", &save_dir, NULL);
