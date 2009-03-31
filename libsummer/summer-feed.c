@@ -106,21 +106,6 @@ set_property (GObject *object, guint prop_id, const GValue *value,
 }
 
 static void
-set_glist (GValue *value, GList *list)
-{
-	GValueArray *array = g_value_array_new (g_list_length (list));
-	for (; list; list = list->next) {
-		GValue tmp = {0};
-		g_value_init (&tmp, G_TYPE_POINTER);
-		g_value_set_pointer (&tmp, list->data);
-		array = g_value_array_append (array, &tmp);
-	}
-
-	g_value_set_boxed (value, array);
-	g_value_array_free (array);
-}
-
-static void
 get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 {
 	SummerFeed *self = SUMMER_FEED (object);
@@ -159,7 +144,7 @@ get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 		g_value_set_long (value, priv->feed_data->updated);
 		break;
 	case PROP_ITEMS:
-		set_glist (value, priv->feed_data->items);
+		g_value_set_pointer (value, priv->feed_data->items);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -243,14 +228,9 @@ summer_feed_class_init (SummerFeedClass *klass)
 		G_PARAM_READABLE);
 	g_object_class_install_property (gobject_class, PROP_UPDATED, pspec);
 
-	pspec = g_param_spec_pointer ("item",
-		"Item",
-		"An item (a post) in the feed",
-		G_PARAM_READABLE);
-	pspec = g_param_spec_value_array ("items",
+	pspec = g_param_spec_pointer ("items",
 		"Items",
-		"A list of the items (posts) in the feed",
-		pspec,
+		"A GList of the items (posts) in the feed",
 		G_PARAM_READABLE);
 	g_object_class_install_property (gobject_class, PROP_ITEMS, pspec);
 
