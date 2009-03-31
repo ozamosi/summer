@@ -67,6 +67,11 @@ gchar* summer_download_get_tmp_dir (SummerDownload *self);
 void summer_download_set_completed (SummerDownload *self, gboolean completed);
 gboolean summer_download_get_completed (SummerDownload *self);
 
+void summer_download_set_filename (SummerDownload *self, gchar *filename);
+gchar* summer_download_get_filename (SummerDownload *self);
+
+gchar* summer_download_get_save_path (SummerDownload *self);
+
 G_END_DECLS
 
 #endif /* __SUMMER_DOWNLOAD_H__ */

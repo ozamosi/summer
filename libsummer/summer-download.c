@@ -474,3 +474,62 @@ summer_download_get_completed (SummerDownload *self)
 	g_object_get (self, "completed", &val, NULL);
 	return val;
 }
+
+/**
+ * summer_download_set_filename:
+ * @self: a %SummerDownload instance
+ * @filename: the filename to set. May not be %NULL.
+ *
+ * Sets the desired filename. Has no effect after the download is complete.
+ */
+void
+summer_download_set_filename (SummerDownload *self, gchar *filename)
+{
+	g_return_if_fail (SUMMER_IS_DOWNLOAD (self));
+	g_return_if_fail (filename == NULL);
+	if (summer_download_get_completed (self))
+		return;
+	g_object_set (self, "filename", filename, NULL);
+}
+
+/**
+ * summer_download_get_filename:
+ * @self: a %SummerDownload instance
+ *
+ * Returns the filename that is/will be the name of the completed file
+ *
+ * Returns: the name of the completed file
+ */
+gchar*
+summer_download_get_filename (SummerDownload *self)
+{
+	g_return_val_if_fail (SUMMER_IS_DOWNLOAD (self), NULL);
+	gchar *filename;
+	g_object_get (self, "filename", &filename, NULL);
+	return filename;
+}
+
+/**
+ * summer_download_get_save_path:
+ * @self: a %SummerDownload instance
+ *
+ * Returns the full path to where the download is stored.
+ *
+ * Returns: the path to the completed download, or %NULL if download is not
+ * completed.
+ */
+gchar*
+summer_download_get_save_path (SummerDownload *self)
+{
+	g_return_val_if_fail (SUMMER_IS_DOWNLOAD (self), NULL);
+	if (summer_download_get_completed (self)) {
+		gchar *filename, *save_dir, *path;
+		filename = summer_download_get_filename (self);
+		save_dir = summer_download_get_save_dir (self);
+		path = g_build_filename (save_dir, filename, NULL);
+		g_free (filename);
+		g_free (save_dir);
+		return path;
+	}
+	return NULL;
+}

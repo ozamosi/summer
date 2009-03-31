@@ -248,6 +248,28 @@
   (return-type "gchar*")
 )
 
+(define-method set_filename
+  (of-object "SummerDownload")
+  (c-name "summer_download_set_filename")
+  (return-type "none")
+  (parameters
+    '("gchar*" "filename")
+  )
+)
+
+(define-method get_filename
+  (of-object "SummerDownload")
+  (c-name "summer_download_get_filename")
+  (return-type "gchar*")
+)
+
+(define-method get_save_path
+  (of-object "SummerDownload")
+  (c-name "summer_download_get_save_path")
+  (return-type "gchar*")
+)
+
+
 ;; From summer-download-web.h
 
 (define-function summer_download_web_get_type
