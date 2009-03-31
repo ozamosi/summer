@@ -48,6 +48,7 @@ typedef struct _SummerDownloadableDataClass    SummerDownloadableDataClass;
 
 struct _SummerFeedData {
 	GObject parent;
+	gchar *url;
 	gchar *title;
 	gchar *description;
 	gchar *id;

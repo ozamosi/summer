@@ -317,6 +317,7 @@ on_downloaded (SummerWebBackend *web, gchar *save_path, gchar *save_data, gpoint
 		xmlParserInputBufferPtr buffer = xmlParserInputBufferCreateMem (save_data, strlen (save_data), 0);
 		xmlTextReaderPtr reader = xmlNewTextReader (buffer, priv->url);
 		priv->feed_data = summer_feed_parser_parse (parsers, sizeof (parsers) / sizeof (*parsers), reader);
+		priv->feed_data->url = priv->url;
 		
 		unsigned int i;
 		for (i = 0; i < sizeof (parsers) / sizeof (*parsers); i++) {
