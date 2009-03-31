@@ -129,7 +129,7 @@ handle_feed_node (SummerFeedParser *self, xmlTextReaderPtr node, SummerFeedData 
 
 	if (xmlStrEqual (xmlTextReaderConstLocalName (node), BAD_CAST ("entry"))) {
 		*is_item = TRUE;
-		feed->items = g_list_prepend (feed->items, summer_item_data_new ());
+		summer_feed_data_append_item (feed);
 	}
 
 	return ret;

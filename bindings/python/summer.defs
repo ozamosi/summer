@@ -61,18 +61,6 @@
   (return-type "SummerFeedData*")
 )
 
-(define-function summer_item_data_new
-  (c-name "summer_item_data_new")
-  (is-constructor-of "SummerItemData")
-  (return-type "SummerItemData*")
-)
-
-(define-function summer_downloadable_data_new
-  (c-name "summer_downloadable_data_new")
-  (is-constructor-of "SummerDownloadableData")
-  (return-type "SummerDownloadableData*")
-)
-
 (define-function summer_feed_data_get_type
   (c-name "summer_feed_data_get_type")
   (return-type "GType")
@@ -130,6 +118,12 @@
   (return-type "const-SummerItemsData*")
 )
 
+(define-method append_item
+  (of-object "SummerFeedData")
+  (c-name "summer_feed_data_append_item")
+  (return-type "const-SummerItemData*")
+)
+
 (define-method get_title
   (of-object "SummerItemData")
   (c-name "summer_item_data_get_title")
@@ -175,7 +169,7 @@
 (define-method append_downloadable
   (of-object "SummerItemData")
   (c-name "summer_item_data_append_downloadable")
-  (return-type "none")
+  (return-type "const-SummerDownloadableData*")
   (parameters
     '("gchar*" "url")
     '("gchar*" "mime" (null-ok) (default "NULL"))

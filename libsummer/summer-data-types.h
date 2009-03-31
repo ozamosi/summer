@@ -28,12 +28,15 @@ G_BEGIN_DECLS
 
 #define SUMMER_TYPE_FEED_DATA             (summer_feed_data_get_type())
 #define SUMMER_FEED_DATA(obj)                  (G_TYPE_CHECK_INSTANCE_CAST((obj),SUMMER_TYPE_FEED_DATA,SummerFeedData))
+#define SUMMER_IS_FEED_DATA(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj),SUMMER_TYPE_FEED_DATA))
 
 #define SUMMER_TYPE_ITEM_DATA             (summer_item_data_get_type())
 #define SUMMER_ITEM_DATA(obj)                  (G_TYPE_CHECK_INSTANCE_CAST((obj),SUMMER_TYPE_ITEM_DATA,SummerItemData))
+#define SUMMER_IS_ITEM_DATA(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj),SUMMER_TYPE_ITEM_DATA))
 
 #define SUMMER_TYPE_DOWNLOADABLE_DATA     (summer_downloadable_data_get_type())
 #define SUMMER_DOWNLOADABLE_DATA(obj)                  (G_TYPE_CHECK_INSTANCE_CAST((obj),SUMMER_TYPE_DOWNLOADABLE_DATA,SummerDownloadableData))
+#define SUMMER_IS_DOWNLOADABLE_DATA(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj),SUMMER_TYPE_DOWNLOADABLE_DATA))
 
 
 typedef struct _SummerFeedData                 SummerFeedData;
@@ -60,6 +63,7 @@ struct _SummerFeedDataClass {
 
 struct _SummerItemData {
 	GObject parent;
+	SummerFeedData *feed;
 	gchar *title;
 	gchar *description;
 	gchar *id;
@@ -75,6 +79,7 @@ struct _SummerItemDataClass {
 
 struct _SummerDownloadableData {
 	GObject parent;
+	SummerItemData *item;
 	gchar *url;
 	gchar *mime;
 	gint length;
@@ -85,8 +90,6 @@ struct _SummerDownloadableDataClass {
 };
 
 SummerFeedData* summer_feed_data_new (void);
-SummerItemData* summer_item_data_new (void);
-SummerDownloadableData* summer_downloadable_data_new (void);
 
 GType summer_feed_data_get_type (void) G_GNUC_CONST;
 GType summer_item_data_get_type (void) G_GNUC_CONST;
@@ -99,6 +102,7 @@ gchar* summer_feed_data_get_web_url (SummerFeedData *self);
 gchar* summer_feed_data_get_author (SummerFeedData *self);
 time_t summer_feed_data_get_updated (SummerFeedData *self);
 GList* summer_feed_data_get_items (SummerFeedData *self);
+SummerItemData* summer_feed_data_append_item (SummerFeedData *self);
 
 gchar* summer_item_data_get_title (SummerItemData *self);
 gchar* summer_item_data_get_description (SummerItemData *self);
@@ -107,7 +111,7 @@ gchar* summer_item_data_get_web_url (SummerItemData *self);
 gchar* summer_item_data_get_author (SummerItemData *self);
 time_t summer_item_data_get_updated (SummerItemData *self);
 GList* summer_item_data_get_downloadables (SummerItemData *self);
-void summer_item_data_append_downloadable (SummerItemData *self, gchar *url, gchar *mime, gint length);
+SummerDownloadableData* summer_item_data_append_downloadable (SummerItemData *self, gchar *url, gchar *mime, guint64 length);
 
 gchar* summer_downloadable_data_get_url (SummerDownloadableData *self);
 gchar* summer_downloadable_data_get_mime (SummerDownloadableData *self);

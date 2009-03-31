@@ -10,7 +10,8 @@ static void
 init ()
 {
 	SummerDownload *dl;
-	SummerItemData *item = summer_item_data_new ();
+	SummerFeedData *feed = summer_feed_data_new ();
+	SummerItemData *item = summer_feed_data_append_item (feed);
 	summer_item_data_append_downloadable (item, 
 		"http://localhost", "application/x-bittorrent", 0);
 	dl = summer_create_download (item);
@@ -20,7 +21,7 @@ init ()
 	g_assert (SUMMER_IS_DOWNLOAD_TORRENT (dl));
 #endif
 	g_object_unref (dl);
-	g_object_unref (item);
+	g_object_unref (feed);
 }
 
 #ifdef ENABLE_BITTORRENT
@@ -30,7 +31,8 @@ invalid_torrent (WebFixture *fix, gconstpointer data)
 	loop = g_main_loop_new (NULL, TRUE);
 	summer_download_set_default (g_get_tmp_dir (), NULL);
 	SummerDownload *dl;
-	SummerItemData *item = summer_item_data_new ();
+	SummerFeedData *feed = summer_feed_data_new ();
+	SummerItemData *item = summer_feed_data_append_item (feed);
 	gchar *url = g_strdup_printf ("http://localhost:%i/video/dummy_mp4", PORT);
 	summer_item_data_append_downloadable (item, 
 		url,
@@ -39,6 +41,7 @@ invalid_torrent (WebFixture *fix, gconstpointer data)
 	g_free (url);
 	dl = summer_download_torrent_new (item);
 	g_assert (SUMMER_IS_DOWNLOAD_TORRENT (dl));
+	g_object_unref (feed);
 // TODO: Need proper error handling before this works (#12)
 /*	summer_download_start (dl);
 	g_main_loop_run (loop);

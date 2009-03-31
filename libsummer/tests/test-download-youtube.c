@@ -33,7 +33,8 @@ static void
 basic (WebFixture *fix, gconstpointer data)
 {
 	loop = g_main_loop_new (NULL, TRUE);
-	SummerItemData *item = summer_item_data_new ();
+	SummerFeedData *feed = summer_feed_data_new ();
+	SummerItemData *item = summer_feed_data_append_item (feed);
 	item->web_url = "http://www.youtube.com/watch?v=SiYurfwzyuY";
 	SummerDownload *dl = summer_download_youtube_new (item);
 	g_assert (SUMMER_IS_DOWNLOAD_YOUTUBE (dl));
@@ -44,7 +45,7 @@ basic (WebFixture *fix, gconstpointer data)
 	//g_main_loop_run (loop);
 	g_main_loop_unref (loop);
 	g_object_unref (dl);
-	g_object_unref (item);
+	g_object_unref (feed);
 }
 
 int main (int argc, char *argv[]) {

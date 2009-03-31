@@ -227,6 +227,23 @@ summer_feed_data_get_items (SummerFeedData *self)
 }
 
 /**
+ * summer_feed_data_append_item ():
+ * @self: a %SummerFeedData object.
+ *
+ * Creates a new %SummerItemData, and appends it to the feed object.
+ *
+ * Returns: The newly created %SummerItemData object.
+ */
+SummerItemData*
+summer_feed_data_append_item (SummerFeedData *self)
+{
+	SummerItemData *data = SUMMER_ITEM_DATA (g_object_new (SUMMER_TYPE_ITEM_DATA, NULL));
+	self->items = g_list_prepend (self->items, data);
+	data->feed = self;
+	return data;
+}
+
+/**
  * SummerItemData:
  * @title: The item title
  * @description: A longer text string. This is the text content of the post.
@@ -257,19 +274,6 @@ static void
 summer_item_data_init (SummerItemData *self)
 {}
 
-/**
- * summer_item_data_new ():
- *
- * Create a new %SummerItemData
- *
- * Returns: the newly created %SummerItemData
- */
-SummerItemData*
-summer_item_data_new ()
-{
-	return SUMMER_ITEM_DATA (g_object_new (SUMMER_TYPE_ITEM_DATA, NULL));
-}
-
 void
 summer_item_data_finalize (GObject *obj)
 {
@@ -289,7 +293,7 @@ summer_item_data_finalize (GObject *obj)
 		g_object_unref (G_OBJECT (list->data));
 	}
 	g_list_free (self->downloadables);
-	
+
 	G_OBJECT_CLASS (summer_item_data_parent_class)->finalize (obj);
 }
 
@@ -405,18 +409,23 @@ summer_item_data_get_downloadables (SummerItemData *self)
  * @mime: the mime for the new downloadable.
  * @length: the length of the new downloadable.
  *
- * A convenience function for creating a new downloadable, and appending it
- * to the list of downloadables in one go.
+ * Create a new downloadable, and appending it to the list of downloadables.
+ *
+ * Returns: the newly created %SummerDownloadableData object.
  */
-void
+SummerDownloadableData*
 summer_item_data_append_downloadable (SummerItemData *self, 
-	gchar *url, gchar *mime, gint length)
+	gchar *url, gchar *mime, guint64 length)
 {
-	SummerDownloadableData *dlable = summer_downloadable_data_new ();
+	SummerDownloadableData *dlable = SUMMER_DOWNLOADABLE_DATA (g_object_new
+	        (SUMMER_TYPE_DOWNLOADABLE_DATA, NULL));
 	dlable->url = g_strdup (url);
 	dlable->mime = g_strdup (mime);
 	dlable->length = length;
 	self->downloadables = g_list_append (self->downloadables, dlable);
+	dlable->item = self;
+
+	return dlable;
 }
 
 /**
@@ -442,20 +451,6 @@ summer_downloadable_data_class_init (SummerDownloadableDataClass *klass)
 static void
 summer_downloadable_data_init (SummerDownloadableData *self)
 {}
-
-/**
- * summer_downloadable_data_new ():
- *
- * Creates a new %SummerDownloadableData
- *
- * Returns: the newly created %SummerDownloadableData
- */
-SummerDownloadableData*
-summer_downloadable_data_new ()
-{
-	return (SummerDownloadableData *) (g_object_new 
-		(SUMMER_TYPE_DOWNLOADABLE_DATA, NULL));
-}
 
 void
 summer_downloadable_data_finalize (GObject *obj)

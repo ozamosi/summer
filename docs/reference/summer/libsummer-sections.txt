@@ -143,8 +143,7 @@ SummerFeedData
 SummerItemData
 SummerDownloadableData
 summer_feed_data_new
-summer_item_data_new
-summer_downloadable_data_new
+summer_feed_data_append_item
 summer_downloadable_data_get_length
 summer_downloadable_data_get_mime
 summer_downloadable_data_get_url
@@ -173,6 +172,9 @@ SUMMER_ITEM_DATA
 SUMMER_TYPE_DOWNLOADABLE_DATA
 SUMMER_TYPE_FEED_DATA
 SUMMER_TYPE_ITEM_DATA
+SUMMER_IS_DOWNLOADABLE_DATA
+SUMMER_IS_FEED_DATA
+SUMMER_IS_ITEM_DATA
 summer_downloadable_data_get_type
 summer_item_data_get_type
 summer_feed_data_get_type

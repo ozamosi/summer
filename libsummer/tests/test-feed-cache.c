@@ -5,7 +5,8 @@
 
 static GList*
 append_uri (GList *list, gchar *uri) {
-	SummerItemData *item = summer_item_data_new ();
+	SummerFeedData *feed = summer_feed_data_new ();
+	SummerItemData *item = summer_feed_data_append_item (feed);
 	item->id = g_strdup (uri);
 	list = g_list_append (list, item);
 	return list;

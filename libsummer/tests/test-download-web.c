@@ -52,12 +52,13 @@ basic (WebFixture *fix, gconstpointer data)
 	summer_download_set_default (g_get_tmp_dir (), g_get_home_dir ());
 	loop = g_main_loop_new (NULL, TRUE);
 	SummerDownload *dl;
-	SummerItemData *item = summer_item_data_new ();
+	SummerFeedData *feed = summer_feed_data_new ();
+	SummerItemData *item = summer_feed_data_append_item (feed);
 	gchar *url = g_strdup_printf ("http://localhost:%i/feeds/epicfu", PORT);
 	summer_item_data_append_downloadable (item, url, "video/mp4", 0);
 	g_free (url);
 	dl = summer_create_download (item);
-	g_object_unref (item);
+	g_object_unref (feed);
 	g_signal_connect (dl, "download-complete", G_CALLBACK (complete_cb), NULL);
 	g_signal_connect (dl, "download-update", G_CALLBACK (update_cb), NULL);
 	summer_download_start (dl);
@@ -70,29 +71,32 @@ static void
 mimes ()
 {
 	SummerDownload *dl;
-	SummerItemData *item = summer_item_data_new ();
+	SummerFeedData *feed = summer_feed_data_new ();
+	SummerItemData *item = summer_feed_data_append_item (feed);
 	gchar *url = g_strdup_printf ("http://localhost:%i/", PORT);
 	summer_item_data_append_downloadable (item, url, "application/xml", 0);
 	g_free (url);
 	dl = summer_create_download (item);
-	g_object_unref (item);
+	g_object_unref (feed);
 	g_assert (!SUMMER_IS_DOWNLOAD_WEB (dl));
 
-	item = summer_item_data_new ();
+	feed = summer_feed_data_new ();
+	item = summer_feed_data_append_item (feed);
 	url = g_strdup_printf ("http://localhost:%i/", PORT);
 	summer_item_data_append_downloadable (item, url, "application/flac", 0);
 	g_free (url);
 	dl = summer_create_download (item);
-	g_object_unref (item);
+	g_object_unref (feed);
 	g_assert (SUMMER_IS_DOWNLOAD_WEB (dl));
 	g_object_unref (dl);
 	
-	item = summer_item_data_new ();
+	feed = summer_feed_data_new ();
+	item = summer_feed_data_append_item (feed);
 	url = g_strdup_printf ("http://localhost:%i/video/dummy_mp4", PORT);
 	summer_item_data_append_downloadable (item, url, "video/mp4", 0);
 	g_free (url);
 	dl = summer_create_download (item);
-	g_object_unref (item);
+	g_object_unref (feed);
 	g_assert (SUMMER_IS_DOWNLOAD_WEB (dl));
 }
 

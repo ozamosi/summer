@@ -188,7 +188,7 @@ handle_feed_node (SummerFeedParser *self, xmlTextReaderPtr node, SummerFeedData 
 
 	if (xmlStrEqual (xmlTextReaderConstLocalName (node), BAD_CAST ("item"))) {
 		*is_item = TRUE;
-		feed->items = g_list_prepend (feed->items, summer_item_data_new ());
+		summer_feed_data_append_item (feed);
 	}
 
 	return ret;
@@ -208,7 +208,7 @@ handle_item_node (SummerFeedParser *self, xmlTextReaderPtr node, SummerFeedData 
 	SAVE_TEXT_CONTENTS ("link", node, item->web_url, ret);
 
 	if (xmlStrEqual (xmlTextReaderConstLocalName (node), BAD_CAST ("enclosure"))) {
-		SummerDownloadableData *dl = summer_downloadable_data_new ();
+		SummerDownloadableData *dl = summer_item_data_append_downloadable (item, NULL, NULL, 0);
 		int r = 1;
 		while (r > 0) {
 			r = xmlTextReaderMoveToNextAttribute (node);
@@ -223,7 +223,6 @@ handle_item_node (SummerFeedParser *self, xmlTextReaderPtr node, SummerFeedData 
 				dl->length = atoi ((char *)xmlTextReaderConstValue (node));
 			}
 		}
-		item->downloadables = g_list_append (item->downloadables, dl);
 		return 2;
 	}
 

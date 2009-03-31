@@ -287,11 +287,17 @@ start (SummerDownload *self)
 	g_return_if_fail (SUMMER_IS_DOWNLOAD_TORRENT (self));
 	gchar *tmp_dir;
 	SummerDownloadableData *downloadable;
+	SummerItemData *orig_item;
 	g_object_get (self, 
-		"tmp-dir", &tmp_dir, "downloadable", &downloadable, NULL);
+		"tmp-dir", &tmp_dir,
+		"downloadable", &downloadable,
+		"item", &orig_item,
+		NULL);
 	gchar *metafile_dir = g_build_filename (tmp_dir, "metafiles", NULL);
 
-	SummerItemData *item = summer_item_data_new ();
+	SummerItemData *item = summer_feed_data_append_item (orig_item->feed);
+	g_object_unref (orig_item);
+	orig_item = NULL;
 	summer_item_data_append_downloadable (item, 
 		summer_downloadable_data_get_url (downloadable), NULL, 0);
 	SummerDownload *web = summer_download_web_new (item);
