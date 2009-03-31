@@ -122,10 +122,7 @@ get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 		g_value_set_string (value, priv->url);
 		break;
 	case PROP_FILENAME:
-		if (priv->pretty_filename != NULL)
-			g_value_set_string (value, priv->pretty_filename);
-		else
-			g_value_set_string (value, priv->filename);
+		g_value_set_string (value, priv->pretty_filename);
 		break;
 	case PROP_LENGTH:
 		g_value_set_uint64 (value, priv->length);
@@ -454,6 +451,8 @@ on_got_headers (SoupMessage *msg, gpointer user_data)
 	if (priv->pretty_filename)
 		g_free (priv->pretty_filename);
 	priv->pretty_filename = get_filename (msg);
+	if (priv->pretty_filename == NULL)
+		priv->pretty_filename = g_strdup (priv->filename);
 
 	if (!priv->head_emitted) {
 		priv->head_emitted = TRUE;
