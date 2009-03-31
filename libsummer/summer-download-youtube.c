@@ -227,6 +227,21 @@ on_webpage_downloaded (SummerWebBackend *web, gchar *path, gchar *web_data,
 }
 
 static void
+summer_download_youtube_abort (SummerDownload *self)
+{
+	g_return_if_fail (SUMMER_IS_DOWNLOAD_YOUTUBE (self));
+	SummerDownloadYoutubePrivate *priv = SUMMER_DOWNLOAD_YOUTUBE (self)->priv;
+	summer_web_backend_abort (priv->web);
+
+	SummerItemData *item;
+	g_object_get (self, "item", &item, NULL);
+	SummerFeedCache *cache = summer_feed_cache_get ();
+	summer_feed_cache_add_new_item (cache, item);
+	g_object_unref (G_OBJECT (cache));
+	g_object_unref (G_OBJECT (item));
+}
+
+static void
 start (SummerDownload *self)
 {
 	g_return_if_fail (SUMMER_IS_DOWNLOAD_YOUTUBE (self));
@@ -249,6 +264,7 @@ summer_download_youtube_class_init (SummerDownloadYoutubeClass *klass)
 
 	SummerDownloadClass *download_class;
 	download_class = SUMMER_DOWNLOAD_CLASS (klass);
+	download_class->abort = summer_download_youtube_abort;
 	download_class->start = start;
 
 	g_type_class_add_private (gobject_class, sizeof(SummerDownloadYoutubePrivate));

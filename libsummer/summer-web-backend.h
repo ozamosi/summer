@@ -55,6 +55,8 @@ SummerWebBackend*    summer_web_backend_new         (const gchar *save_dir, cons
 
 void summer_web_backend_fetch (SummerWebBackend *self);
 void summer_web_backend_fetch_head (SummerWebBackend *self);
+void summer_web_backend_abort (SummerWebBackend *self);
+
 G_END_DECLS
 
 #endif /* __SUMMER_WEB_BACKEND_H__ */

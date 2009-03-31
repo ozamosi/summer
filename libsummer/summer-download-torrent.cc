@@ -292,6 +292,23 @@ on_metafile_downloaded (SummerDownloadWeb *dl, gchar *metafile_path, gpointer us
 }
 
 static void
+summer_download_torrent_abort (SummerDownload *self)
+{
+	g_return_if_fail (SUMMER_IS_DOWNLOAD_TORRENT (self));
+	SummerDownloadTorrentPrivate *priv = SUMMER_DOWNLOAD_TORRENT (self)->priv;
+	if (priv->handle.is_valid ())
+		session->remove_torrent (priv->handle);
+	downloads = g_slist_remove (downloads, self);
+
+	SummerItemData *item;
+	g_object_get (self, "item", &item, NULL);
+	SummerFeedCache *cache = summer_feed_cache_get ();
+	summer_feed_cache_add_new_item (cache, item);
+	g_object_unref (G_OBJECT (cache));
+	g_object_unref (G_OBJECT (item));
+}
+
+static void
 start (SummerDownload *self)
 {
 	g_return_if_fail (SUMMER_IS_DOWNLOAD_TORRENT (self));
@@ -388,6 +405,7 @@ summer_download_torrent_class_init (SummerDownloadTorrentClass *klass)
 	SummerDownloadClass *download_class;
 	download_class = SUMMER_DOWNLOAD_CLASS (klass);
 	download_class->start = start;
+	download_class->abort = summer_download_torrent_abort;
 
 	g_type_class_add_private (gobject_class, sizeof(SummerDownloadTorrentPrivate));
 #endif

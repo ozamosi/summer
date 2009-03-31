@@ -66,6 +66,7 @@ SUMMER_DOWNLOAD_WEB_GET_CLASS
 <TITLE>SummerDownload</TITLE>
 SummerDownload
 summer_download_start
+summer_download_abort
 summer_download_get_save_dir
 summer_download_get_tmp_dir
 summer_download_set_default
@@ -219,6 +220,7 @@ SummerWebBackend
 summer_web_backend_new
 summer_web_backend_fetch
 summer_web_backend_fetch_head
+summer_web_backend_abort
 <SUBSECTION Standard>
 SummerWebBackendClass
 SummerWebBackendPrivate

@@ -345,6 +345,19 @@ summer_download_start (SummerDownload *obj)
 }
 
 /**
+ * summer_download_abort:
+ * @obj: a %SummerDownload instance
+ *
+ * Aborts the file transfer
+ */
+void
+summer_download_abort (SummerDownload *obj)
+{
+	g_return_if_fail (SUMMER_IS_DOWNLOAD (obj));
+	SUMMER_DOWNLOAD_GET_CLASS (obj)->abort (obj);
+}
+
+/**
  * summer_download_set_save_dir:
  * @self: a %SummerDownload instance
  * @save_dir: a directory path

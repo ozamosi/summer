@@ -68,6 +68,7 @@ struct _SummerWebBackendPrivate {
 	gboolean fetch;
 	GFileOutputStream *outfile;
 	GFile *filehandle;
+	SoupMessage *msg;
 	gboolean head_emitted;
 };
 #define SUMMER_WEB_BACKEND_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE((o), \
@@ -474,8 +475,8 @@ summer_web_backend_fetch (SummerWebBackend *self)
 	g_return_if_fail (SUMMER_IS_WEB_BACKEND (self));
 	SummerWebBackendPrivate *priv = self->priv;
 
-	SoupMessage *msg = soup_message_new ("GET", priv->url);
-	if (msg == NULL) {
+	priv->msg = soup_message_new ("GET", priv->url);
+	if (priv->msg == NULL) {
 		g_warning ("Could not parse URL: %s", priv->url);
 		return;
 	}
@@ -501,12 +502,12 @@ summer_web_backend_fetch (SummerWebBackend *self)
 		}
 		priv->fetch = FALSE;
 
-		soup_message_body_set_accumulate (msg->response_body, FALSE);
+		soup_message_body_set_accumulate (priv->msg->response_body, FALSE);
 	}
 
-	g_signal_connect (msg, "got-chunk", G_CALLBACK (on_got_chunk), self);
-	g_signal_connect (msg, "got-headers", G_CALLBACK (on_got_headers), self);
-	soup_session_queue_message (session, msg, on_downloaded, self);
+	g_signal_connect (priv->msg, "got-chunk", G_CALLBACK (on_got_chunk), self);
+	g_signal_connect (priv->msg, "got-headers", G_CALLBACK (on_got_headers), self);
+	soup_session_queue_message (session, priv->msg, on_downloaded, self);
 }
 
 /**
@@ -521,9 +522,27 @@ void
 summer_web_backend_fetch_head (SummerWebBackend *self)
 {
 	g_return_if_fail (SUMMER_IS_WEB_BACKEND (self));
+	g_return_if_fail (!SOUP_IS_MESSAGE (self->priv->msg));
 
 	SoupMessage *msg = soup_message_new ("HEAD", self->priv->url);
 
 	g_signal_connect (msg, "got-headers", G_CALLBACK (on_got_headers), self);
 	soup_session_queue_message (session, msg, NULL, NULL);
+}
+
+/**
+ * summer_web_backend_abort:
+ * @self: a #SummerWebBackend instance
+ *
+ * If there is a transfer in progress, abort it.
+ */
+void
+summer_web_backend_abort (SummerWebBackend *self)
+{
+	g_return_if_fail (SUMMER_IS_WEB_BACKEND (self));
+	if (SOUP_IS_MESSAGE (self->priv->msg)) {
+		soup_session_cancel_message (session,
+			self->priv->msg,
+			SOUP_STATUS_CANCELLED);
+	}
 }

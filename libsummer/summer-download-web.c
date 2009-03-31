@@ -203,6 +203,21 @@ on_headers_parsed (SummerWebBackend *web, gpointer user_data)
 }
 
 static void
+summer_download_web_abort (SummerDownload *self)
+{
+	g_return_if_fail (SUMMER_IS_DOWNLOAD_WEB (self));
+	SummerDownloadWebPrivate *priv = SUMMER_DOWNLOAD_WEB (self)->priv;
+	summer_web_backend_abort (priv->web);
+
+	SummerItemData *item;
+	g_object_get (self, "item", &item, NULL);
+	SummerFeedCache *cache = summer_feed_cache_get ();
+	summer_feed_cache_add_new_item (cache, item);
+	g_object_unref (G_OBJECT (cache));
+	g_object_unref (G_OBJECT (item));
+}
+
+static void
 start (SummerDownload *self)
 {
 	g_return_if_fail (SUMMER_IS_DOWNLOAD_WEB (self));
@@ -240,6 +255,7 @@ summer_download_web_class_init (SummerDownloadWebClass *klass)
 
 	SummerDownloadClass *download_class;
 	download_class = SUMMER_DOWNLOAD_CLASS (klass);
+	download_class->abort = summer_download_web_abort;
 	download_class->start = start;
 
 	g_type_class_add_private (gobject_class, sizeof(SummerDownloadWebPrivate));
