@@ -101,6 +101,7 @@ summer_feed_get_cache_dir
 summer_feed_get_description
 summer_feed_get_frequency
 summer_feed_get_id
+summer_feed_peek_items
 summer_feed_get_items
 summer_feed_get_title
 summer_feed_get_updated

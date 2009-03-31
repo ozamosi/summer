@@ -307,10 +307,6 @@ on_downloaded (SummerWebBackend *web, gchar *save_path, gchar *save_data, gpoint
 		xmlFreeTextReader (reader);
 		xmlFreeParserInputBuffer (buffer);
 	
-		SummerFeedCache *cache = summer_feed_cache_get ();
-		summer_feed_cache_filter_old_items (cache, &priv->feed_data->items);
-		g_object_unref (cache);
-
 		g_signal_emit_by_name (self, "new-entries");
 	}
 
@@ -572,16 +568,35 @@ summer_feed_get_updated (SummerFeed *self)
 }
 
 /**
+ * summer_feed_peek_items:
+ * @self: a %SummerFeedData object.
+ *
+ * Returns all new items in this feed, without marking those items as old.
+ *
+ * Returns: The new items in the feed.
+ */
+GList *
+summer_feed_peek_items (SummerFeed *self)
+{
+	return g_list_copy (self->priv->feed_data->items);
+}
+
+/**
  * summer_feed_get_items:
  * @self: a %SummerFeedData object.
  *
- * Returns all items in this feed.
+ * Returns all new items in this feed. A new item is one that hasn't been returned by this
+ * function before.
  *
- * Returns: The items in the feed.
+ * Returns: The new items in the feed.
  */
 GList *
 summer_feed_get_items (SummerFeed *self)
 {
+	SummerFeedCache *cache = summer_feed_cache_get ();
+	summer_feed_cache_filter_old_items (cache, &self->priv->feed_data->items);
+	g_object_unref (cache);
+
 	return g_list_copy (self->priv->feed_data->items);
 }
 

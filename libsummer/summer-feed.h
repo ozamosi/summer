@@ -77,6 +77,7 @@ gchar* summer_feed_get_author (SummerFeed *self);
 time_t summer_feed_get_updated (SummerFeed *self);
 
 GList* summer_feed_get_items (SummerFeed *self);
+GList* summer_feed_peek_items (SummerFeed *self);
 
 void summer_feed_shutdown (void);
 G_END_DECLS

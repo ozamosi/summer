@@ -407,6 +407,12 @@
   (return-type "time_t")
 )
 
+(define-method peek_items
+  (of-object "SummerFeed")
+  (c-name "summer_feed_peek_items")
+  (return-type "const-SummerItemData*")
+)
+
 (define-method get_items
   (of-object "SummerFeed")
   (c-name "summer_feed_get_items")
