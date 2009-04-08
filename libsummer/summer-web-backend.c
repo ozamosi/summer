@@ -285,7 +285,7 @@ summer_web_backend_init (SummerWebBackend *self)
 		g_object_ref (session);
 	else {
 		session = soup_session_async_new_with_options (
-			"max-conns-per-host", 2,
+			"max-conns-per-host", 1,
 			"user-agent", "libsummer/" VERSION " ",
 			NULL);
 		if (summer_debug (NULL) == TRUE) {
