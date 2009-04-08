@@ -24,8 +24,9 @@ update_cb (SummerDownload *obj, guint64 received, guint64 length, gpointer user_
 }
 
 static void
-complete_cb (SummerDownload *obj, gchar *save_path, gpointer user_data)
+complete_cb (SummerDownload *obj, gpointer user_data)
 {
+	gchar *save_path = summer_download_get_save_path (obj);
 	g_assert_cmpstr (save_path, !=, NULL);
 	gchar *filename = g_build_filename (g_get_home_dir (), "epicfu", NULL);
 	g_assert_cmpstr (save_path, ==, filename);

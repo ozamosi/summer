@@ -145,8 +145,7 @@ handle_alert (gpointer data)
 			dynamic_cast<libtorrent::storage_moved_alert *> (alert)) {
 		SummerDownloadTorrent *dl = get_download_torrent (p->handle);
 		if (dl->priv->completing) {
-			g_signal_emit_by_name (dl, "download-complete",
-				dl->priv->handle.save_path ().string ().c_str ());
+			g_signal_emit_by_name (dl, "download-complete");
 			dl->priv->completing = FALSE;
 		}
 	}
@@ -223,8 +222,7 @@ check_progress (gpointer data) {
 			priv->handle.move_storage (boost_save_dir);
 			priv->completing = TRUE;
 		} else {
-			g_signal_emit_by_name (self, "download-complete",
-				priv->handle.save_path ().string ().c_str ());
+			g_signal_emit_by_name (self, "download-complete");
 		}
 		return FALSE;
 	}
@@ -232,8 +230,9 @@ check_progress (gpointer data) {
 }
 
 static void
-on_metafile_downloaded (SummerDownloadWeb *dl, gchar *metafile_path, gpointer user_data)
+on_metafile_downloaded (SummerDownloadWeb *dl, gpointer user_data)
 {
+	gchar *metafile_path = summer_download_get_save_path (SUMMER_DOWNLOAD (dl));
 	summer_debug ("%s: Metafile downloaded - torrent transfer starting", metafile_path);
 	g_return_if_fail (SUMMER_IS_DOWNLOAD_TORRENT (user_data));
 	g_return_if_fail (metafile_path != NULL);

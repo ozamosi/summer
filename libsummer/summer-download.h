@@ -46,7 +46,7 @@ struct _SummerDownloadClass {
 	GObjectClass parent_class;
 	void (* start) (SummerDownload *self);
 	void (* abort) (SummerDownload *self);
-	void (* download_complete) (SummerDownload *obj, gchar *save_path, gpointer user_data);
+	void (* download_complete) (SummerDownload *obj, gpointer user_data);
 	void (* download_update) (SummerDownload *obj, guint64 received, guint64 length, gpointer user_data);
 	void (* download_started) (SummerDownload *obj, gpointer user_data);
 };

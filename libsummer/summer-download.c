@@ -226,8 +226,6 @@ summer_download_class_init (SummerDownloadClass *klass)
 	/**
 	 * SummerDownload::download-complete:
 	 * @obj: the %SummerDownload object that emitted the signal
-	 * @save_path: the file system path where the file was saved. %NULL if there
-	 * was an error
 	 *
 	 * Signal that is emitted when the whole file has been downloaded and moved
 	 * to it's final destination.
@@ -238,10 +236,9 @@ summer_download_class_init (SummerDownloadClass *klass)
 			G_SIGNAL_RUN_FIRST,
 			G_STRUCT_OFFSET (SummerDownloadClass, download_complete),
 			NULL, NULL,
-			g_cclosure_marshal_VOID__STRING,
+			g_cclosure_marshal_VOID__VOID,
 			G_TYPE_NONE,
-			1,
-			G_TYPE_STRING);
+			0);
 	/**
 	 * SummerDownload::download-update:
 	 * @obj: the %SummerDownload object that emitted the signal

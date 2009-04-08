@@ -77,7 +77,7 @@ on_download_complete (SummerWebBackend *web_backend, gchar *save_path, gchar *sa
 	SummerDownload *self = SUMMER_DOWNLOAD (user_data);
 
 	if (save_path == NULL) {
-		g_signal_emit_by_name (self, "download-complete", NULL);
+		g_signal_emit_by_name (self, "download-complete");
 		g_object_unref (self);
 		return;
 	}
@@ -117,7 +117,7 @@ on_download_complete (SummerWebBackend *web_backend, gchar *save_path, gchar *sa
 	g_object_unref (G_OBJECT (cache));
 	g_object_unref (G_OBJECT (item));
 
-	g_signal_emit_by_name (self, "download-complete", destpath);
+	g_signal_emit_by_name (self, "download-complete");
 	g_object_unref (self);
 	g_free (destpath);
 }
@@ -194,7 +194,7 @@ on_headers_parsed (SummerWebBackend *web, gpointer user_data)
 	g_signal_emit_by_name (self, "download-started");
 
 	if (is_downloaded (final_path, length)) {
-		g_signal_emit_by_name (self, "download-complete", final_path);
+		g_signal_emit_by_name (self, "download-complete");
 	} else {
 		summer_web_backend_fetch (priv->web);
 	}

@@ -109,7 +109,7 @@ on_file_downloaded (SummerWebBackend *web, gchar *saved_path, gchar *saved_data,
 	if (saved_path == NULL) {
 		self->priv->quality--;
 		if (self->priv->quality < 0) {
-			g_signal_emit_by_name (self, "download-complete", NULL);
+			g_signal_emit_by_name (self, "download-complete");
 			g_object_unref (self);
 			g_object_unref (web);
 			return;
@@ -165,7 +165,7 @@ on_file_downloaded (SummerWebBackend *web, gchar *saved_path, gchar *saved_data,
 	g_object_unref (G_OBJECT (cache));
 	g_object_unref (item);
 	g_object_unref (web);
-	g_signal_emit_by_name (self, "download-complete", destpath);
+	g_signal_emit_by_name (self, "download-complete");
 	g_object_unref (self);
 	g_free (destpath);
 }
