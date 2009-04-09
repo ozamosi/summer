@@ -216,8 +216,10 @@ if test "$enable_coverage" = "yes"; then
 	COVERAGE_CFLAGS="-O0 -g -fprofile-arcs -ftest-coverage"
 	COVERAGE_LIBS="-lgcov"
 
-	AC_PATH_PROG(locv_path, [lcov], [no])
-	if test "x$lcov_path" != "xno" ; then
+	AC_PATH_PROG(lcov_path, [lcov], [no])
+	if test "x$lcov_path" = "xno" ; then
+		AC_MSG_ERROR([lcov not found])
+	else
 		LCOV_VERSION=`lcov --version|head -n 1| $SED 's/^.* version //'`
 		LCOV_MAJOR=`echo $LCOV_VERSION | cut -d. -f1 | $SED s/[a-zA-Z\-].*//g`
 		LCOV_MINOR=`echo $LCOV_VERSION | cut -d. -f2 | $SED s/[a-zA-Z\-].*//g`

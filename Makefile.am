@@ -27,7 +27,7 @@ coverage::
 	lcov --compat-libtool --directory . --zerocounters
 	-$(MAKE) test
 	lcov --compat-libtool --directory ./libsummer --capture --output-file ./coverage/$(PACKAGE)_tmp.info
-	lcov --compat-libtool --extract ./coverage/$(PACKAGE)_tmp.info "$(PWD)/libsummer*" -o ./coverage/$(PACKAGE).info
+	lcov --compat-libtool --extract ./coverage/$(PACKAGE)_tmp.info "*libsummer*" -o ./coverage/$(PACKAGE).info
 	$(RM) ./coverage/$(PACKAGE)_tmp.info
 	genhtml -o ./coverage --num-spaces 2 ./coverage/$(PACKAGE).info
 endif
