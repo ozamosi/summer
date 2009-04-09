@@ -18,6 +18,9 @@ BUILT_SOURCES = $(MARSHAL_GENERATED)
 
 CLEANFILES = $(MARSHAL_GENERATED)
 
+clean-local:
+	rm -f *.gcno
+
 INCLUDES = \
 	$(CFLAGS) \
 	$(SUMMER_CFLAGS) \

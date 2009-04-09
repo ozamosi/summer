@@ -43,3 +43,7 @@ EXTRA_DIST = \
 	epicfu \
 	rss2sample.xml \
 	watch?v=SiYurfwzyuY
+
+clean-local:
+	rm -f *.gcno
+	rm -f *.gcda
