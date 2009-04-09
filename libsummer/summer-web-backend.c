@@ -440,8 +440,10 @@ on_got_headers (SoupMessage *msg, gpointer user_data)
 		soup_session_cancel_message (session, msg, SOUP_STATUS_CANCELLED);
 		return;
 	}
-	else if (!SOUP_STATUS_IS_REDIRECTION (msg->status_code))
-		priv->fetch = TRUE;
+	else if (SOUP_STATUS_IS_REDIRECTION (msg->status_code))
+		return;
+	
+	priv->fetch = TRUE;
 
 	goffset length;
 	length = soup_message_headers_get_content_length (msg->response_headers);
