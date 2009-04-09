@@ -25,7 +25,7 @@ if USE_LCOV
 coverage::
 	mkdir -p ./coverage
 	lcov --compat-libtool --directory . --zerocounters
-	-$(MAKE) check
+	-$(MAKE) test
 	lcov --compat-libtool --directory ./libsummer --capture --output-file ./coverage/$(PACKAGE)_tmp.info
 	lcov --compat-libtool --extract ./coverage/$(PACKAGE)_tmp.info "$(PWD)/libsummer*" -o ./coverage/$(PACKAGE).info
 	$(RM) ./coverage/$(PACKAGE)_tmp.info

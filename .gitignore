@@ -2,6 +2,8 @@
 *.o
 *.stamp
 *.m4
+*.gcno
+*.gcda
 Makefile
 Makefile.in
 docs/reference/summer/html/

@@ -4,14 +4,15 @@ noinst_PROGRAMS = $(TEST_PROGS)
 
 INCLUDES = \
 	$(CFLAGS) \
-	$(SUMMER_CFLAGS) \
 	$(GLIB_CFLAGS) \
 	$(SOUP_CFLAGS) \
+	$(SUMMER_CFLAGS) \
 	-I$(top_srcdir) \
 	-include $(CONFIG_HEADER)
 
 AM_LDFLAGS = \
 	$(GLIB_LIBS) \
+	$(SUMMER_LIBS) \
 	$(SOUP_LIBS) \
 	$(top_builddir)/libsummer/libsummer.la
 
