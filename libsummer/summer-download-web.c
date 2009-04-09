@@ -24,6 +24,7 @@
 #include "summer-feed-cache.h"
 #include "summer-debug.h"
 #include <string.h>
+#include <time.h>
 #include <gio/gio.h>
 
 /**
@@ -53,6 +54,7 @@ static void summer_download_web_finalize   (GObject *obj);
 
 struct _SummerDownloadWebPrivate {
 	SummerWebBackend *web;
+	time_t last_update;
 };
 #define SUMMER_DOWNLOAD_WEB_GET_PRIVATE(o)      (G_TYPE_INSTANCE_GET_PRIVATE((o), \
                                                  SUMMER_TYPE_DOWNLOAD_WEB, \
@@ -65,7 +67,12 @@ on_download_chunk (SummerWebBackend *web_backend, guint64 received, guint64 leng
 {
 	g_return_if_fail (SUMMER_IS_DOWNLOAD_WEB (user_data));
 	SummerDownload *self = SUMMER_DOWNLOAD (user_data);
-	g_signal_emit_by_name (self, "download-update", received, length);
+	SummerDownloadWebPrivate *priv = SUMMER_DOWNLOAD_WEB (self)->priv;
+	time_t curr_time = time (NULL);
+	if (priv->last_update == 0 || priv->last_update < curr_time) {
+		priv->last_update = curr_time;
+		g_signal_emit_by_name (self, "download-update", received, length);
+	}
 }
 
 static void

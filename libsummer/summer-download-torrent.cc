@@ -287,7 +287,7 @@ on_metafile_downloaded (SummerDownloadWeb *dl, gpointer user_data)
 	}
 
 	g_signal_emit_by_name (self, "download-started");
-	g_timeout_add_seconds (5, (GSourceFunc) check_progress, self);
+	g_timeout_add_seconds (1, (GSourceFunc) check_progress, self);
 	g_timeout_add_seconds (30, (GSourceFunc) check_done_seeding, self);
 }
 

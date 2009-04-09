@@ -28,6 +28,7 @@
 #include <glib.h>
 #include <string.h>
 #include <gio/gio.h>
+#include <time.h>
 
 /**
  * SECTION:summer-download-youtube
@@ -59,6 +60,7 @@ struct _SummerDownloadYoutubePrivate {
 	gchar *v;
 	gint quality;
 	SummerWebBackend *web;
+	time_t last_update;
 };
 #define SUMMER_DOWNLOAD_YOUTUBE_GET_PRIVATE(o)      (G_TYPE_INSTANCE_GET_PRIVATE((o), \
                                                      SUMMER_TYPE_DOWNLOAD_YOUTUBE, \
@@ -79,7 +81,12 @@ on_download_chunk (SummerWebBackend *web_backend, guint64 received, guint64 leng
 {
 	g_return_if_fail (SUMMER_IS_DOWNLOAD_YOUTUBE (user_data));
 	SummerDownload *self = SUMMER_DOWNLOAD (user_data);
-	g_signal_emit_by_name (self, "download-update", received, length);
+	SummerDownloadYoutubePrivate *priv = SUMMER_DOWNLOAD_YOUTUBE (self)->priv;
+	time_t curr_time = time (NULL);
+	if (priv->last_update == 0 || priv->last_update < curr_time) {
+		priv->last_update = curr_time;
+		g_signal_emit_by_name (self, "download-update", received, length);
+	}
 }
 
 static void

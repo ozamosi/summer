@@ -40,6 +40,9 @@
  * certain way to fetch media files from remote sources. You should not create
  * instances of this class.
  *
+ * %SummerDownload instances steal a reference when used - you should thus not
+ * free any %SummerDownload-objects.
+ *
  * Look at %summer_create_download if you want to create downloader instances.
  */
 static void summer_download_class_init (SummerDownloadClass *klass);
@@ -246,8 +249,10 @@ summer_download_class_init (SummerDownloadClass *klass)
 	 * @length: the total number of bytes to be downloaded. %-1 if this is not
 	 * known.
 	 *
-	 * ::download-update is emitted every time the downloader feels it has new
-	 * results to inform - the exact semantics is downloader specific.
+	 * ::download-update is emitted if the backend feels it has anything new
+	 * to report. This will usually be approximately once per second, but if
+	 * there is nothing to report, the backend may choose not to emit this
+	 * signal.
 	 */
 	g_signal_new (
 			"download-update",

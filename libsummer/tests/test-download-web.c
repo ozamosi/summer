@@ -1,10 +1,12 @@
 #include <glib.h>
 #include <libsummer/summer.h>
 #include <libsummer/summer-download-web.h>
+#include <time.h>
 #include "server.h"
 
 static GMainLoop *loop;
 static gint last_received = 0;
+static time_t last_timestamp = 0;
 
 static void
 update_cb (SummerDownload *obj, guint64 received, guint64 length, gpointer user_data)
@@ -13,6 +15,9 @@ update_cb (SummerDownload *obj, guint64 received, guint64 length, gpointer user_
     g_assert_cmpint (received, >=, last_received);
     g_assert_cmpint (received, <=, length);
 	last_received = received;
+
+	g_assert_cmpint (last_timestamp, <, time (NULL));
+	last_timestamp = time (NULL);
 
 	gchar *contents;
 	gsize file_length;
