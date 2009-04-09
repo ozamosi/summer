@@ -16,4 +16,5 @@ Libxml >= 2.6
 Optional:
 
 Pygobject >= 2.15.2 (for Python bindings)
+Vala >= 0.5 (for Vala bindings)
 Libtorrent-rasterbar >= 0.14 (for bittorrent downloads)
