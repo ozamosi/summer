@@ -185,8 +185,6 @@ if test "x$enable_vala" != "xno"; then
 	PKG_CHECK_MODULES(VALA, vala-1.0 >= $VALA_REQUIRED, [
 		VAPIGEN="$($PKG_CONFIG --variable=vapigen vala-1.0)"
 		VALA_GEN_INTROSPECT="$($PKG_CONFIG --variable=vala_gen_introspect vala-1.0)"
-		VAPIDIR="$($PKG_CONFIG --variable=vapidir vala-1.0)"
-		AC_SUBST(VAPIDIR)
 		AC_SUBST(VAPIGEN)
 		AC_SUBST(VALA_GEN_INTROSPECT)
 		enable_vala=yes
