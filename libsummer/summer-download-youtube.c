@@ -95,13 +95,13 @@ on_headers_parsed (SummerWebBackend *web, gpointer data)
 	g_return_if_fail (SUMMER_IS_DOWNLOAD_YOUTUBE (data));
 	SummerDownloadYoutube *self = SUMMER_DOWNLOAD_YOUTUBE (data);
 	guint64 length;
-	g_object_get (web, "length", &length, NULL);
-	if (length) {
-		SummerDownloadableData *dlable;
-		g_object_get (self, "downloadable", &dlable, NULL);
-		dlable->length = length;
-		g_object_unref (dlable);
-	}
+	gchar *url;
+	g_object_get (web, "length", &length, "url", &url, NULL);
+	SummerDownloadableData *dlable;
+	g_object_get (self, "downloadable", &dlable, NULL);
+	dlable->url = url;
+	dlable->length = length;
+	g_object_unref (dlable);
 
 	g_signal_emit_by_name (self, "download-started");
 }
@@ -322,8 +322,11 @@ summer_download_youtube_new (SummerItemData *item)
 	if (g_match_info_matches (info)) {
 		g_regex_unref (v);
 		SummerDownloadYoutube *dl;
+		SummerDownloadableData *dlable = summer_item_data_append_downloadable (
+			item, NULL, NULL, 0);
 		dl = g_object_new (SUMMER_TYPE_DOWNLOAD_YOUTUBE, 
-			"item", item, "downloadable", NULL, NULL);
+			"item", item, "downloadable", dlable, NULL);
+		g_object_unref (dlable);
 		dl->priv->v = g_match_info_fetch (info, 2);
 		g_match_info_free (info);
 		return SUMMER_DOWNLOAD (dl);
