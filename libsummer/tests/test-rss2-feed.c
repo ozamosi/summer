@@ -17,7 +17,7 @@ feedburner ()
 	g_assert_cmpstr (feed_data->id, ==, NULL);
 	g_assert_cmpstr (feed_data->web_url, ==, "http://epicfu.com/");
 	GTimeVal time;
-	g_time_val_from_iso8601 ("2008-12-02T03:56:43 -0800", &time);
+	g_time_val_from_iso8601 ("2008-12-02T03:56:43-0800", &time);
 	g_assert_cmpint (feed_data->updated, ==, time.tv_sec);
 	g_assert_cmpstr (feed_data->author, ==, NULL);
 
@@ -55,6 +55,8 @@ parse ()
 	SummerItemData *item_data = (SummerItemData *)feed_data->items->data;
 	g_assert_cmpstr (item_data->title, ==, "Astronauts' Dirty Laundry");
 	g_assert_cmpstr (item_data->id, ==, "http://liftoff.msfc.nasa.gov/2003/05/20.html#item570");
+	g_time_val_from_iso8601 ("2009-04-12T20:50:43Z", &time);
+	g_assert_cmpint (item_data->updated, ==, time.tv_sec);
 	item_data = (SummerItemData *)g_list_last (feed_data->items)->data;
 	g_assert_cmpstr (item_data->title, ==, "Star City");
 	g_assert_cmpstr (item_data->description, ==, "How do Americans get ready to work with Russians aboard the International Space Station? They take a crash course in culture, language and protocol at Russia's <a href=\"http://howe.iki.rssi.ru/GCTC/gctc_e.htm\">Star City</a>.");

@@ -152,11 +152,13 @@ parse_rfc2822 (gchar *text) {
 	time_t t;
 	t = mktime (&tm);
 	if (parts[4][0] == '+' || parts[4][0] == '-') {
-		gchar *tmp = g_strndup (parts[4], 2);
-		t += atoi (tmp) * 3600;
-		tmp[1] = parts[4][3]; // overwrite the digits, keep the sign
-		tmp[2] = parts[4][4];
-		t += atoi (tmp) * 60;
+		gchar *tmp = g_strndup (parts[4], 3);
+		t -= atoi (tmp) * 3600;
+		if (g_utf8_strlen (parts[4], -1) == 5) {
+			tmp[1] = parts[4][3]; // overwrite the digits, keep the sign
+			tmp[2] = parts[4][4];
+			t -= atoi (tmp) * 60;
+		}
 		g_free (tmp);
 	} else {
 		for (i = 0; i < 25; i++) {
