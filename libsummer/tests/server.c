@@ -41,7 +41,7 @@ video_server (SoupServer *server, SoupMessage *msg, const char *path,
 	if (!g_strcmp0 (path, "/video/youtube")) {
 		gchar *page_contents;
 		gsize length;
-		if (!g_file_get_contents ("watch?v=SiYurfwzyuY", &page_contents, &length, NULL)) {
+		if (!g_file_get_contents (BASEFILEPATH "/watch?v=SiYurfwzyuY", &page_contents, &length, NULL)) {
 			g_error ("Couldn't serve video file");
 		}
 		soup_message_set_status (msg, SOUP_STATUS_OK);
@@ -67,7 +67,7 @@ feed_server (SoupServer *server, SoupMessage *msg, const char *path,
 	if (!g_strcmp0 (path, "/feeds/epicfu")) {
 		gchar *contents;
 		gsize length;
-		if (!g_file_get_contents ("epicfu", &contents, &length, NULL)) {
+		if (!g_file_get_contents (BASEFILEPATH "/epicfu", &contents, &length, NULL)) {
 			g_error ("Couldn't serve feed");
 		}
 		const char *mime_type = "text/xml";
@@ -84,7 +84,7 @@ feed_server (SoupServer *server, SoupMessage *msg, const char *path,
 	if (!g_strcmp0 (path, "/feeds/atom")) {
 		gchar *contents;
 		gsize length;
-		if (!g_file_get_contents ("atom_feed", &contents, &length, NULL)) {
+		if (!g_file_get_contents (BASEFILEPATH "/atom_feed", &contents, &length, NULL)) {
 			g_error ("Couldn't serve feed");
 		}
 		const char *mime_type = "text/xml";
@@ -95,7 +95,7 @@ feed_server (SoupServer *server, SoupMessage *msg, const char *path,
 	if (!g_strcmp0 (path, "/feeds/rss2sample.xml")) {
 		gchar *contents;
 		gsize length;
-		if (!g_file_get_contents ("rss2sample.xml", &contents, &length, NULL)) {
+		if (!g_file_get_contents (BASEFILEPATH "/rss2sample.xml", &contents, &length, NULL)) {
 			g_error ("Couldn't serve feed");
 		}
 		const char *mime_type = "text/xml";

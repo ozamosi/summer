@@ -31,7 +31,7 @@ disk_downloaded_cb (SummerWebBackend *web, gchar *save_path, gchar *save_data, g
 	gchar *rec_contents = NULL;
 	gsize orig_length;
 	gsize rec_length;
-	g_file_get_contents ("epicfu", &orig_contents, &orig_length, NULL);
+	g_file_get_contents (BASEFILEPATH "/epicfu", &orig_contents, &orig_length, NULL);
 	g_file_get_contents (save_path, &rec_contents, &rec_length, NULL);
 	g_assert_cmpstr (orig_contents, ==, rec_contents);
 	g_free (orig_contents);
@@ -70,7 +70,7 @@ ram_downloaded_cb (SummerWebBackend *web, gchar *save_path, gchar *save_data, gp
 	g_assert_cmpstr (save_data, !=, NULL);
 	gchar *contents = NULL;
 	gsize length = 0;
-	g_file_get_contents ("epicfu", &contents, &length, NULL);
+	g_file_get_contents (BASEFILEPATH "/epicfu", &contents, &length, NULL);
 	g_assert_cmpstr (save_data, ==, contents);
 	g_free (contents);
 	g_main_loop_quit (loop);

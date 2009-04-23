@@ -8,7 +8,8 @@ INCLUDES = \
 	$(SOUP_CFLAGS) \
 	$(SUMMER_CFLAGS) \
 	-I$(top_srcdir) \
-	-include $(CONFIG_HEADER)
+	-include $(CONFIG_HEADER) \
+	-DBASEFILEPATH=\"$(srcdir)\"
 
 AM_LDFLAGS = \
 	$(GLIB_LIBS) \
@@ -43,6 +44,8 @@ EXTRA_DIST = \
 	epicfu \
 	rss2sample.xml \
 	watch?v=SiYurfwzyuY
+
+check-local: test
 
 clean-local:
 	rm -f *.gcno

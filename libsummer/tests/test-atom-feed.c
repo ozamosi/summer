@@ -6,7 +6,7 @@ static void
 parse ()
 {
 	SummerFeedParser *parsers[] = {SUMMER_FEED_PARSER (summer_atom_parser_new ())};
-	xmlTextReaderPtr reader = xmlNewTextReaderFilename ("atom_feed");
+	xmlTextReaderPtr reader = xmlNewTextReaderFilename (BASEFILEPATH "/atom_feed");
 	SummerFeedData *feed_data = summer_feed_parser_parse (parsers, sizeof (parsers) / sizeof (*parsers), reader);
 	xmlFreeTextReader (reader);
 	g_assert_cmpstr (feed_data->title, ==, "Example Feed");
@@ -33,7 +33,7 @@ static void
 broken_title ()
 {
 	SummerFeedParser *parsers[] = {SUMMER_FEED_PARSER (summer_atom_parser_new ())};
-	xmlTextReaderPtr reader = xmlNewTextReaderFilename ("atom_feed_nolink");
+	xmlTextReaderPtr reader = xmlNewTextReaderFilename (BASEFILEPATH "/atom_feed_nolink");
 	SummerFeedData *feed_data = summer_feed_parser_parse (parsers, sizeof (parsers) / sizeof (parsers), reader);
 	xmlFreeTextReader (reader);
 	g_assert_cmpstr (feed_data->title, ==, "Example Feed");
