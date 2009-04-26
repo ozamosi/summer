@@ -13,7 +13,7 @@ init ()
 	SummerFeedData *feed = summer_feed_data_new ();
 	SummerItemData *item = summer_feed_data_append_item (feed);
 	summer_item_data_append_downloadable (item, 
-		"http://localhost", "application/x-bittorrent", 0);
+		"http://127.0.0.1", "application/x-bittorrent", 0);
 	dl = summer_create_download (item);
 #ifndef ENABLE_BITTORRENT
 	g_assert (SUMMER_IS_DOWNLOAD_WEB (dl));
@@ -33,7 +33,7 @@ invalid_torrent (WebFixture *fix, gconstpointer data)
 	SummerDownload *dl;
 	SummerFeedData *feed = summer_feed_data_new ();
 	SummerItemData *item = summer_feed_data_append_item (feed);
-	gchar *url = g_strdup_printf ("http://localhost:%i/video/dummy_mp4", PORT);
+	gchar *url = g_strdup_printf ("http://127.0.0.1:%i/video/dummy_mp4", PORT);
 	summer_item_data_append_downloadable (item, 
 		url,
 		"application/x-bittorrent",

@@ -47,7 +47,7 @@ to_disk (WebFixture *fix, gconstpointer data)
 	loop = g_main_loop_new (NULL, TRUE);
 	gchar *path = g_strdup (g_get_tmp_dir ());
 	gchar *orig_path = g_strdup (path);
-	gchar *url =  g_strdup_printf ("http://localhost:%i/feeds/epicfu", PORT);
+	gchar *url =  g_strdup_printf ("http://127.0.0.1:%i/feeds/epicfu", PORT);
 	SummerWebBackend *web = summer_web_backend_new (path, url);
 	g_free (url);
 	g_free (path);
@@ -81,7 +81,7 @@ static void
 to_ram (WebFixture *fix, gconstpointer data)
 {
 	loop = g_main_loop_new (NULL, TRUE);
-	gchar *url =  g_strdup_printf ("http://localhost:%i/feeds/epicfu", PORT);
+	gchar *url =  g_strdup_printf ("http://127.0.0.1:%i/feeds/epicfu", PORT);
 	SummerWebBackend *web = summer_web_backend_new (NULL, url);
 	g_free (url);
 	gchar *save_dir;
@@ -107,7 +107,7 @@ static void
 response404_ram (WebFixture *fix, gconstpointer data)
 {
 	loop = g_main_loop_new (NULL, TRUE);
-	gchar *url =  g_strdup_printf ("http://localhost:%i/doesnotexist", PORT);
+	gchar *url =  g_strdup_printf ("http://127.0.0.1:%i/doesnotexist", PORT);
 	SummerWebBackend *web = summer_web_backend_new (NULL, url);
 	g_free (url);
 	g_signal_connect (web, "download-chunk", G_CALLBACK (not_reached), NULL);
@@ -130,7 +130,7 @@ response404_disk (WebFixture *fix, gconstpointer data)
 {
 	loop = g_main_loop_new (NULL, TRUE);
 	gchar *path = g_strdup (g_get_tmp_dir ());
-	gchar *url =  g_strdup_printf ("http://localhost:%i/doesnotexist", PORT);
+	gchar *url =  g_strdup_printf ("http://127.0.0.1:%i/doesnotexist", PORT);
 	SummerWebBackend *web = summer_web_backend_new (path, url);
 	g_free (url);
 	g_signal_connect (web, "download-chunk", G_CALLBACK (not_reached), NULL);
@@ -148,7 +148,7 @@ static void
 serverdown ()
 {
 	loop = g_main_loop_new (NULL, TRUE);
-	gchar *url = g_strdup_printf ("http://localhost:%i", PORT+1);
+	gchar *url = g_strdup_printf ("http://127.0.0.1:%i", PORT+1);
 	SummerWebBackend *web = summer_web_backend_new (NULL, url);
 	g_free (url);
 	g_signal_connect (web, "download-chunk", G_CALLBACK (chunk_cb), NULL);
@@ -178,7 +178,7 @@ static void
 redirect (WebFixture *fix, gconstpointer data)
 {
 	loop = g_main_loop_new (NULL, TRUE);
-	gchar *url = g_strdup_printf ("http://localhost:%i/redirect/302", PORT);
+	gchar *url = g_strdup_printf ("http://127.0.0.1:%i/redirect/302", PORT);
 	SummerWebBackend *web = summer_web_backend_new (g_get_tmp_dir (), url);
 	g_free (url);
 	g_signal_connect (web, "download-complete", G_CALLBACK (redirect_response_cb), NULL);
@@ -208,7 +208,7 @@ static void
 head (WebFixture *fix, gconstpointer data)
 {
 	loop = g_main_loop_new (NULL, TRUE);
-	gchar *url = g_strdup_printf ("http://localhost:%i/feeds/epicfu", PORT);
+	gchar *url = g_strdup_printf ("http://127.0.0.1:%i/feeds/epicfu", PORT);
 	SummerWebBackend *web = summer_web_backend_new (g_get_tmp_dir (), url);
 	g_free (url);
 	head_complete_id = g_signal_connect_data (web, "download-complete", G_CALLBACK (not_reached), NULL, NULL, 0);
@@ -235,7 +235,7 @@ static void
 slash (WebFixture *fix, gconstpointer data)
 {
 	loop = g_main_loop_new (NULL, TRUE);
-	gchar *url = g_strdup_printf ("http://localhost:%i/video/file_with_slash",
+	gchar *url = g_strdup_printf ("http://127.0.0.1:%i/video/file_with_slash",
 		PORT);
 	SummerWebBackend *web = summer_web_backend_new (g_get_tmp_dir (), url);
 	g_free (url);

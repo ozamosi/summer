@@ -19,7 +19,7 @@ create (WebFixture *fix, gconstpointer data)
 	SummerFeed *feed;
 	feed = summer_feed_new ();
 	g_signal_connect (feed, "new-entries", G_CALLBACK (on_new_entries), NULL);
-	gchar *url = g_strdup_printf ("http://localhost:%i/feeds/epicfu", PORT);
+	gchar *url = g_strdup_printf ("http://127.0.0.1:%i/feeds/epicfu", PORT);
 	summer_feed_start (feed, url);
 	g_free (url);
 	g_assert (feed != NULL);
@@ -42,7 +42,7 @@ invalid (WebFixture *fix, gconstpointer data)
 	SummerFeed *feed;
 	feed = summer_feed_new ();
 	g_signal_connect (feed, "new-entries", G_CALLBACK (on_invalid), NULL);
-	gchar *url = g_strdup_printf ("http://localhost:%i/video/dummy_mp4", PORT);
+	gchar *url = g_strdup_printf ("http://127.0.0.1:%i/video/dummy_mp4", PORT);
 	summer_feed_start (feed, url);
 	g_free (url);
 	g_assert (feed != NULL);
@@ -57,7 +57,7 @@ settings ()
 	summer_feed_set_default (g_get_tmp_dir (), 900);
 	SummerFeed *feed;
 	feed = summer_feed_new ();
-	gchar *orig_url = g_strdup_printf ("http://localhost:%i/feeds/epicfu",
+	gchar *orig_url = g_strdup_printf ("http://127.0.0.1:%i/feeds/epicfu",
 		PORT);
 	summer_feed_start (feed, orig_url);
 	gchar *cache_dir;

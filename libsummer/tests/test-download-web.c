@@ -69,7 +69,7 @@ basic (WebFixture *fix, gconstpointer data)
 	SummerDownload *dl;
 	SummerFeedData *feed = summer_feed_data_new ();
 	SummerItemData *item = summer_feed_data_append_item (feed);
-	gchar *url = g_strdup_printf ("http://localhost:%i/feeds/epicfu", PORT);
+	gchar *url = g_strdup_printf ("http://127.0.0.1:%i/feeds/epicfu", PORT);
 	summer_item_data_append_downloadable (item, url, "video/mp4", 0);
 	g_free (url);
 	url = NULL;
@@ -95,7 +95,7 @@ mimes ()
 	SummerDownload *dl;
 	SummerFeedData *feed = summer_feed_data_new ();
 	SummerItemData *item = summer_feed_data_append_item (feed);
-	gchar *url = g_strdup_printf ("http://localhost:%i/", PORT);
+	gchar *url = g_strdup_printf ("http://127.0.0.1:%i/", PORT);
 	summer_item_data_append_downloadable (item, url, "application/xml", 0);
 	g_free (url);
 	dl = summer_create_download (item);
@@ -104,7 +104,7 @@ mimes ()
 
 	feed = summer_feed_data_new ();
 	item = summer_feed_data_append_item (feed);
-	url = g_strdup_printf ("http://localhost:%i/", PORT);
+	url = g_strdup_printf ("http://127.0.0.1:%i/", PORT);
 	summer_item_data_append_downloadable (item, url, "application/flac", 0);
 	g_free (url);
 	dl = summer_create_download (item);
@@ -114,7 +114,7 @@ mimes ()
 	
 	feed = summer_feed_data_new ();
 	item = summer_feed_data_append_item (feed);
-	url = g_strdup_printf ("http://localhost:%i/video/dummy_mp4", PORT);
+	url = g_strdup_printf ("http://127.0.0.1:%i/video/dummy_mp4", PORT);
 	summer_item_data_append_downloadable (item, url, "video/mp4", 0);
 	g_free (url);
 	dl = summer_create_download (item);

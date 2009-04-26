@@ -10,7 +10,7 @@ redirect_server (SoupServer *server, SoupMessage *msg, const char *path,
 	gsize length = strlen (contents);
 	if (!g_strcmp0 (path, "/redirect/302"))
 		soup_message_set_status (msg, 302);
-	soup_message_headers_append (msg->response_headers, "Location", g_strdup_printf ("http://localhost:%i/video/dummy_mp4", PORT));
+	soup_message_headers_append (msg->response_headers, "Location", g_strdup_printf ("http://127.0.0.1:%i/video/dummy_mp4", PORT));
 	soup_message_set_response (msg, "text/plain", SOUP_MEMORY_COPY, contents, length);
 }
 
