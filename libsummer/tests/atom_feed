@@ -16,4 +16,9 @@
     <updated>2003-12-13T18:30:02Z</updated>
     <summary>Some text.</summary>
   </entry>
+  <entry>
+    <title>Item without web url</title>
+	<link type="application/atom+xml" href="http://localhost"/>
+	<summary>Nonsense</summary>
+  </entry>
 </feed>
