@@ -153,10 +153,18 @@ get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 }
 
 static void
+download_error (SummerDownload *self, GError *error, gpointer user_data)
+{
+	g_clear_error (&error);
+}
+
+static void
 summer_download_class_init (SummerDownloadClass *klass)
 {
 	GObjectClass *gobject_class;
 	gobject_class = (GObjectClass*) klass;
+
+	klass->download_error = download_error;
 
 	gobject_class->finalize = summer_download_finalize;
 	gobject_class->set_property = set_property;
@@ -264,6 +272,7 @@ summer_download_class_init (SummerDownloadClass *klass)
 			G_TYPE_NONE,
 			2,
 			G_TYPE_UINT64, G_TYPE_UINT64);
+	
 	/**
 	 * SummerDownload::download-started:
 	 * @obj: the %SummerDownload object that emitted the signal
@@ -281,6 +290,26 @@ summer_download_class_init (SummerDownloadClass *klass)
 			g_cclosure_marshal_VOID__VOID,
 			G_TYPE_NONE,
 			0);
+	
+	/**
+	 * SummerDownload::download-error:
+	 * @obj: the %SummerDownload object that emitted the signal
+	 * @error: a %GError
+	 *
+	 * If a download fails, this signal will be emitted, sending a %GError
+	 * parameter explaining the error. If this is emitted,
+	 * %SummerDownload::download-complete will not be emitted.
+	 */
+	g_signal_new (
+			"download-error",
+			SUMMER_TYPE_DOWNLOAD,
+			G_SIGNAL_RUN_CLEANUP,
+			G_STRUCT_OFFSET (SummerDownloadClass, download_error),
+			NULL, NULL,
+			g_cclosure_marshal_VOID__POINTER,
+			G_TYPE_NONE,
+			1,
+			G_TYPE_POINTER);
 }
 
 static void

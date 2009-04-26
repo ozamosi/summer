@@ -49,6 +49,7 @@ struct _SummerDownloadClass {
 	void (* download_complete) (SummerDownload *obj, gpointer user_data);
 	void (* download_update) (SummerDownload *obj, guint64 received, guint64 length, gpointer user_data);
 	void (* download_started) (SummerDownload *obj, gpointer user_data);
+	void (* download_error) (SummerDownload *obj, GError *error, gpointer user_data);
 };
 
 GType        summer_download_get_type    (void) G_GNUC_CONST;
@@ -77,7 +78,6 @@ GQuark summer_download_error_quark (void);
 
 enum SummerDownloadError {
 	SUMMER_DOWNLOAD_ERROR_OUTPUT,
-	SUMMER_DOWNLOAD_ERROR_STAT,
 	SUMMER_DOWNLOAD_ERROR_INPUT
 };
 
