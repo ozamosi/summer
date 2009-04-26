@@ -30,7 +30,10 @@ INCLUDES = \
 	$(DISABLE_DEPRECATED) \
 	$(LIBTORRENT_CFLAGS) \
 	-include $(CONFIG_HEADER) \
-	-Wall -Wextra -Wno-missing-field-initializers -Wno-unused-parameter -Werror
+	-Wall -Wextra \
+	-Wno-missing-field-initializers -Wno-unused-parameter \
+	-Werror \
+	-DG_LOG_DOMAIN=\"Summer\"
 
 libsummer_la_CFLAGS = \
 	-Wmissing-prototypes
