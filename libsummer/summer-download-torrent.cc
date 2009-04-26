@@ -247,7 +247,12 @@ on_metafile_downloaded (SummerDownloadWeb *dl, gpointer user_data)
 	try {
 		p.ti = new libtorrent::torrent_info (metafile_path);
 	} catch (std::exception& e) {
-		g_warning ("Couldn't add torrent: %s", e.what ());
+		GError *error = g_error_new (
+			SUMMER_DOWNLOAD_ERROR,
+			SUMMER_DOWNLOAD_ERROR_INPUT,
+			"Couldn't add torrent: %s", e.what ());
+		g_signal_emit_by_name (self, "download-error", error);
+		g_object_unref (self);
 		g_free (tmp_dir);
 		g_free (save_dir);
 		return;

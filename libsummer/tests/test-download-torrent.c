@@ -26,6 +26,19 @@ init ()
 
 #ifdef ENABLE_BITTORRENT
 static void
+on_fail (SummerDownload *dl, GError *error, gconstpointer user_data)
+{
+	g_assert_error (error, SUMMER_DOWNLOAD_ERROR, SUMMER_DOWNLOAD_ERROR_INPUT);
+	g_main_loop_quit (loop);
+}
+
+static void
+on_completed_fail (SummerDownload *dl, gconstpointer user_data)
+{
+	g_assert_not_reached ();
+}
+
+static void
 invalid_torrent (WebFixture *fix, gconstpointer data)
 {
 	loop = g_main_loop_new (NULL, TRUE);
@@ -42,12 +55,11 @@ invalid_torrent (WebFixture *fix, gconstpointer data)
 	dl = summer_download_torrent_new (item);
 	g_assert (SUMMER_IS_DOWNLOAD_TORRENT (dl));
 	g_object_unref (feed);
-// TODO: Need proper error handling before this works (#12)
-/*	summer_download_start (dl);
+	g_signal_connect (dl, "download-error", on_fail, NULL);
+	g_signal_connect (dl, "download-complete", on_completed_fail, NULL);
+	summer_download_start (dl);
 	g_main_loop_run (loop);
-	g_object_unref (dl);
 	g_main_loop_unref (loop);
-*/
 }
 #endif
 
