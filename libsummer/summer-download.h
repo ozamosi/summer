@@ -72,6 +72,15 @@ gchar* summer_download_get_filename (SummerDownload *self);
 
 gchar* summer_download_get_save_path (SummerDownload *self);
 
+#define SUMMER_DOWNLOAD_ERROR summer_download_error_quark ()
+GQuark summer_download_error_quark (void);
+
+enum SummerDownloadError {
+	SUMMER_DOWNLOAD_ERROR_OUTPUT,
+	SUMMER_DOWNLOAD_ERROR_STAT,
+	SUMMER_DOWNLOAD_ERROR_INPUT
+};
+
 G_END_DECLS
 
 #endif /* __SUMMER_DOWNLOAD_H__ */

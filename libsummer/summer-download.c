@@ -535,3 +535,9 @@ summer_download_get_save_path (SummerDownload *self)
 	}
 	return NULL;
 }
+
+GQuark
+summer_download_error_quark (void)
+{
+	return g_quark_from_static_string ("summer-download-error-quark");
+}
