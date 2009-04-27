@@ -544,25 +544,23 @@ summer_download_get_filename (SummerDownload *self)
  * summer_download_get_save_path:
  * @self: a %SummerDownload instance
  *
- * Returns the full path to where the download is stored.
+ * Returns the full path to where the download is stored. You should not attempt
+ * to call this function unless %SummerDownload::download-started has been
+ * emitted, or the information you receive might be bogus.
  *
- * Returns: the path to the completed download, or %NULL if download is not
- * completed.
+ * Returns: The path to the completed download.
  */
 gchar*
 summer_download_get_save_path (SummerDownload *self)
 {
 	g_return_val_if_fail (SUMMER_IS_DOWNLOAD (self), NULL);
-	if (summer_download_get_completed (self)) {
-		gchar *filename, *save_dir, *path;
-		filename = summer_download_get_filename (self);
-		save_dir = summer_download_get_save_dir (self);
-		path = g_build_filename (save_dir, filename, NULL);
-		g_free (filename);
-		g_free (save_dir);
-		return path;
-	}
-	return NULL;
+	gchar *filename, *save_dir, *path;
+	filename = summer_download_get_filename (self);
+	save_dir = summer_download_get_save_dir (self);
+	path = g_build_filename (save_dir, filename, NULL);
+	g_free (filename);
+	g_free (save_dir);
+	return path;
 }
 
 GQuark
