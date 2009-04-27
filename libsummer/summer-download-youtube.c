@@ -111,12 +111,17 @@ on_file_downloaded (SummerWebBackend *web, gchar *saved_path, gchar *saved_data,
 {
 	g_return_if_fail (SUMMER_IS_DOWNLOAD_YOUTUBE (data));
 	g_return_if_fail (saved_data == NULL);
-	SummerDownloadYoutube *self = SUMMER_DOWNLOAD_YOUTUBE (data);
+	SummerDownload *self = SUMMER_DOWNLOAD (data);
+	SummerDownloadYoutubePrivate *priv = SUMMER_DOWNLOAD_YOUTUBE (self)->priv;
 	
 	if (saved_path == NULL) {
-		self->priv->quality--;
-		if (self->priv->quality < 0) {
-			g_signal_emit_by_name (self, "download-complete");
+		priv->quality--;
+		if (priv->quality < 0) {
+			GError *error = g_error_new (
+				SUMMER_DOWNLOAD_ERROR,
+				SUMMER_DOWNLOAD_ERROR_INPUT,
+				"Download Failed");
+			g_signal_emit_by_name (self, "download-error", error);
 			g_object_unref (self);
 			g_object_unref (web);
 			return;
@@ -124,57 +129,73 @@ on_file_downloaded (SummerWebBackend *web, gchar *saved_path, gchar *saved_data,
 		
 		SummerItemData *item;
 		g_object_get (self, "item", &item, NULL);
-		gchar *filename = g_strdup_printf ("%s.%s", 
+		summer_download_set_filename (self, g_strdup_printf ("%s.%s",
 			summer_item_data_get_title (item),
-			quality[self->priv->quality][1]);
-		g_object_set (self, "filename", filename, NULL);
-		g_free (filename);
+			quality[priv->quality][1]));
 		g_object_unref (item);
 
-		g_object_set (web, "url", create_youtube_url (self), NULL);
+		g_object_set (web, 
+			"url", create_youtube_url (SUMMER_DOWNLOAD_YOUTUBE (self)),
+			NULL);
 		summer_web_backend_fetch (web);
 		return;
 	}
 
-	SummerItemData *item;
-	g_object_get (self, "item", &item, NULL);
-	gchar *filename = g_strdup_printf ("%s.%s",
-		summer_item_data_get_title (item),
-		quality[self->priv->quality][1]);
-
 	GFile *src = g_file_new_for_path (saved_path);
-	gchar *destpath, *save_dir;
-	g_object_get (self, "save-dir", &save_dir, NULL);
-	destpath = g_build_filename (save_dir, filename, NULL);
-	g_free (filename);
-
+	gchar *destpath = summer_download_get_save_path (self);
 	GFile *dest = g_file_new_for_path (destpath);
+	g_free (destpath);
+	destpath = NULL;
+	GError *e = NULL;
 
-	GError *error = NULL;
+	gchar *save_dir = summer_download_get_save_dir (self);
 	GFile *destdir = g_file_new_for_path (save_dir);
+	g_free (save_dir);
+	save_dir = NULL;
 	if (!g_file_query_exists (destdir, NULL)) {
-		if (!g_file_make_directory_with_parents (destdir, NULL, &error)) {
-			g_warning ("Error creating directory to put file in: %s", error->message);
-			g_clear_error (&error);
+		if (!g_file_make_directory_with_parents (destdir, NULL, &e)) {
+			GError *error = g_error_new (
+				SUMMER_DOWNLOAD_ERROR,
+				SUMMER_DOWNLOAD_ERROR_OUTPUT,
+				"Couldn't create output directory: %s", e->message);
+			g_signal_emit_by_name (self, "download-error", error);
+			g_object_unref (self);
+			g_clear_error (&e);
+			g_object_unref (src);
+			g_object_unref (dest);
+			g_object_unref (destdir);
+			return;
 		}
 	}
+	g_object_unref (destdir);
 
-	if (!g_file_move (src, dest, G_FILE_COPY_OVERWRITE, NULL, NULL, NULL, &error)) {
-		g_warning ("Couldn't move file: %s", error->message);
-		g_clear_error (&error);
+	if (!g_file_move (src, dest, G_FILE_COPY_OVERWRITE, NULL, NULL, NULL, &e)) {
+		GError *error = g_error_new (
+			SUMMER_DOWNLOAD_ERROR,
+			SUMMER_DOWNLOAD_ERROR_OUTPUT,
+			"Couldn't move download to it's final destination: %s",
+			e->message);
+		g_signal_emit_by_name (self, "download-error", error);
+		g_object_unref (self);
+		g_clear_error (&e);
+		g_object_unref (src);
+		g_object_unref (dest);
+		return;
 	}
 	g_object_unref (src);
 	g_object_unref (dest);
 	g_free (save_dir);
 
+	SummerItemData *item;
+	g_object_get (self, "item", &item, NULL);
 	SummerFeedCache *cache = summer_feed_cache_get ();
 	summer_feed_cache_add_new_item (cache, item);
 	g_object_unref (G_OBJECT (cache));
 	g_object_unref (item);
+
 	g_object_unref (web);
 	g_signal_emit_by_name (self, "download-complete");
 	g_object_unref (self);
-	g_free (destpath);
 }
 
 static void
@@ -184,12 +205,12 @@ on_webpage_downloaded (SummerWebBackend *web, gchar *path, gchar *web_data,
 	g_return_if_fail (SUMMER_IS_DOWNLOAD_YOUTUBE (data));
 	g_return_if_fail (web_data != NULL);
 	SummerDownloadYoutube *self = SUMMER_DOWNLOAD_YOUTUBE (data);
-	GError *error = NULL;
+	GError *e = NULL;
 	GRegex *t;
-	t = g_regex_new (", \"t\": \"([^\"]+)\"", 0, 0, &error);
-	if (error) {
-		g_warning ("Error compiling regex: %s", error->message);
-		g_clear_error (&error);
+	t = g_regex_new (", \"t\": \"([^\"]+)\"", 0, 0, &e);
+	if (e) {
+		g_warning ("Error compiling regex: %s", e->message);
+		g_clear_error (&e);
 		g_object_unref (self);
 		return;
 	}
@@ -198,7 +219,11 @@ on_webpage_downloaded (SummerWebBackend *web, gchar *path, gchar *web_data,
 	g_regex_unref (t);
 	
 	if (!g_match_info_matches (info)) {
-		g_warning ("Not a youtube page. Content: %s", web_data);
+		GError *error = g_error_new (
+			SUMMER_DOWNLOAD_ERROR,
+			SUMMER_DOWNLOAD_ERROR_INPUT,
+			"Not a youtube page");
+		g_signal_emit_by_name (self, "download-error", error);
 		g_object_unref (self);
 		g_match_info_free (info);
 		return;
