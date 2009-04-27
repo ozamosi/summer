@@ -82,35 +82,55 @@ on_download_complete (SummerWebBackend *web_backend, gchar *save_path, gchar *sa
 	g_return_if_fail (save_data == NULL);
 
 	SummerDownload *self = SUMMER_DOWNLOAD (user_data);
-
 	if (save_path == NULL) {
-		g_signal_emit_by_name (self, "download-complete");
+		GError *error = g_error_new (
+			SUMMER_DOWNLOAD_ERROR,
+			SUMMER_DOWNLOAD_ERROR_INPUT,
+			"Download Failed");
+		g_signal_emit_by_name (self, "download-error", error);
 		g_object_unref (self);
 		return;
 	}
 
 	GFile *src = g_file_new_for_path (save_path);
-	gchar *destpath, *save_dir, *final_filename;
-	g_object_get (self, "save-dir", &save_dir, NULL);
-	g_object_get (self, "filename", &final_filename, NULL);
-	destpath = g_build_filename (save_dir, final_filename, NULL);
-	g_free (final_filename);
-
+	gchar *destpath = summer_download_get_save_path (self);
 	GFile *dest = g_file_new_for_path (destpath);
-	GError *error = NULL;
+	g_free (destpath);
+	destpath = NULL;
+	GError *e = NULL;
 
+	gchar *save_dir = summer_download_get_save_dir (self);
 	GFile *destdir = g_file_new_for_path (save_dir);
+	g_free (save_dir);
+	save_dir = NULL;
 	if (!g_file_query_exists (destdir, NULL)) {
-		if (!g_file_make_directory_with_parents (destdir, NULL, &error)) {
-			g_warning ("Error creating directory to put file in: %s", error->message);
-			g_clear_error (&error);
+		if (!g_file_make_directory_with_parents (destdir, NULL, &e)) {
+			GError *error = g_error_new (
+				SUMMER_DOWNLOAD_ERROR,
+				SUMMER_DOWNLOAD_ERROR_OUTPUT,
+				"Couldn't create output directory: %s", e->message);
+			g_signal_emit_by_name (self, "download-error", error);
+			g_object_unref (self);
+			g_clear_error (&e);
+			g_object_unref (src);
+			g_object_unref (dest);
+			return;
 		}
 	}
 	g_object_unref (destdir);
 
-	if (!g_file_move (src, dest, G_FILE_COPY_OVERWRITE, NULL, NULL, NULL, &error)) {
-		g_warning ("%s", error->message);
-		g_clear_error (&error);
+	if (!g_file_move (src, dest, G_FILE_COPY_OVERWRITE, NULL, NULL, NULL, &e)) {
+		GError *error = g_error_new (
+			SUMMER_DOWNLOAD_ERROR,
+			SUMMER_DOWNLOAD_ERROR_OUTPUT,
+			"Couldn't move download to it's final destination: %s",
+			e->message);
+		g_signal_emit_by_name (self, "download-error", error);
+		g_object_unref (self);
+		g_clear_error (&e);
+		g_object_unref (src);
+		g_object_unref (dest);
+		return;
 	}
 	g_object_unref (src);
 	g_object_unref (dest);
@@ -126,7 +146,6 @@ on_download_complete (SummerWebBackend *web_backend, gchar *save_path, gchar *sa
 
 	g_signal_emit_by_name (self, "download-complete");
 	g_object_unref (self);
-	g_free (destpath);
 }
 
 static gboolean

@@ -9,6 +9,76 @@ static gint last_received = 0;
 static time_t last_timestamp = 0;
 
 static void
+on_complete_fail (SummerDownload *dl, gconstpointer user_data)
+{
+	g_assert_not_reached ();
+}
+
+static void
+on_fail_noserver (SummerDownload *dl, GError *error, gconstpointer user_data)
+{
+	g_assert_error (error, SUMMER_DOWNLOAD_ERROR, SUMMER_DOWNLOAD_ERROR_INPUT);
+	g_main_loop_quit (loop);
+}
+
+static void
+on_fail_cannotwrite (SummerDownload *dl, GError *error, gconstpointer user_data)
+{
+	g_assert_error (error, SUMMER_DOWNLOAD_ERROR, SUMMER_DOWNLOAD_ERROR_OUTPUT);
+	g_main_loop_quit (loop);
+}
+
+static void
+noserver (WebFixture *fix, gconstpointer data)
+{
+	summer_download_set_default (g_get_tmp_dir (), g_get_home_dir ());
+	loop = g_main_loop_new (NULL, TRUE);
+	SummerDownload *dl;
+	SummerFeedData *feed = summer_feed_data_new ();
+	SummerItemData *item = summer_feed_data_append_item (feed);
+	gchar *url = g_strdup_printf ("http://127.0.0.1:%i", PORT+1);
+	summer_item_data_append_downloadable (item, url, "video/mp4", 0);
+	g_free (url);
+	url = NULL;
+	dl = summer_create_download (item);
+	g_assert (SUMMER_IS_DOWNLOAD_WEB (dl));
+	g_object_unref (feed);
+	g_signal_connect (dl, "download-complete", G_CALLBACK (on_complete_fail), NULL);
+	g_signal_connect (dl, "download-error", G_CALLBACK (on_fail_noserver), NULL);
+	summer_download_start (dl);
+	g_main_loop_run (loop);
+	g_main_loop_unref (loop);
+}
+
+static void
+cannotwrite (WebFixture *fix, gconstpointer data)
+{
+	summer_download_set_default (g_get_tmp_dir (), "/");
+	loop = g_main_loop_new (NULL, TRUE);
+	SummerDownload *dl;
+	SummerFeedData *feed = summer_feed_data_new ();
+	SummerItemData *item = summer_feed_data_append_item (feed);
+	gchar *url = g_strdup_printf ("http://127.0.0.1:%i/feeds/epicfu", PORT);
+	summer_item_data_append_downloadable (item, url, "video/mp4", 0);
+	g_free (url);
+	url = NULL;
+	dl = summer_create_download (item);
+	g_assert (SUMMER_IS_DOWNLOAD_WEB (dl));
+	g_object_unref (feed);
+	g_signal_connect (dl, "download-complete", G_CALLBACK (on_complete_fail), NULL);
+	g_signal_connect (dl, "download-error", G_CALLBACK (on_fail_cannotwrite), NULL);
+	summer_download_start (dl);
+	g_main_loop_run (loop);
+	g_main_loop_unref (loop);
+}
+
+static void
+fail_cb_nofail (SummerDownload *obj, GError* error, gconstpointer user_data)
+{
+	g_assert_not_reached ();
+}
+
+static void
 update_cb (SummerDownload *obj, guint64 received, guint64 length, gpointer user_data)
 {
 	g_assert_cmpint (received, >, 0);
@@ -83,6 +153,7 @@ basic (WebFixture *fix, gconstpointer data)
 	g_signal_connect (dl, "download-started", G_CALLBACK (started_cb), NULL);
 	g_signal_connect (dl, "download-complete", G_CALLBACK (complete_cb), NULL);
 	g_signal_connect (dl, "download-update", G_CALLBACK (update_cb), NULL);
+	g_signal_connect (dl, "download-error", G_CALLBACK (fail_cb_nofail), NULL);
 	summer_download_start (dl);
 	g_main_loop_run (loop);
 	g_main_loop_unref (loop);
@@ -128,5 +199,7 @@ int main (int argc, char *argv[]) {
 	g_test_init (&argc, &argv, NULL);
 	g_test_add_func ("/download-web/mimes", mimes);
 	g_test_add ("/download-web/basic", WebFixture, 0, web_setup, basic, web_teardown);
+	g_test_add ("/download-web/noserver", WebFixture, 0, web_setup, noserver, web_teardown);
+	g_test_add ("/download-web/cannotwrite", WebFixture, 0, web_setup, cannotwrite, web_teardown);
 	return g_test_run ();
 }
