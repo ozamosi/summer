@@ -153,9 +153,11 @@ serverdown ()
 	g_free (url);
 	g_signal_connect (web, "download-chunk", G_CALLBACK (chunk_cb), NULL);
 	g_signal_connect (web, "download-complete", G_CALLBACK (r404_response_cb), NULL);
-	summer_web_backend_fetch (g_object_ref (web));
-	g_object_unref (web);
+	summer_web_backend_fetch_head (g_object_ref (web));
 	g_main_loop_run (loop);
+	summer_web_backend_fetch (g_object_ref (web));
+	g_main_loop_run (loop);
+	g_object_unref (web);
 	g_main_loop_unref (loop);
 }
 

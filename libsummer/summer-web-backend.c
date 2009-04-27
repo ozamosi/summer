@@ -511,6 +511,15 @@ summer_web_backend_fetch (SummerWebBackend *self)
 	soup_session_queue_message (session, priv->msg, on_downloaded, self);
 }
 
+static void
+on_head_done (SoupSession *session, SoupMessage *msg, gpointer user_data)
+{
+	g_return_if_fail (SUMMER_IS_WEB_BACKEND (user_data));
+	SummerWebBackend *self = SUMMER_WEB_BACKEND (user_data);
+	if (!SOUP_STATUS_IS_SUCCESSFUL (msg->status_code))
+		g_signal_emit_by_name (self, "download-complete", NULL, NULL);
+}
+
 /**
  * summer_web_backend_fetch_head:
  * @self: a #SummerWebBackend instance
@@ -528,7 +537,7 @@ summer_web_backend_fetch_head (SummerWebBackend *self)
 	SoupMessage *msg = soup_message_new ("HEAD", self->priv->url);
 
 	g_signal_connect (msg, "got-headers", G_CALLBACK (on_got_headers), self);
-	soup_session_queue_message (session, msg, NULL, NULL);
+	soup_session_queue_message (session, msg, on_head_done, self);
 }
 
 /**

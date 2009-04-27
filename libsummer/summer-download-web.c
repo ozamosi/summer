@@ -196,7 +196,6 @@ on_headers_parsed (SummerWebBackend *web, gpointer user_data)
 	filename = NULL;
 
 	g_signal_connect (priv->web, "download-chunk", G_CALLBACK (on_download_chunk), self);
-	g_signal_connect (priv->web, "download-complete", G_CALLBACK (on_download_complete), self);
 	
 	g_signal_emit_by_name (self, "download-started");
 
@@ -231,6 +230,7 @@ start (SummerDownload *self)
 	g_return_if_fail (SUMMER_IS_DOWNLOAD_WEB (self));
 	SummerDownloadWebPrivate *priv = SUMMER_DOWNLOAD_WEB (self)->priv;
 	g_signal_connect (priv->web, "headers-parsed", G_CALLBACK (on_headers_parsed), self);
+	g_signal_connect (priv->web, "download-complete", G_CALLBACK (on_download_complete), self);
 	summer_web_backend_fetch_head (priv->web);
 }
 
