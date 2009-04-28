@@ -30,7 +30,10 @@ AC_DEFINE(SUMMER_MICRO_VERSION, [summer_micro_version],
 
 AC_PROG_CC
 AC_PROG_CXX
+AM_PROG_CC_C_O
+
 AC_PROG_LIBTOOL
+DOLT
 
 GNOME_COMMON_INIT
 GNOME_DOC_INIT
@@ -244,20 +247,19 @@ SUMMER_LIBS+=" $COVERAGE_LIBS"
 AC_SUBST(SUMMER_CFLAGS)
 AC_SUBST(SUMMER_LIBS)
 
+SHAVE_INIT(., enable)
+
 AC_CONFIG_FILES([
 	README
 	Makefile
-	libsummer/Makefile
-	libsummer/tests/Makefile
+	shave
+	shave-libtool
 	libsummer-1.0.pc
 	libsummer-1.0-uninstalled.pc
 	docs/Makefile
 	docs/reference/Makefile
 	docs/reference/summer/Makefile
-	docs/reference/summer/version.xml
-	bindings/Makefile
-	bindings/python/Makefile
-	bindings/vala/Makefile])
+	docs/reference/summer/version.xml])
 
 AC_OUTPUT
 

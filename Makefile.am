@@ -4,11 +4,6 @@ DISTCHECK_CONFIGURE_FLAGS = --enable-gtk-doc
 
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = \
-	libsummer \
-	docs \
-	bindings
-
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libsummer-1.0.pc
 
@@ -19,7 +14,9 @@ EXTRA_DIST = \
 	libsummer-1.0-uninstalled.pc.in \
 	gen-changelog.py
 
-DISTCLEANFILES =
+DISTCLEANFILES = \
+	doltlibtool \
+	doltcompile
 
 if USE_LCOV
 coverage::
@@ -38,3 +35,23 @@ dist-hook:
 		rm -f $(distdir)/ChangeLog; \
 		mv $(distdir)/cl-t $(distdir)/ChangeLog; \
 	fi
+
+INCLUDES = \
+    $(CFLAGS) \
+    $(SUMMER_CFLAGS) \
+    $(DISABLE_DEPRECATED) \
+    -include $(CONFIG_HEADER) \
+    -Wall -Wextra \
+    -Wno-missing-field-initializers -Wno-unused-parameter \
+    -Werror
+
+CLEANFILES =
+
+include libsummer.mk
+include libsummer-tests.mk
+include python.mk
+include vala.mk
+
+CLEANFILES += $(BUILT_SOURCES)
+
+SUBDIRS = . docs

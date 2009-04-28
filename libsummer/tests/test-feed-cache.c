@@ -1,4 +1,5 @@
 #include <glib.h>
+#include <glib/gstdio.h>
 #include <libsummer/summer.h>
 #include <libsummer/summer-data-types.h>
 #include <libsummer/summer-feed-cache.h>

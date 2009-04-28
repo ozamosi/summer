@@ -1,10 +1,13 @@
 #include <glib.h>
+#include <glib-object.h>
 #include <libsummer/summer.h>
 #include <libsummer/summer-download-torrent.h>
 #include <libsummer/summer-download-web.h>
 #include "server.h"
 
+#ifdef ENABLE_BITTORRENT
 static GMainLoop *loop;
+#endif
 
 static void
 init ()
@@ -55,8 +58,8 @@ invalid_torrent (WebFixture *fix, gconstpointer data)
 	dl = summer_download_torrent_new (item);
 	g_assert (SUMMER_IS_DOWNLOAD_TORRENT (dl));
 	g_object_unref (feed);
-	g_signal_connect (dl, "download-error", on_fail, NULL);
-	g_signal_connect (dl, "download-complete", on_completed_fail, NULL);
+	g_signal_connect (dl, "download-error", G_CALLBACK (on_fail), NULL);
+	g_signal_connect (dl, "download-complete", G_CALLBACK (on_completed_fail), NULL);
 	summer_download_start (dl);
 	g_main_loop_run (loop);
 	g_main_loop_unref (loop);

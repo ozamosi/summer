@@ -13,6 +13,34 @@ import gobject.GObject as PyGObject_Type
 ignore-glob
   *_get_type
 %%
+override summer_feed_peek_items noargs
+static PyObject *
+_wrap_summer_feed_peek_items (PyGObject *self)
+{
+	GList *list, *tmp;
+	PyObject *py_list;
+
+	list = summer_feed_peek_items (SUMMER_FEED (self->obj));
+
+	if ((py_list = PyList_New (0)) == NULL) {
+		g_list_free (list);
+		return NULL;
+	}
+	for (tmp = list; tmp != NULL; tmp = tmp->next) {
+		PyObject *obj = pygobject_new (G_OBJECT (tmp->data));
+
+		if (obj == NULL) {
+			g_list_free (list);
+			Py_DECREF (py_list);
+			return NULL;
+		}
+		PyList_Append (py_list, obj);
+		Py_DECREF (obj);
+	}
+	g_list_free (list);
+	return py_list;
+}
+%%
 override summer_feed_get_items noargs
 static PyObject *
 _wrap_summer_feed_get_items (PyGObject *self)

@@ -1,4 +1,5 @@
 #include <glib.h>
+#include <glib/gstdio.h>
 #include <libsummer/summer.h>
 #include <libsummer/summer-download-web.h>
 #include <time.h>

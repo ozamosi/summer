@@ -24,8 +24,6 @@ complete_cb (SummerDownload *obj, gpointer user_data)
     gchar *filename = g_build_filename (g_get_home_dir (), "epicfu", NULL);
     g_assert_cmpstr (save_path, ==, filename);
     g_free (filename);
-    gchar *rec_contents = NULL, *orig_contents = NULL;
-    gsize rec_length, orig_length;
 
     g_main_loop_quit (loop);
 }

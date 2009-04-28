@@ -1,5 +1,6 @@
 #include <glib.h>
 #include <libsummer/summer-rss2-parser.h>
+#include <libsummer/summer-atom-parser.h>
 #include <libxml/xmlreader.h>
 
 static void

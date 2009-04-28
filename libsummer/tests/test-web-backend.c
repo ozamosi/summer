@@ -1,5 +1,6 @@
 #include <glib.h>
 #include <glib-object.h>
+#include <glib/gstdio.h>
 #include <libsummer/summer-web-backend.h>
 #include "server.h"
 
