@@ -18,14 +18,18 @@ on_complete_fail (SummerDownload *dl, gconstpointer user_data)
 static void
 on_fail_noserver (SummerDownload *dl, GError *error, gconstpointer user_data)
 {
+#if GLIB_CHECK_VERSION(2, 20, 0)
 	g_assert_error (error, SUMMER_DOWNLOAD_ERROR, SUMMER_DOWNLOAD_ERROR_INPUT);
+#endif
 	g_main_loop_quit (loop);
 }
 
 static void
 on_fail_cannotwrite (SummerDownload *dl, GError *error, gconstpointer user_data)
 {
+#if GLIB_CHECK_VERSION(2, 20, 0)
 	g_assert_error (error, SUMMER_DOWNLOAD_ERROR, SUMMER_DOWNLOAD_ERROR_OUTPUT);
+#endif
 	g_main_loop_quit (loop);
 }
 

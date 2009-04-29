@@ -31,7 +31,9 @@ init ()
 static void
 on_fail (SummerDownload *dl, GError *error, gconstpointer user_data)
 {
+#if GLIB_CHECK_VERSION(2, 20, 0)
 	g_assert_error (error, SUMMER_DOWNLOAD_ERROR, SUMMER_DOWNLOAD_ERROR_INPUT);
+#endif
 	g_main_loop_quit (loop);
 }
 
