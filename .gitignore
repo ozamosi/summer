@@ -43,3 +43,8 @@ depcomp
 libtool
 ltmain.sh
 stamp-h1
+doltcompile
+doltlibtool
+shave
+shave-libtool
+compile
