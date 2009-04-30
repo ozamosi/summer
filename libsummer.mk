@@ -14,8 +14,6 @@ $(srcdir)/libsummer/summer-marshal.c: $(srcdir)/libsummer/summer-marshal.h
 
 BUILT_SOURCES = $(MARSHAL_GENERATED)
 
-CLEANFILES += libsummer/*.gcno
-
 lib_LTLIBRARIES = libsummer.la
 
 libsummer_la_CPPFLAGS = \

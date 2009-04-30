@@ -82,7 +82,3 @@ EXTRA_DIST += \
 	libsummer/tests/watch?v=SiYurfwzyuY
 
 check-local: test
-
-CLEANFILES += \
-	libsummer/tests/*.gcno \
-	libsummer/tests/*.gcda

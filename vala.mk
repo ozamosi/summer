@@ -27,5 +27,5 @@ build_files = \
 
 EXTRA_DIST += $(build_files)
 
-DISTCLEANFILES += libsummer-1.0.vapi \
-	bindings/vala/libsummer-1.0/libsummer-1.0.gi
+CLEANFILES += libsummer-1.0.vapi
+DISTCLEANFILES += bindings/vala/libsummer-1.0/libsummer-1.0.gi

@@ -47,6 +47,11 @@ INCLUDES = \
 
 CLEANFILES =
 
+clean-local:
+	rm -rf coverage
+	rm *.gcda
+	rm *.gcno
+
 include libsummer.mk
 include libsummer-tests.mk
 include python.mk

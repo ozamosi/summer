@@ -250,7 +250,6 @@ AC_SUBST(SUMMER_LIBS)
 SHAVE_INIT(., enable)
 
 AC_CONFIG_FILES([
-	README
 	Makefile
 	shave
 	shave-libtool
