@@ -49,13 +49,19 @@ CLEANFILES =
 
 clean-local:
 	rm -rf coverage
-	rm *.gcda
-	rm *.gcno
+	rm -f *.gcda
+	rm -f *.gcno
 
 include libsummer.mk
 include libsummer-tests.mk
+
+if ENABLE_PYTHON
 include python.mk
+endif
+
+if ENABLE_VALA
 include vala.mk
+endif
 
 CLEANFILES += $(BUILT_SOURCES)
 

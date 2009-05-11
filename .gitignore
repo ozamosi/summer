@@ -33,8 +33,6 @@ config.*
 configure
 autom4te.cache
 bindings/python/summer.c
-bindings/vala/libsummer-1.0.vapi
-bindings/vala/libsummer-1.0/libsummer-1.0.gi
 install-sh
 gnome-doc-utils.make
 gtk-doc.make
