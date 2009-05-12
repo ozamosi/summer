@@ -436,7 +436,9 @@ on_got_headers (SoupMessage *msg, gpointer user_data)
 	SummerWebBackend *self = SUMMER_WEB_BACKEND (user_data);
 	SummerWebBackendPrivate *priv = self->priv;
 	if (msg->status_code >= 400 || msg->status_code < 100) {
-		soup_session_cancel_message (session, msg, SOUP_STATUS_CANCELLED);
+		if (SOUP_IS_SESSION (session)) {
+			soup_session_cancel_message (session, msg, SOUP_STATUS_CANCELLED);
+		}
 		return;
 	}
 	else if (SOUP_STATUS_IS_REDIRECTION (msg->status_code))
