@@ -298,7 +298,8 @@ _on_error_cb (SummerDownload *dl, GError *error, gpointer user_data)
 	PyObject *value;
 	PyObject *tb;
 	struct args *arguments = (struct args*) user_data;
-	pyglib_error_check (&error);
+	GError *error_copy = g_error_copy (error);
+	pyglib_error_check (&error_copy);
 	PyErr_Fetch (&type, &value, &tb);
 	if (type != NULL) {
 		Py_DECREF (type);
