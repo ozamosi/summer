@@ -4,6 +4,7 @@
 #include <libsummer/summer-download-torrent.h>
 #include <libsummer/summer-download-web.h>
 #include "server.h"
+#include <unistd.h>
 
 #ifdef ENABLE_BITTORRENT
 static GMainLoop *loop;
@@ -23,6 +24,7 @@ init ()
 #else
 	g_assert (SUMMER_IS_DOWNLOAD_TORRENT (dl));
 #endif
+	sleep (1); //Avoid deadlocking
 	g_object_unref (dl);
 	g_object_unref (feed);
 }
