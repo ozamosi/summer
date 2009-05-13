@@ -37,13 +37,13 @@ dist-hook:
 	fi
 
 INCLUDES = \
-    $(CFLAGS) \
-    $(SUMMER_CFLAGS) \
-    $(DISABLE_DEPRECATED) \
-    -include $(CONFIG_HEADER) \
-    -Wall -Wextra \
-    -Wno-missing-field-initializers -Wno-unused-parameter \
-    -Werror
+	$(CFLAGS) \
+	$(SUMMER_CFLAGS) \
+	$(DISABLE_DEPRECATED) \
+	-include $(CONFIG_HEADER) \
+	-Wall -Wextra \
+	-Wno-missing-field-initializers -Wno-unused-parameter \
+	-Werror -O0 -g
 
 CLEANFILES =
 
@@ -55,14 +55,13 @@ clean-local:
 include libsummer.mk
 include libsummer-tests.mk
 
-if ENABLE_PYTHON
-include python.mk
-endif
-
 if ENABLE_VALA
 include vala.mk
 endif
 
 CLEANFILES += $(BUILT_SOURCES)
 
-SUBDIRS = . docs
+SUBDIRS = . docs/reference/summer
+if ENABLE_PYTHON
+SUBDIRS += bindings/python
+endif

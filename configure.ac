@@ -255,6 +255,7 @@ AC_CONFIG_FILES([
 	shave-libtool
 	libsummer-1.0.pc
 	libsummer-1.0-uninstalled.pc
+	bindings/python/Makefile
 	docs/Makefile
 	docs/reference/Makefile
 	docs/reference/summer/Makefile
