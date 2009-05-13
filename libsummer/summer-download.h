@@ -45,10 +45,10 @@ struct _SummerDownloadClass {
 	GObjectClass parent_class;
 	void (* start) (SummerDownload *self);
 	void (* abort) (SummerDownload *self);
-	void (* download_complete) (SummerDownload *obj, gpointer user_data);
-	void (* download_update) (SummerDownload *obj, guint64 received, guint64 length, gpointer user_data);
-	void (* download_started) (SummerDownload *obj, gpointer user_data);
-	void (* download_error) (SummerDownload *obj, GError *error, gpointer user_data);
+	void (* download_complete) (SummerDownload *obj);
+	void (* download_update) (SummerDownload *obj, guint64 received, guint64 length);
+	void (* download_started) (SummerDownload *obj);
+	void (* download_error) (SummerDownload *obj, GError *error);
 };
 
 GType        summer_download_get_type    (void) G_GNUC_CONST;

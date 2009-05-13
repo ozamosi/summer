@@ -152,7 +152,7 @@ get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 }
 
 static void
-download_error (SummerDownload *self, GError *error, gpointer user_data)
+download_error (SummerDownload *self, GError *error)
 {
 	g_clear_error (&error);
 }
