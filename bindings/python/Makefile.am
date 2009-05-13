@@ -19,7 +19,8 @@ summer_la_LIBADD = \
 	$(top_builddir)/libsummer.la \
 	$(PYTHON_LIBS) \
 	$(PYGOBJECT_LIBS) \
-	$(GLIB_LIBS)
+	$(GLIB_LIBS) \
+	$(PYGLIB_LIBS)
 
 summer_la_CFLAGS = \
 	$(CFLAGS) \

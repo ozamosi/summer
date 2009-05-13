@@ -2,6 +2,7 @@
 headers
 #include <Python.h>
 #include <pygobject.h>
+#include <pyglib.h>
 #include "summer.h"
 #include "summer-download-torrent.h"
 #include "summer-download-web.h"
@@ -282,3 +283,53 @@ static PyMappingMethods _wrap_summer_downloadable_data_tp_as_mapping = {
 	(binaryfunc)_wrap_summer_downloadable_data_tp_getitem,
 	(objobjargproc)_wrap_summer_downloadable_data_tp_setitem
 };
+%%
+define SummerDownload.on_error
+
+struct args {
+	PyObject *function;
+	PyObject *parameter;
+};
+
+static void
+_on_error_cb (SummerDownload *dl, GError *error, gpointer user_data)
+{
+	PyObject *type;
+	PyObject *value;
+	PyObject *tb;
+	struct args *arguments = (struct args*) user_data;
+	pyglib_error_check (&error);
+	PyErr_Fetch (&type, &value, &tb);
+	if (type != NULL) {
+		Py_DECREF (type);
+	}
+	if (tb != NULL) {
+		Py_DECREF (tb);
+	}
+
+	PyObject *pydl = pygobject_new (G_OBJECT (dl));
+	if (arguments->parameter == NULL) {
+		PyObject_CallFunction(arguments->function, "OO", pydl, value);
+	} else {
+		PyObject_CallFunction(arguments->function, "OOO", pydl, value, arguments->parameter);
+	}
+	g_slice_free (struct args, arguments);
+	Py_DECREF (value);
+	Py_DECREF (pydl);
+}
+static PyObject*
+_wrap_summer_download_on_error (PyGObject *self, PyObject *args)
+{
+	struct args *arguments = g_slice_new (struct args);
+	if (!PyArg_ParseTuple (args, "O|O", &(arguments->function), &(arguments->parameter))) {
+		PyErr_SetString (PyExc_TypeError, "Invalid parameters");
+	}
+	if (!PyFunction_Check (arguments->function)) {
+		PyErr_SetString (PyExc_TypeError, "Argument must be callback method");
+		return NULL;
+	}
+	SummerDownload *dl = SUMMER_DOWNLOAD (self->obj);
+	g_signal_connect (dl, "download-error", G_CALLBACK (_on_error_cb), arguments);
+	Py_INCREF (Py_None);
+	return Py_None;
+}
