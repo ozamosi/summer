@@ -45,3 +45,8 @@ EXTRA_DIST = \
 	summer.override
 
 CLEANFILES = $(built_sources)
+
+TESTS_ENVIRONMENT = PYTHONPATH=$(builddir)/.libs:$PYTHONPATH $(PYTHON)
+TESTS = tests/runner.py
+
+test:

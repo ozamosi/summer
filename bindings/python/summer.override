@@ -118,3 +118,167 @@ _wrap_summer_item_data_get_downloadables (PyGObject *self)
 	}
 	return py_list;
 }
+%%
+override-slot SummerFeed.tp_as_mapping
+static Py_ssize_t
+_wrap_summer_feed_tp_length(PyGObject *self)
+{
+	return 10;
+}
+static PyObject *
+_wrap_summer_feed_tp_getitem(PyGObject *self, PyObject *item)
+{
+	PyObject *ret = NULL;
+	SummerFeed *feed = SUMMER_FEED (self->obj);
+	gchar *prop = PyString_AsString (item);
+	if (!g_strcmp0 (prop, "frequency")) {
+		gint val;
+		g_object_get (feed,
+			prop, &val,
+			NULL);
+		ret = PyInt_FromSsize_t (val);
+	} else if (!g_strcmp0 (prop, "updated")) {
+		glong val;
+		g_object_get (feed,
+			prop, &val,
+			NULL);
+		ret = PyInt_FromLong (val);
+	} else if (!g_strcmp0 (prop, "items")) {
+		ret = _wrap_summer_feed_peek_items (self);
+	} else {
+		gchar *val;
+		g_object_get (feed,
+			prop, &val,
+			NULL);
+		ret = PyString_FromString (val);
+	}
+	return ret;
+}
+static int
+_wrap_summer_feed_tp_setitem(PyGObject *self, PyObject *item, PyObject *value)
+{
+	SummerFeed *feed = SUMMER_FEED (self->obj);
+	gchar *prop = PyString_AsString (item);
+	if (!g_strcmp0 (prop, "frequency")) {
+		gint val = PyInt_AsSsize_t (value);
+		g_object_set (feed,
+			prop, val,
+			NULL);
+		return 0;
+	} else {
+		gchar *val = PyString_AsString (value);
+		g_object_set (feed,
+			prop, val,
+			NULL);
+		return 0;
+	}
+}
+static PyMappingMethods _wrap_summer_feed_tp_as_mapping = {
+	(lenfunc)_wrap_summer_feed_tp_length,
+	(binaryfunc)_wrap_summer_feed_tp_getitem,
+	(objobjargproc)_wrap_summer_feed_tp_setitem
+};
+%%
+override-slot SummerItemData.tp_as_mapping
+static Py_ssize_t
+_wrap_summer_item_data_tp_length(PyGObject *self)
+{
+	return 8;
+}
+static PyObject *
+_wrap_summer_item_data_tp_getitem(PyGObject *self, PyObject *item)
+{
+	PyObject *ret = NULL;
+	SummerItemData *itd = SUMMER_ITEM_DATA (self->obj);
+	gchar *prop = PyString_AsString (item);
+	if (!g_strcmp0 (prop, "updated")) {
+		ret = PyInt_FromLong (itd->updated);
+	} else if (!g_strcmp0 (prop, "downloadables")) {
+		ret = _wrap_summer_item_data_get_downloadables (self);
+	} else if (!g_strcmp0 (prop, "feed")) {
+		ret = pygobject_new (G_OBJECT (itd->feed));
+	} else if (!g_strcmp0 (prop, "title")) {
+		ret = PyString_FromString (itd->title);
+	} else if (!g_strcmp0 (prop, "description")) {
+		ret = PyString_FromString (itd->description);
+	} else if (!g_strcmp0 (prop, "id")) {
+		ret = PyString_FromString (summer_item_data_get_id (itd));
+	} else if (!g_strcmp0 (prop, "web_url")) {
+		ret = PyString_FromString (itd->web_url);
+	} else if (!g_strcmp0 (prop, "author")) {
+		ret = PyString_FromString (itd->author);
+	}
+	return ret;
+}
+static int
+_wrap_summer_item_data_tp_setitem(PyGObject *self, PyObject *item, PyObject *value)
+{
+	SummerItemData *itd = SUMMER_ITEM_DATA (self->obj);
+	gchar *prop = PyString_AsString (item);
+	if (!g_strcmp0 (prop, "updated")) {
+		itd->updated = PyInt_AsLong (value);
+	} else if (!g_strcmp0 (prop, "title")) {
+		itd->title = g_strdup (PyString_AsString (value));
+	} else if (!g_strcmp0 (prop, "description")) {
+		itd->description = g_strdup (PyString_AsString (value));
+	} else if (!g_strcmp0 (prop, "id")) {
+		itd->id = g_strdup (PyString_AsString (value));
+	} else if (!g_strcmp0 (prop, "web_url")) {
+		itd->web_url = g_strdup (PyString_AsString (value));
+	} else if (!g_strcmp0 (prop, "author")) {
+		itd->author = g_strdup (PyString_AsString (value));
+	} else {
+		return -1;
+	}
+	return 0;
+}
+static PyMappingMethods _wrap_summer_item_data_tp_as_mapping = {
+	(lenfunc)_wrap_summer_item_data_tp_length,
+	(binaryfunc)_wrap_summer_item_data_tp_getitem,
+	(objobjargproc)_wrap_summer_item_data_tp_setitem
+};
+%%
+override-slot SummerDownloadableData.tp_as_mapping
+static Py_ssize_t
+_wrap_summer_downloadable_data_tp_length(PyGObject *self)
+{
+	return 4;
+}
+static PyObject *
+_wrap_summer_downloadable_data_tp_getitem(PyGObject *self, PyObject *item)
+{
+	PyObject *ret = NULL;
+	SummerDownloadableData *dlable = SUMMER_DOWNLOADABLE_DATA (self->obj);
+	gchar *prop = PyString_AsString (item);
+	if (!g_strcmp0 (prop, "item")) {
+		ret = pygobject_new (G_OBJECT (dlable->item));
+	} else if (!g_strcmp0 (prop, "url")) {
+		ret = PyString_FromString (dlable->url);
+	} else if (!g_strcmp0 (prop, "mime")) {
+		ret = PyString_FromString (dlable->mime);
+	} else if (!g_strcmp0 (prop, "length")) {
+		ret = PyLong_FromUnsignedLongLong (dlable->length);
+	}
+	return ret;
+}
+static int
+_wrap_summer_downloadable_data_tp_setitem(PyGObject *self, PyObject *item, PyObject *value)
+{
+	SummerDownloadableData *dlable = SUMMER_DOWNLOADABLE_DATA (self->obj);
+	gchar *prop = PyString_AsString (item);
+	if (!g_strcmp0 (prop, "url")) {
+		dlable->url = PyString_AsString (value);
+	} else if (!g_strcmp0 (prop, "mime")) {
+		dlable->mime = PyString_AsString (value);
+	} else if (!g_strcmp0 (prop, "length")) {
+		dlable->length = PyLong_AsUnsignedLongLong (value);
+	} else {
+		return -1;
+	}
+	return 0;
+}
+static PyMappingMethods _wrap_summer_downloadable_data_tp_as_mapping = {
+	(lenfunc)_wrap_summer_downloadable_data_tp_length,
+	(binaryfunc)_wrap_summer_downloadable_data_tp_getitem,
+	(objobjargproc)_wrap_summer_downloadable_data_tp_setitem
+};
