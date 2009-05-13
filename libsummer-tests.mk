@@ -1,4 +1,4 @@
-noinst_PROGRAMS = $(TEST_PROGS)
+check_PROGRAMS = $(TEST_PROGS)
 
 TESTS_INCLUDES =  \
 	$(SOUP_CFLAGS) \
