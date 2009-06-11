@@ -40,7 +40,7 @@
 /**
  * SummerDownloadYoutube:
  *
- * A %SummerDownload-based class for youtube videos.
+ * A #SummerDownload-based class for youtube videos.
  */
 
 static void summer_download_youtube_class_init (SummerDownloadYoutubeClass *klass);

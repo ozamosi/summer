@@ -25,11 +25,11 @@
 
 /**
  * SECTION:summer-rss2-parser
- * @short_description: A %SummerFeedParser that parses RSS2 feeds
+ * @short_description: A #SummerFeedParser that parses RSS2 feeds
  * @stability: Unstable
  * @include: libsummer/summer-rss2-parser.h
  *
- * A %SummerFeedParser that parses RSS feeds of the RSS2 "format tree". That 
+ * A #SummerFeedParser that parses RSS feeds of the RSS2 "format tree". That
  * means it's supposed to be able to parse all RSS feeds, except RSS 0.90 and 
  * RSS 1.0 (so it should work with 0.91, 0.92, 0.93, 0.94, 2.0, 2.0.1).
  */
@@ -74,9 +74,9 @@ summer_rss2_parser_finalize (GObject *obj)
 /**
  * summer_rss2_parser_new ():
  *
- * Create a new %SummerRss2Parser.
+ * Create a new #SummerRss2Parser.
  *
- * Returns: The newly created %SummerRss2Parser.
+ * Returns: The newly created #SummerRss2Parser.
  */
 SummerRss2Parser*
 summer_rss2_parser_new (void)

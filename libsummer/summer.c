@@ -40,12 +40,12 @@
 
 /**
  * summer_create_download:
- * @item: a %SummerItemData, containing information about the download.
+ * @item: a #SummerItemData, containing information about the download.
  *
- * A factory function that returns a %SummerDownload suited for handling the 
+ * A factory function that returns a #SummerDownload suited for handling the
  * download specified in @item.
  *
- * Returns: a %SummerDownload if one could be created, otherwise %NULL
+ * Returns: a #SummerDownload if one could be created, otherwise %NULL
  */
 
 SummerDownload*

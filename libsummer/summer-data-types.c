@@ -40,14 +40,14 @@ static void summer_downloadable_data_finalize   (GObject *obj);
  * This component contains a few datatypes for storing feed data. Their 
  * relations are as follows:
  *
- * A %SummerFeedData represents a complete feed and contains global data about
- * it. It contains a list of several %SummerItemData objects.
+ * A #SummerFeedData represents a complete feed and contains global data about
+ * it. It contains a list of several #SummerItemData objects.
  *
- * A %SummerItemData object represents an item, also known as a post or an
- * entry, in a feed. It contains a list of several %SummerDownloadableData
+ * A #SummerItemData object represents an item, also known as a post or an
+ * entry, in a feed. It contains a list of several #SummerDownloadableData
  * objects.
  *
- * A %SummerDownloadableData object represents something that a feed parser
+ * A #SummerDownloadableData object represents something that a feed parser
  * thinks may be something worth downloading. Most commonly, this represents an
  * <enclosure/> tag in RSS2, and is some kind of multimedia file. It is not 
  * uncommon that one item contains several of these, where each differ for
@@ -64,7 +64,7 @@ static void summer_downloadable_data_finalize   (GObject *obj);
  * @web_url: A URL where the same content is available as a web page.
  * @author: The author of the feed.
  * @updated: The last time the feed was updated.
- * @items: A list containing a %SummerItemData objects for each item in the 
+ * @items: A list containing a #SummerItemData objects for each item in the
  * feed.
  *
  * A type to store feed global data in.
@@ -88,9 +88,9 @@ summer_feed_data_init (SummerFeedData *self)
 /**
  * summer_feed_data_new ():
  *
- * Create a new %SummerFeedData
+ * Create a new #SummerFeedData
  *
- * Returns: the newly created %SummerFeedData object.
+ * Returns: the newly created #SummerFeedData object.
  */
 SummerFeedData*
 summer_feed_data_new ()
@@ -123,7 +123,7 @@ summer_feed_data_finalize (GObject *obj)
 
 /**
  * summer_feed_data_get_title:
- * @self: a %SummerFeedData object.
+ * @self: a #SummerFeedData object.
  *
  * Returns the title of the feed that this object represents. This string
  * should not be freed.
@@ -138,7 +138,7 @@ summer_feed_data_get_title (SummerFeedData *self)
 
 /**
  * summer_feed_data_get_description:
- * @self: a %SummerFeedData object.
+ * @self: a #SummerFeedData object.
  *
  * Returns the description of the feed that this object represents. This 
  * string should not be freed.
@@ -153,7 +153,7 @@ summer_feed_data_get_description (SummerFeedData *self)
 
 /**
  * summer_feed_data_get_id:
- * @self: a %SummerFeedData object.
+ * @self: a #SummerFeedData object.
  *
  * Returns a unique identifier for the feed that this object represents. This 
  * string should not be freed.
@@ -168,7 +168,7 @@ summer_feed_data_get_id (SummerFeedData *self)
 
 /**
  * summer_feed_data_get_web_url:
- * @self: a %SummerFeedData object.
+ * @self: a #SummerFeedData object.
  *
  * Returns a URL, pointing to a web resource for the feed that this object 
  * represents. This string should not be freed.
@@ -183,7 +183,7 @@ summer_feed_data_get_web_url (SummerFeedData *self)
 
 /**
  * summer_feed_data_get_author:
- * @self: a %SummerFeedData object.
+ * @self: a #SummerFeedData object.
  *
  * Returns the author of the feed that this object represents. This 
  * string should not be freed.
@@ -198,7 +198,7 @@ summer_feed_data_get_author (SummerFeedData *self)
 
 /**
  * summer_feed_data_get_updated:
- * @self: a %SummerFeedData object.
+ * @self: a #SummerFeedData object.
  *
  * Returns when, in seconds since the epoch, this feed was most recently
  * updated.
@@ -213,7 +213,7 @@ summer_feed_data_get_updated (SummerFeedData *self)
 
 /**
  * summer_feed_data_get_items:
- * @self: a %SummerFeedData object.
+ * @self: a #SummerFeedData object.
  *
  * Returns all items in this feed. This list should not be freed.
  *
@@ -227,11 +227,11 @@ summer_feed_data_get_items (SummerFeedData *self)
 
 /**
  * summer_feed_data_append_item ():
- * @self: a %SummerFeedData object.
+ * @self: a #SummerFeedData object.
  *
- * Creates a new %SummerItemData, and appends it to the feed object.
+ * Creates a new #SummerItemData, and appends it to the feed object.
  *
- * Returns: The newly created %SummerItemData object.
+ * Returns: The newly created #SummerItemData object.
  */
 SummerItemData*
 summer_feed_data_append_item (SummerFeedData *self)
@@ -250,12 +250,12 @@ summer_feed_data_append_item (SummerFeedData *self)
  * @web_url: A URL where the same content is available as a web page.
  * @author: The author of the post.
  * @updated: The last time the post was updated.
- * @downloadables: A list of %SummerDownloadableData objects for each 
- * downloadable file found in this item. All of these are usually the same 
+ * @downloadables: A list of #SummerDownloadableData objects for each
+ * downloadable file found in this item. All of these are usually the same
  * content, but may differ in quality or format.
  *
  * A feed consists of several items. Each item can be represented by a
- * %SummerItemData object.
+ * #SummerItemData object.
  */
 
 G_DEFINE_TYPE (SummerItemData, summer_item_data, G_TYPE_OBJECT);
@@ -298,7 +298,7 @@ summer_item_data_finalize (GObject *obj)
 
 /**
  * summer_item_data_get_title:
- * @self: a %SummerItemData object.
+ * @self: a #SummerItemData object.
  *
  * Returns the title of the item that this object represents. You should not
  * free the returned string.
@@ -313,7 +313,7 @@ summer_item_data_get_title (SummerItemData *self)
 
 /**
  * summer_item_data_get_description:
- * @self: a %SummerItemData object.
+ * @self: a #SummerItemData object.
  *
  * Returns the description of the item that this object represents. You should
  * not free the returned string.
@@ -328,7 +328,7 @@ summer_item_data_get_description (SummerItemData *self)
 
 /**
  * summer_item_data_get_id:
- * @self: a %SummerItemData object.
+ * @self: a #SummerItemData object.
  *
  * Returns a unique identifier for the item that this object represents. If the
  * item doesn't specify one, the web URL is used for that purpose instead.
@@ -344,7 +344,7 @@ summer_item_data_get_id (SummerItemData *self)
 
 /**
  * summer_item_data_get_web_url:
- * @self: a %SummerItemData object.
+ * @self: a #SummerItemData object.
  *
  * Returns a URL to a web representation of the item that this object 
  * represents. You should not free the returned string.
@@ -359,7 +359,7 @@ summer_item_data_get_web_url (SummerItemData *self)
 
 /**
  * summer_item_data_get_author:
- * @self: a %SummerItemData object.
+ * @self: a #SummerItemData object.
  *
  * Returns the author of the item that this object represents. You should not
  * free the returned string.
@@ -374,7 +374,7 @@ summer_item_data_get_author (SummerItemData *self)
 
 /**
  * summer_item_data_get_updated:
- * @self: a %SummerItemData object.
+ * @self: a #SummerItemData object.
  *
  * Returns when this item was most recently updated, in seconds since the epoch.
  *
@@ -388,7 +388,7 @@ summer_item_data_get_updated (SummerItemData *self)
 
 /**
  * summer_item_data_get_downloadables:
- * @self: a %SummerItemData object.
+ * @self: a #SummerItemData object.
  *
  * Returns a list of all the downloadables the item that this object represents
  * contains. You should not free the returned list.
@@ -403,14 +403,14 @@ summer_item_data_get_downloadables (SummerItemData *self)
 
 /**
  * summer_item_data_append_downloadable:
- * @self: a %SummerItemData object.
+ * @self: a #SummerItemData object.
  * @url: the URL of the new downloadable.
  * @mime: the mime for the new downloadable.
  * @length: the length of the new downloadable.
  *
  * Create a new downloadable, and appending it to the list of downloadables.
  *
- * Returns: the newly created %SummerDownloadableData object.
+ * Returns: the newly created #SummerDownloadableData object.
  */
 SummerDownloadableData*
 summer_item_data_append_downloadable (SummerItemData *self, 
@@ -463,7 +463,7 @@ summer_downloadable_data_finalize (GObject *obj)
 
 /**
  * summer_downloadable_data_get_url:
- * @self: a %SummerItemData object.
+ * @self: a #SummerItemData object.
  *
  * Returns the URL where this downloadable object can be downloaded from.
  * You should not free the returned string.
@@ -478,7 +478,7 @@ summer_downloadable_data_get_url (SummerDownloadableData *self)
 
 /**
  * summer_downloadable_data_get_mime:
- * @self: a %SummerItemData object.
+ * @self: a #SummerItemData object.
  *
  * Returns the reported mime type of this downloadable object.
  * You should not free the returned string.
@@ -493,7 +493,7 @@ summer_downloadable_data_get_mime (SummerDownloadableData *self)
 
 /**
  * summer_downloadable_data_get_length:
- * @self: a %SummerItemData object.
+ * @self: a #SummerItemData object.
  *
  * Returns the reported length of the downloadable object. This data is usually
  * in bytes, but since it's fetched from a web feed, it could be something else.

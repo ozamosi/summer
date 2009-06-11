@@ -202,10 +202,10 @@ summer_feed_cache_finalize (GObject *obj)
 /**
  * summer_feed_cache_get:
  *
- * Returns the global %SummerFeedCache instance, or creates one if there isn't
+ * Returns the global #SummerFeedCache instance, or creates one if there isn't
  * one.
  *
- * Returns: The %SummerFeedCache object.
+ * Returns: The #SummerFeedCache object.
  */
 SummerFeedCache*
 summer_feed_cache_get ()
@@ -279,10 +279,10 @@ list_find_string (GList *list, const gchar *string)
 
 /**
  * summer_feed_cache_filter_old_items:
- * @self: a %SummerFeedCache object.
- * @items: a list of %SummerItemData objects to be filtered.
+ * @self: a #SummerFeedCache object.
+ * @items: a list of #SummerItemData objects to be filtered.
  *
- * From a list of %SummerItemData objects, this function removes all nodes that
+ * From a list of #SummerItemData objects, this function removes all nodes that
  * have previously been seen.
  */
 void
@@ -310,7 +310,7 @@ summer_feed_cache_filter_old_items (SummerFeedCache *self, GList **items)
 
 /**
  * summer_feed_cache_add_new_item:
- * @self: the %SummerFeedCache object
+ * @self: the #SummerFeedCache object
  * @item: the item to add to the cache
  *
  * After a download is finnished, this function must be called, to make sure

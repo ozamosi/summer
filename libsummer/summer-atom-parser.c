@@ -22,11 +22,11 @@
 
 /**
  * SECTION:summer-atom-parser
- * @short_description: A %SummerFeedParser that parses Atom feeds
+ * @short_description: A #SummerFeedParser that parses Atom feeds
  * @stability: Unstable
  * @include: libsummer/summer-atom-parser.h
  *
- * A %SummerFeedParser that implements an Atom Syndication Format (RFC 4287)
+ * A #SummerFeedParser that implements an Atom Syndication Format (RFC 4287)
  * parser. It is pretty liberal in it's interprentation of the standard.
  */
 
@@ -74,9 +74,9 @@ summer_atom_parser_finalize (GObject *obj)
 /**
  * summer_atom_parser_new ():
  *
- * Create a new %SummerAtomParser.
+ * Create a new #SummerAtomParser.
  *
- * Returns: The newly created %SummerAtomParser.
+ * Returns: The newly created #SummerAtomParser.
  */
 SummerAtomParser*
 summer_atom_parser_new (void)

@@ -31,7 +31,7 @@
  * @short_description: Provides a way to download audio and video files from
  * regular web servers.
  * @stability: Unstable
- * @see_also: %SummerDownloadTorrent
+ * @see_also: #SummerDownloadTorrent
  *
  * This is the downloader for regular web servers - that is, the one used by 
  * most podcasts and vidcasts.
@@ -40,7 +40,7 @@
 /**
  * SummerDownloadWeb:
  *
- * A %SummerDownload-based class for files that's available on regular web
+ * A #SummerDownload-based class for files that's available on regular web
  * servers.
  *
  * Note that this class steals a reference and frees itself after the download
@@ -236,6 +236,7 @@ summer_download_web_abort (SummerDownload *self)
 
 	SummerItemData *item;
 	g_object_get (self, "item", &item, NULL);
+
 	SummerFeedCache *cache = summer_feed_cache_get ();
 	summer_feed_cache_add_new_item (cache, item);
 	g_object_unref (G_OBJECT (cache));

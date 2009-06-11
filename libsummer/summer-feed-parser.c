@@ -34,7 +34,7 @@
  * SummerFeedParser:
  * 
  * A base class for parsing feeds. You should not use this class directly - look
- * at %SummerFeed instead.
+ * at #SummerFeed instead.
  */
 
 static void summer_feed_parser_class_init (SummerFeedParserClass *klass);
@@ -67,7 +67,7 @@ summer_feed_parser_finalize (GObject *self)
  * @self: A SummerFeedParser instance.
  * @node: A xmlTextReader instance. This must be a element start tag 
  * (%XML_READER_TYPE_ELEMENT).
- * @feed: A %SummerFeedData to store the results in.
+ * @feed: A #SummerFeedData to store the results in.
  * @is_item: A boolean that will be set to %TRUE if the tag is the start of an item.
  *
  * Handles a node. If the node was
@@ -87,13 +87,13 @@ summer_feed_parser_handle_node (SummerFeedParser* self,
 
 /**
  * summer_feed_parser_parse:
- * @parsers: an array of %SummerFeedParser objects
+ * @parsers: an array of #SummerFeedParser objects
  * @num_parsers: the number of elements in @parsers
  * @reader: the xmlTextReader
  *
  * Parses a given XML reader stream, with the given parsers.
  *
- * Returns: a %SummerFeedData, representing the parsed feed.
+ * Returns: a #SummerFeedData, representing the parsed feed.
  */
 
 SummerFeedData*

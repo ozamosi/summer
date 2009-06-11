@@ -31,11 +31,11 @@
  * @include: libsummer/summer-web-backend.h
  *
  * This component is only meant to be used by the downloaders and the feed
- * fetchers. It contains %SummerWebBackend - a class for communicating with
+ * fetchers. It contains #SummerWebBackend - a class for communicating with
  * web servers.
  *
  * <example>
- *  <title>Downloading a file with %SummerWebBackend</title>
+ *  <title>Downloading a file with #SummerWebBackend</title>
  *  <programlisting>
  * gchar *directory = "/home/username/Desktop";
  * gchar *url = "http://video.boingboing.net/video/17138/bbtv_2008-07-16-195553.mp4"
@@ -212,7 +212,7 @@ summer_web_backend_class_init (SummerWebBackendClass *klass)
 
 	/**
 	 * SummerWebBackend::download-complete:
-	 * @web_backend: the %SummerWebBackend that emitted the signal
+	 * @web_backend: the #SummerWebBackend that emitted the signal
 	 * @save_path: the path in the file system that the file was downloaded to.
 	 * %NULL if it wasn't saved or if there was an error.
 	 * @save_data: the actual file, as a string. %NULL if the file was saved to 
@@ -235,7 +235,7 @@ summer_web_backend_class_init (SummerWebBackendClass *klass)
 
 	/**
 	 * SummerWebBackend::download-chunk:
-	 * @web_backend: the %SummerWebBackend that emitted the signal
+	 * @web_backend: the #SummerWebBackend that emitted the signal
 	 * @received: the number of bytes of the file that has been downloaded. 
 	 * @length: the total number of bytes to be downloaded. %-1 if this is not
 	 * known.
@@ -257,11 +257,11 @@ summer_web_backend_class_init (SummerWebBackendClass *klass)
 
 	/**
 	 * SummerWebBackend::headers-parsed:
-	 * @web_backend: the %SummerWebBackend that emitted the signal
+	 * @web_backend: the #SummerWebBackend that emitted the signal
 	 * @user_data: user-provided data.
 	 *
 	 * Emitted when the headers of a transfer has been downloaded and
-	 * transfered. Only emitted once per %SummerWebBackend instance, so if you
+	 * transfered. Only emitted once per #SummerWebBackend instance, so if you
 	 * call %summer_web_backend_fetch_head(), it will not be emitted during
 	 * subsequent calls to %summer_web_backend_fetch_head() or 
 	 * %summer_web_backend_fetch()
@@ -523,8 +523,8 @@ on_head_done (SoupSession *session, SoupMessage *msg, gpointer user_data)
  * @self: a #SummerWebBackend instance
  *
  * Performs a HEAD request against #SummerWebBackend:url.
- * function will not return anything - instead, connect to the 
- * #SummerWebBackend::headers-parsed signal.
+ * This function will not return anything - connect to the
+ * #SummerWebBackend::headers-parsed signal to get the result.
  */
 void
 summer_web_backend_fetch_head (SummerWebBackend *self)

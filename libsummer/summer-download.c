@@ -29,7 +29,7 @@
  * SECTION:summer-download
  * @short_description: Base class for downloaders.
  * @stability: Unstable
- * @see_also: %SummerDownloadWeb
+ * @see_also: #SummerDownloadWeb
  *
  * This section contains the base class for downloaders.
  */
@@ -41,8 +41,8 @@
  * certain way to fetch media files from remote sources. You should not create
  * instances of this class.
  *
- * %SummerDownload instances steal a reference when used - you should thus not
- * free any %SummerDownload-objects.
+ * #SummerDownload instances steal a reference when used - you should thus not
+ * free any #SummerDownload-objects.
  *
  * Look at %summer_create_download if you want to create downloader instances.
  */
@@ -237,7 +237,7 @@ summer_download_class_init (SummerDownloadClass *klass)
 
 	/**
 	 * SummerDownload::download-complete:
-	 * @obj: the %SummerDownload object that emitted the signal
+	 * @obj: the #SummerDownload object that emitted the signal
 	 *
 	 * Signal that is emitted when the whole file has been downloaded and moved
 	 * to it's final destination.
@@ -253,7 +253,7 @@ summer_download_class_init (SummerDownloadClass *klass)
 			0);
 	/**
 	 * SummerDownload::download-update:
-	 * @obj: the %SummerDownload object that emitted the signal
+	 * @obj: the #SummerDownload object that emitted the signal
 	 * @received: the number of bytes of the file that has been downloaded
 	 * @length: the total number of bytes to be downloaded. %-1 if this is not
 	 * known.
@@ -276,7 +276,7 @@ summer_download_class_init (SummerDownloadClass *klass)
 	
 	/**
 	 * SummerDownload::download-started:
-	 * @obj: the %SummerDownload object that emitted the signal
+	 * @obj: the #SummerDownload object that emitted the signal
 	 *
 	 * Some information, such as filesize or filename, may not be known by the
 	 * downloading backend initially. When this kind of information has been
@@ -294,12 +294,12 @@ summer_download_class_init (SummerDownloadClass *klass)
 	
 	/**
 	 * SummerDownload::download-error:
-	 * @obj: the %SummerDownload object that emitted the signal
+	 * @obj: the #SummerDownload object that emitted the signal
 	 * @error: a %GError
 	 *
 	 * If a download fails, this signal will be emitted, sending a %GError
 	 * parameter explaining the error. If this is emitted,
-	 * %SummerDownload::download-complete will not be emitted.
+	 * #SummerDownload::download-complete will not be emitted.
 	 */
 	g_signal_new (
 			"download-error",
@@ -387,7 +387,7 @@ summer_download_set_default (const gchar *tmp_dir, const gchar *save_dir)
 
 /**
  * summer_download_start:
- * @obj: a %SummerDownload instance
+ * @obj: a #SummerDownload instance
  *
  * Start the file transfer
  */
@@ -400,9 +400,9 @@ summer_download_start (SummerDownload *obj)
 
 /**
  * summer_download_abort:
- * @obj: a %SummerDownload instance
+ * @obj: a #SummerDownload instance
  *
- * Aborts the file transfer
+ * Aborts the file transfer.
  */
 void
 summer_download_abort (SummerDownload *obj)
@@ -413,7 +413,7 @@ summer_download_abort (SummerDownload *obj)
 
 /**
  * summer_download_set_save_dir:
- * @self: a %SummerDownload instance
+ * @self: a #SummerDownload instance
  * @save_dir: a directory path
  *
  * Changes the directory to store completed downloads in.
@@ -427,12 +427,12 @@ summer_download_set_save_dir (SummerDownload *self, gchar *save_dir)
 
 /**
  * summer_download_get_save_dir:
- * @self: a %SummerDownload instance
+ * @self: a #SummerDownload instance
  *
  * Returns the directory where completed downloads are stored. You must free the
  * returned string yourself.
  *
- * Returns: the directory where completed downloads are stored.
+ * Returns: the directory where completed downloads are stored
  */
 gchar*
 summer_download_get_save_dir (SummerDownload *self)
@@ -445,7 +445,7 @@ summer_download_get_save_dir (SummerDownload *self)
 
 /**
  * summer_download_set_tmp_dir:
- * @self: a %SummerDownload instance
+ * @self: a #SummerDownload instance
  * @tmp_dir: a directory path
  *
  * Changes the directory to store temporary files (for instance incomplete 
@@ -460,12 +460,12 @@ summer_download_set_tmp_dir (SummerDownload *self, gchar *tmp_dir)
 
 /**
  * summer_download_get_tmp_dir:
- * @self: a %SummerDownload instance
+ * @self: a #SummerDownload instance
  *
  * Returns the directory where incomplete downloads and other temporary files
  * are stored. You must free the returned string yourself.
  *
- * Returns: the directory where temporary files are stored.
+ * Returns: the directory where temporary files are stored
  */
 gchar*
 summer_download_get_tmp_dir (SummerDownload *self)
@@ -478,10 +478,10 @@ summer_download_get_tmp_dir (SummerDownload *self)
 
 /**
  * summer_download_set_completed:
- * @self: a %SummerDownload instance
+ * @self: a #SummerDownload instance
  * @completed: whether the download is completed or not
  *
- * Sets whether the download is completed or not
+ * Sets whether the download is completed or not.
  */
 void
 summer_download_set_completed (SummerDownload *self, gboolean completed)
@@ -492,7 +492,7 @@ summer_download_set_completed (SummerDownload *self, gboolean completed)
 
 /**
  * summer_download_get_completed:
- * @self: a %SummerDownload instance
+ * @self: a #SummerDownload instance
  *
  * Returns whether the download is completed.
  *
@@ -509,7 +509,7 @@ summer_download_get_completed (SummerDownload *self)
 
 /**
  * summer_download_set_filename:
- * @self: a %SummerDownload instance
+ * @self: a #SummerDownload instance
  * @filename: the filename to set. May not be %NULL.
  *
  * Sets the desired filename. Has no effect after the download is complete.
@@ -526,9 +526,9 @@ summer_download_set_filename (SummerDownload *self, gchar *filename)
 
 /**
  * summer_download_get_filename:
- * @self: a %SummerDownload instance
+ * @self: a #SummerDownload instance
  *
- * Returns the filename that is/will be the name of the completed file
+ * Returns the filename that is/will be the name of the completed file.
  *
  * Returns: the name of the completed file
  */
@@ -543,13 +543,13 @@ summer_download_get_filename (SummerDownload *self)
 
 /**
  * summer_download_get_save_path:
- * @self: a %SummerDownload instance
+ * @self: a #SummerDownload instance
  *
  * Returns the full path to where the download is stored. You should not attempt
- * to call this function unless %SummerDownload::download-started has been
+ * to call this function unless #SummerDownload::download-started has been
  * emitted, or the information you receive might be bogus.
  *
- * Returns: The path to the completed download.
+ * Returns: The path to the completed download
  */
 gchar*
 summer_download_get_save_path (SummerDownload *self)

@@ -37,7 +37,7 @@
  * @short_description: Provides a way to download audio and video files via
  * bittorrent.
  * @stability: Unstable
- * @see_also: %SummerDownloadWeb
+ * @see_also: #SummerDownloadWeb
  *
  * This is the downloader for bittorrent files.
  */
@@ -45,7 +45,7 @@
 /**
  * SummerDownloadTorrent:
  *
- * A %SummerDownload-based class for files that's available on bittorrent.
+ * A #SummerDownload-based class for files that's available on bittorrent.
  */
 #endif
 
@@ -537,9 +537,9 @@ summer_download_torrent_new (SummerItemData *item)
  * These options may be set at any time during the session. You may change these
  * as you wish after downloads have been started, but note that changing these
  * will only affect downloads started after the change. @max_up_speed can be
- * individually overridden by changing the %SummerDownloadTorrent::max-up-speed
+ * individually overridden by changing the #SummerDownloadTorrent::max-up-speed
  * property. The port selected in the range specified by @min_port and @max_port
- * can be retrieved by looking at the %SummerDownloadTorrent::port property.
+ * can be retrieved by looking at the #SummerDownloadTorrent::port property.
  */
 void
 summer_download_torrent_set_default (
@@ -628,7 +628,7 @@ create_autoresume ()
 /**
  * summer_download_torrent_shutdown:
  *
- * Disconnect from the tracker.
+ * Disconnect from the tracker, other peers, and save progress information.
  */
 void
 summer_download_torrent_shutdown ()

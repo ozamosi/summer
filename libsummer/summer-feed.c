@@ -273,9 +273,9 @@ summer_feed_finalize (GObject *obj)
 /**
  * summer_feed_new():
  *
- * Creates a new %SummerFeed object.
+ * Creates a new #SummerFeed object.
  *
- * Returns: The newly created %SummerFeed object.
+ * Returns: The newly created #SummerFeed object.
  */
 SummerFeed*
 summer_feed_new ()
@@ -327,10 +327,10 @@ download_timeout (gpointer data) {
 
 /**
  * summer_feed_start ():
- * @self: A %SummerFeed instance.
+ * @self: A #SummerFeed instance.
  * @url: The URL to download.
  *
- * Download the feed, parse it, and redo it every %SummerFeed::frequency 
+ * Download the feed, parse it, and redo it every #SummerFeed::frequency
  * seconds.
  */
 void
@@ -357,7 +357,7 @@ summer_feed_start (SummerFeed *self, gchar *url) {
  * These options may be set at any time during the session. You may change these
  * as you wish after downloads have been started, but note that changing these
  * will only affect downloads started after the change. These options can be
- * individually overridden by editing the SummerDownload::cache-dir and 
+ * individually overridden by editing the SummerDownload::cache-dir and
  * SummerDownload::frequency properties.
  */
 void
@@ -409,9 +409,9 @@ summer_feed_set_cache_dir (SummerFeed *self, gchar *cache_dir)
 
 /**
  * summer_feed_get_frequency:
- * @self: a %SummerFeed object
+ * @self: a #SummerFeed object
  *
- * Returns the number of seconds the %SummerFeed object waits before it tries 
+ * Returns the number of seconds the #SummerFeed object waits before it tries
  * to recheck the feed.
  *
  * Returns: the frequency.
@@ -426,10 +426,10 @@ summer_feed_get_frequency (SummerFeed *self)
 
 /**
  * summer_feed_set_frequency:
- * @self: a %SummerFeed object
+ * @self: a #SummerFeed object
  * @frequency: the new frequency.
  *
- * Sets the number of seconds the %SummerFeed object waits before 
+ * Sets the number of seconds the #SummerFeed object waits before
  * it tries to recheck the feed to @frequency.
  */
 void
@@ -443,9 +443,9 @@ summer_feed_set_frequency (SummerFeed *self, gint frequency)
  * summer_feed_get_url:
  * @self: the SummerFeed object
  *
- * Returns the URL this %SummerFeed uses to fetch it's feeds.
+ * Returns the URL this #SummerFeed uses to fetch it's feeds.
  *
- * Returns: the URL this %SummerFeed uses.
+ * Returns: the URL this #SummerFeed uses.
  */
 gchar *
 summer_feed_get_url (SummerFeed *self)
@@ -460,7 +460,7 @@ summer_feed_get_url (SummerFeed *self)
  * @self: the SummerFeed object
  * @url: a URL
  *
- * Changes the URL this %SummerFeed uses to fetched it's feeds to @url.
+ * Changes the URL this #SummerFeed uses to fetched it's feeds to @url.
  */
 void
 summer_feed_set_url (SummerFeed *self, gchar *url)
@@ -470,7 +470,7 @@ summer_feed_set_url (SummerFeed *self, gchar *url)
 
 /**
  * summer_feed_get_title:
- * @self: a %SummerFeedData object.
+ * @self: a #SummerFeedData object.
  *
  * Returns the title of the feed that this object represents.
  *
@@ -486,7 +486,7 @@ summer_feed_get_title (SummerFeed *self)
 
 /**
  * summer_feed_get_description:
- * @self: a %SummerFeedData object.
+ * @self: a #SummerFeedData object.
  *
  * Returns the description of the feed that this object represents.
  *
@@ -502,7 +502,7 @@ summer_feed_get_description (SummerFeed *self)
 
 /**
  * summer_feed_get_id:
- * @self: a %SummerFeedData object.
+ * @self: a #SummerFeedData object.
  *
  * Returns a unique identifier for the feed that this object represents.
  *
@@ -518,7 +518,7 @@ summer_feed_get_id (SummerFeed *self)
 
 /**
  * summer_feed_get_web_url:
- * @self: a %SummerFeedData object.
+ * @self: a #SummerFeedData object.
  *
  * Returns a URL, pointing to a web resource for the feed that this object 
  * represents.
@@ -535,7 +535,7 @@ summer_feed_get_web_url (SummerFeed *self)
 
 /**
  * summer_feed_get_author:
- * @self: a %SummerFeedData object.
+ * @self: a #SummerFeedData object.
  *
  * Returns the author of the feed that this object represents.
  *
@@ -551,7 +551,7 @@ summer_feed_get_author (SummerFeed *self)
 
 /**
  * summer_feed_get_updated:
- * @self: a %SummerFeedData object.
+ * @self: a #SummerFeedData object.
  *
  * Returns when, in seconds since the epoch, this feed was most recently
  * updated.
@@ -568,7 +568,7 @@ summer_feed_get_updated (SummerFeed *self)
 
 /**
  * summer_feed_peek_items:
- * @self: a %SummerFeedData object.
+ * @self: a #SummerFeedData object.
  *
  * Returns all new items in this feed, without marking those items as old.
  *
@@ -582,7 +582,7 @@ summer_feed_peek_items (SummerFeed *self)
 
 /**
  * summer_feed_get_items:
- * @self: a %SummerFeedData object.
+ * @self: a #SummerFeedData object.
  *
  * Returns all new items in this feed. A new item is one that hasn't been returned by this
  * function before.
