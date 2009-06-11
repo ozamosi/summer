@@ -67,6 +67,7 @@ SUMMER_DOWNLOAD_WEB_GET_CLASS
 SummerDownload
 summer_download_start
 summer_download_abort
+summer_download_delete
 summer_download_get_save_dir
 summer_download_get_tmp_dir
 summer_download_set_default

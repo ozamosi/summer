@@ -71,6 +71,7 @@ void summer_download_set_filename (SummerDownload *self, gchar *filename);
 gchar* summer_download_get_filename (SummerDownload *self);
 
 gchar* summer_download_get_save_path (SummerDownload *self);
+gboolean summer_download_delete (SummerDownload *self, GError **error);
 
 #define SUMMER_DOWNLOAD_ERROR summer_download_error_quark ()
 GQuark summer_download_error_quark (void);

@@ -23,6 +23,8 @@
 #include "summer-marshal.h"
 #include "summer-debug.h"
 
+#include <gio/gio.h>
+
 /**
  * SECTION:summer-download
  * @short_description: Base class for downloaders.
@@ -560,6 +562,39 @@ summer_download_get_save_path (SummerDownload *self)
 	g_free (filename);
 	g_free (save_dir);
 	return path;
+}
+
+/**
+ * summer_download_delete:
+ * @self: a #SummerDownload object
+ * @error: a #GError pointer
+ *
+ * Deletes the downloaded file.
+ *
+ * Returns: %TRUE on success, otherwise %FALSE
+ */
+gboolean
+summer_download_delete (SummerDownload *self, GError **error)
+{
+	g_return_val_if_fail (SUMMER_IS_DOWNLOAD (self), FALSE);
+	gchar *filename, *dir, *path;
+	filename = summer_download_get_filename (self);
+	if (summer_download_get_completed (self))
+		dir = summer_download_get_save_dir (self);
+	else
+		dir = summer_download_get_tmp_dir (self);
+	path = g_build_filename (dir, filename, NULL);
+	g_free (filename);
+	g_free (dir);
+	GFile *tmpfile = g_file_new_for_path (path);
+	GError *tmp_error = NULL;
+	g_file_delete (tmpfile, NULL, &tmp_error);
+	g_free (path);
+	g_object_unref (tmpfile);
+	if (tmp_error != NULL) {
+		g_propagate_error (error, tmp_error);
+	}
+	return tmp_error == NULL;
 }
 
 GQuark

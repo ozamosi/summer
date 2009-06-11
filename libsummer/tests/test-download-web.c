@@ -116,7 +116,8 @@ complete_cb (SummerDownload *obj, gpointer user_data)
 	g_file_get_contents (BASEFILEPATH "/epicfu", &orig_contents, &orig_length, NULL);
     g_file_get_contents (save_path, &rec_contents, &rec_length, NULL);
 	g_assert_cmpstr (orig_contents, ==, rec_contents);
-	g_remove (save_path);
+	g_assert (summer_download_delete (obj, NULL));
+	g_assert (!g_file_test (save_path, G_FILE_TEST_EXISTS));
 	g_free (rec_contents);
 	g_free (orig_contents);
 
