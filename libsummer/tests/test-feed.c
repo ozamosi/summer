@@ -1,5 +1,6 @@
 #include <glib.h>
 #include <libsummer/summer.h>
+#include <stdlib.h>
 #include "server.h"
 
 static GMainLoop *loop;
@@ -44,17 +45,22 @@ on_invalid (SummerFeed *feed, gconstpointer data) {
 static void
 invalid (WebFixture *fix, gconstpointer data)
 {
-	loop = g_main_loop_new (NULL, TRUE);
-	SummerFeed *feed;
-	feed = summer_feed_new ();
-	g_signal_connect (feed, "new-entries", G_CALLBACK (on_invalid), NULL);
-	gchar *url = g_strdup_printf ("http://127.0.0.1:%i/video/dummy_mp4", PORT);
-	summer_feed_start (feed, url);
-	g_free (url);
-	g_assert (feed != NULL);
-	g_object_unref (feed);
-	g_main_loop_run (loop);
-	g_main_loop_unref (loop);
+	if (g_test_trap_fork (0, G_TEST_TRAP_SILENCE_STDERR)) {
+		loop = g_main_loop_new (NULL, TRUE);
+		SummerFeed *feed;
+		feed = summer_feed_new ();
+		g_signal_connect (feed, "new-entries", G_CALLBACK (on_invalid), NULL);
+		gchar *url = g_strdup_printf ("http://127.0.0.1:%i/video/dummy_mp4", PORT);
+		summer_feed_start (feed, url);
+		g_free (url);
+		g_assert (feed != NULL);
+		g_object_unref (feed);
+		g_main_loop_run (loop);
+		g_main_loop_unref (loop);
+		exit (0);
+	}
+	g_test_trap_assert_passed();
+	g_test_trap_assert_stderr ("*Document is empty*");
 }
 
 static void
