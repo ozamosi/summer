@@ -1,3 +1,7 @@
+V         = @
+Q         = $(V:1=)
+QUIET_GEN = $(Q:@=@echo '  GEN   '$@;)
+
 include $(top_srcdir)/gtest.mk
 
 DISTCHECK_CONFIGURE_FLAGS = --enable-gtk-doc

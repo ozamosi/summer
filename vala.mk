@@ -2,10 +2,12 @@ vapi_DATA=bindings/vala/libsummer-1.0.vapi
 vapidir=$(datadir)/vala/vapi
 
 regen-vala:
-	t=`pwd` \
-	cd $(srcdir)/bindings/vala \
-	$(VALA_GEN_INTROSPECT) libsummer-1.0 libsummer-1.0 \
-	$(VAPIGEN) --library libsummer-1.0 libsummer-1.0/* \
+	t=`pwd` && \
+	cd $(srcdir)/bindings/vala && \
+	echo '  GEN   bindings/vala/libsummer-1.0/libsummer-1.0.gi' && \
+	$(VALA_GEN_INTROSPECT) libsummer-1.0 libsummer-1.0 && \
+	echo '  GEN   bindings/vala/libsummer-1.0.vapi' && \
+	$(VAPIGEN) --library libsummer-1.0 libsummer-1.0/* && \
 	cd $t
 
 build_files = \

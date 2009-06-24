@@ -1,14 +1,12 @@
-QUIET_GEN = $(Q:@=@echo ' GEN '$@;)
-
 MARSHAL_GENERATED = $(srcdir)/libsummer/summer-marshal.c $(srcdir)/libsummer/summer-marshal.h
 
 $(srcdir)/libsummer/summer-marshal.h: $(srcdir)/libsummer/summer-marshal.list
-	( $(GLIB_GENMARSHAL) --prefix=summer_marshal $(srcdir)/libsummer/summer-marshal.list --header > $(srcdir)/libsummer/summer-marshal.tmp \
+	$(QUIET_GEN) ( $(GLIB_GENMARSHAL) --prefix=summer_marshal $(srcdir)/libsummer/summer-marshal.list --header > $(srcdir)/libsummer/summer-marshal.tmp \
 	&& mv $(srcdir)/libsummer/summer-marshal.tmp $(srcdir)/libsummer/summer-marshal.h ) \
 	|| ( rm -f $(srcdir)/libsummer/summer-marshal.tmp && exit 1 )
 
 $(srcdir)/libsummer/summer-marshal.c: $(srcdir)/libsummer/summer-marshal.h
-	( (echo '#include "summer-marshal.h"'; $(GLIB_GENMARSHAL) --prefix=summer_marshal $(srcdir)/libsummer/summer-marshal.list --body) > $(srcdir)/libsummer/summer-marshal.tmp \
+	$(QUIET_GEN) ( (echo '#include "summer-marshal.h"'; $(GLIB_GENMARSHAL) --prefix=summer_marshal $(srcdir)/libsummer/summer-marshal.list --body) > $(srcdir)/libsummer/summer-marshal.tmp \
 	&& mv $(srcdir)/libsummer/summer-marshal.tmp $(srcdir)/libsummer/summer-marshal.c ) \
 	|| ( rm -f $(srcdir)/libsummer/summer-marshal.tmp && exit 1 )
 
