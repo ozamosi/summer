@@ -46,12 +46,21 @@ struct _SummerDownloadClass {
 	void (* start) (SummerDownload *self);
 	void (* abort) (SummerDownload *self);
 	void (* download_complete) (SummerDownload *obj);
+	void (* download_done) (SummerDownload *obj);
 	void (* download_update) (SummerDownload *obj, guint64 received, guint64 length);
 	void (* download_started) (SummerDownload *obj);
 	void (* download_error) (SummerDownload *obj, GError *error);
 };
 
 GType        summer_download_get_type    (void) G_GNUC_CONST;
+
+typedef enum {
+	SUMMER_DOWNLOAD_STATE_UNKNOWN = 10,
+	SUMMER_DOWNLOAD_STATE_DOWNLOADING = 20,
+	SUMMER_DOWNLOAD_STATE_FAILED = 30,
+	SUMMER_DOWNLOAD_STATE_SEEDING = 40,
+	SUMMER_DOWNLOAD_STATE_DONE = 50,
+} SummerDownloadState;
 
 void summer_download_set_default (const gchar *tmp_dir, const gchar *save_dir);
 
@@ -64,14 +73,17 @@ gchar* summer_download_get_save_dir (SummerDownload *self);
 void summer_download_set_tmp_dir (SummerDownload *self, gchar *tmp_dir);
 gchar* summer_download_get_tmp_dir (SummerDownload *self);
 
-void summer_download_set_completed (SummerDownload *self, gboolean completed);
-gboolean summer_download_get_completed (SummerDownload *self);
-
 void summer_download_set_filename (SummerDownload *self, gchar *filename);
 gchar* summer_download_get_filename (SummerDownload *self);
 
 gchar* summer_download_get_save_path (SummerDownload *self);
+
 gboolean summer_download_delete (SummerDownload *self, GError **error);
+
+SummerDownloadState summer_download_get_state (SummerDownload *self);
+
+gboolean summer_download_is_paused (SummerDownload *self);
+void summer_download_set_paused (SummerDownload *self, gboolean pause);
 
 #define SUMMER_DOWNLOAD_ERROR summer_download_error_quark ()
 GQuark summer_download_error_quark (void);

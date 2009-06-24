@@ -159,6 +159,13 @@
 		<struct name="SummerXmlBackendClass">
 			<field name="parent_class" type="GObjectClass"/>
 		</struct>
+		<enum name="SummerDownloadState">
+			<member name="SUMMER_DOWNLOAD_STATE_UNKNOWN" value="10"/>
+			<member name="SUMMER_DOWNLOAD_STATE_DOWNLOADING" value="20"/>
+			<member name="SUMMER_DOWNLOAD_STATE_FAILED" value="30"/>
+			<member name="SUMMER_DOWNLOAD_STATE_SEEDING" value="40"/>
+			<member name="SUMMER_DOWNLOAD_STATE_DONE" value="50"/>
+		</enum>
 		<object name="SummerAtomParser" parent="SummerFeedParser" type-name="SummerAtomParser" get-type="summer_atom_parser_get_type">
 			<constructor name="new" symbol="summer_atom_parser_new">
 				<return-type type="SummerAtomParser*"/>
@@ -171,14 +178,15 @@
 					<parameter name="obj" type="SummerDownload*"/>
 				</parameters>
 			</method>
-			<method name="error_quark" symbol="summer_download_error_quark">
-				<return-type type="GQuark"/>
-			</method>
-			<method name="get_completed" symbol="summer_download_get_completed">
+			<method name="delete" symbol="summer_download_delete">
 				<return-type type="gboolean"/>
 				<parameters>
 					<parameter name="self" type="SummerDownload*"/>
+					<parameter name="error" type="GError**"/>
 				</parameters>
+			</method>
+			<method name="error_quark" symbol="summer_download_error_quark">
+				<return-type type="GQuark"/>
 			</method>
 			<method name="get_filename" symbol="summer_download_get_filename">
 				<return-type type="gchar*"/>
@@ -198,17 +206,22 @@
 					<parameter name="self" type="SummerDownload*"/>
 				</parameters>
 			</method>
+			<method name="get_state" symbol="summer_download_get_state">
+				<return-type type="SummerDownloadState"/>
+				<parameters>
+					<parameter name="self" type="SummerDownload*"/>
+				</parameters>
+			</method>
 			<method name="get_tmp_dir" symbol="summer_download_get_tmp_dir">
 				<return-type type="gchar*"/>
 				<parameters>
 					<parameter name="self" type="SummerDownload*"/>
 				</parameters>
 			</method>
-			<method name="set_completed" symbol="summer_download_set_completed">
-				<return-type type="void"/>
+			<method name="is_paused" symbol="summer_download_is_paused">
+				<return-type type="gboolean"/>
 				<parameters>
 					<parameter name="self" type="SummerDownload*"/>
-					<parameter name="completed" type="gboolean"/>
 				</parameters>
 			</method>
 			<method name="set_default" symbol="summer_download_set_default">
@@ -223,6 +236,13 @@
 				<parameters>
 					<parameter name="self" type="SummerDownload*"/>
 					<parameter name="filename" type="gchar*"/>
+				</parameters>
+			</method>
+			<method name="set_paused" symbol="summer_download_set_paused">
+				<return-type type="void"/>
+				<parameters>
+					<parameter name="self" type="SummerDownload*"/>
+					<parameter name="pause" type="gboolean"/>
 				</parameters>
 			</method>
 			<method name="set_save_dir" symbol="summer_download_set_save_dir">
@@ -245,14 +265,21 @@
 					<parameter name="obj" type="SummerDownload*"/>
 				</parameters>
 			</method>
-			<property name="completed" type="gboolean" readable="1" writable="1" construct="0" construct-only="0"/>
 			<property name="downloadable" type="SummerDownloadableData*" readable="1" writable="1" construct="0" construct-only="1"/>
 			<property name="filename" type="char*" readable="1" writable="1" construct="0" construct-only="0"/>
 			<property name="item" type="SummerItemData*" readable="1" writable="1" construct="0" construct-only="1"/>
+			<property name="paused" type="gboolean" readable="1" writable="1" construct="0" construct-only="0"/>
 			<property name="save-dir" type="char*" readable="1" writable="1" construct="0" construct-only="0"/>
+			<property name="state" type="SummerDownloadState" readable="1" writable="0" construct="0" construct-only="0"/>
 			<property name="tmp-dir" type="char*" readable="1" writable="1" construct="0" construct-only="0"/>
 			<property name="url" type="char*" readable="1" writable="0" construct="0" construct-only="0"/>
 			<signal name="download-complete" when="FIRST">
+				<return-type type="void"/>
+				<parameters>
+					<parameter name="obj" type="SummerDownload*"/>
+				</parameters>
+			</signal>
+			<signal name="download-done" when="FIRST">
 				<return-type type="void"/>
 				<parameters>
 					<parameter name="obj" type="SummerDownload*"/>

@@ -81,7 +81,8 @@ enum {
 	PROP_PORT,
 	PROP_MAX_UP_SPEED,
 	PROP_FILENAME,
-	PROP_MAX_RATIO
+	PROP_MAX_RATIO,
+	PROP_PAUSED
 };
 
 G_DEFINE_TYPE (SummerDownloadTorrent, summer_download_torrent, SUMMER_TYPE_DOWNLOAD);
@@ -185,6 +186,8 @@ check_done_seeding (gpointer data)
 		g_object_get (self, "item", &item, NULL);
 		SummerFeedCache *cache = summer_feed_cache_get ();
 		summer_feed_cache_add_new_item (cache, item);
+
+		g_signal_emit_by_name (self, "download-done");
 		g_object_unref (G_OBJECT (cache));
 		g_object_unref (G_OBJECT (item));
 
@@ -360,6 +363,13 @@ set_property (GObject *object, guint prop_id, const GValue *value,
 	case PROP_MAX_RATIO:
 		priv->max_ratio = g_value_get_float (value);
 		break;
+	case PROP_PAUSED:
+		if (g_value_get_boolean (value)) {
+			priv->handle.pause ();
+		} else {
+			priv->handle.resume ();
+		}
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -387,6 +397,9 @@ get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 		break;
 	case PROP_MAX_RATIO:
 		g_value_set_float (value, priv->max_ratio);
+		break;
+	case PROP_PAUSED:
+		g_value_set_boolean (value, priv->handle.is_paused ());
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -444,6 +457,7 @@ summer_download_torrent_class_init (SummerDownloadTorrentClass *klass)
 	g_object_class_install_property (gobject_class, PROP_MAX_RATIO, pspec);
 
 	g_object_class_override_property (gobject_class, PROP_FILENAME, "filename");
+	g_object_class_override_property (gobject_class, PROP_PAUSED, "paused");
 }
 
 static void

@@ -10,29 +10,34 @@ namespace Summer {
 	[CCode (cheader_filename = "libsummer/summer.h")]
 	public class Download : GLib.Object {
 		public virtual void abort ();
+		public bool @delete () throws GLib.Error;
 		public static GLib.Quark error_quark ();
-		public bool get_completed ();
 		public unowned string get_filename ();
 		public unowned string get_save_dir ();
 		public unowned string get_save_path ();
+		public Summer.DownloadState get_state ();
 		public unowned string get_tmp_dir ();
-		public void set_completed (bool completed);
+		public bool is_paused ();
 		public static void set_default (string? tmp_dir, string? save_dir);
 		public void set_filename (string filename);
+		public void set_paused (bool pause);
 		public void set_save_dir (string save_dir);
 		public void set_tmp_dir (string tmp_dir);
 		public virtual void start ();
-		public bool completed { get; set; }
 		[NoAccessorMethod]
 		public Summer.DownloadableData downloadable { owned get; construct; }
 		public string filename { get; set; }
 		[NoAccessorMethod]
 		public Summer.ItemData item { owned get; construct; }
+		[NoAccessorMethod]
+		public bool paused { get; set; }
 		public string save_dir { get; set; }
+		public Summer.DownloadState state { get; }
 		public string tmp_dir { get; set; }
 		[NoAccessorMethod]
 		public string url { owned get; }
 		public virtual signal void download_complete ();
+		public virtual signal void download_done ();
 		public virtual signal void download_error (void* error);
 		public virtual signal void download_started ();
 		public virtual signal void download_update (uint64 received, uint64 length);
@@ -302,6 +307,14 @@ namespace Summer {
 	[CCode (cheader_filename = "libsummer/summer.h")]
 	public class XmlBackendClass {
 		public weak GLib.ObjectClass parent_class;
+	}
+	[CCode (cprefix = "SUMMER_DOWNLOAD_STATE_", has_type_id = "0", cheader_filename = "libsummer/summer.h")]
+	public enum DownloadState {
+		UNKNOWN,
+		DOWNLOADING,
+		FAILED,
+		SEEDING,
+		DONE
 	}
 	[CCode (cheader_filename = "libsummer/summer.h")]
 	public static unowned Summer.Download create_download (Summer.ItemData item);

@@ -21,6 +21,7 @@
 #include "summer-download.h"
 #include "summer-data-types.h"
 #include "summer-marshal.h"
+#include "summer-enum-types.h"
 #include "summer-debug.h"
 
 #include <gio/gio.h>
@@ -56,8 +57,9 @@ struct _SummerDownloadPrivate {
 	gchar *filename;
 	SummerItemData *item;
 	SummerDownloadableData *downloadable;
-	gboolean completed;
+	SummerDownloadState state;
 };
+
 #define SUMMER_DOWNLOAD_GET_PRIVATE(o)   (G_TYPE_INSTANCE_GET_PRIVATE((o), \
                                           SUMMER_TYPE_DOWNLOAD, \
 										  SummerDownloadPrivate))
@@ -73,7 +75,8 @@ enum {
 	PROP_FILENAME,
 	PROP_ITEM,
 	PROP_DOWNLOADABLE,
-	PROP_COMPLETED
+	PROP_STATE,
+	PROP_PAUSED
 };
 
 G_DEFINE_ABSTRACT_TYPE (SummerDownload, summer_download, G_TYPE_OBJECT);
@@ -110,9 +113,6 @@ set_property (GObject *object, guint prop_id, const GValue *value,
 			g_object_unref (priv->downloadable);
 		priv->downloadable = g_value_dup_object (value);
 		break;
-	case PROP_COMPLETED:
-		priv->completed = g_value_get_boolean (value);
-		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -144,9 +144,11 @@ get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 	case PROP_DOWNLOADABLE:
 		g_value_set_object (value, priv->downloadable);
 		break;
-	case PROP_COMPLETED:
-		g_value_set_boolean (value, priv->completed);
+	case PROP_STATE:
+		g_value_set_enum (value, priv->state);
 		break;
+	case PROP_PAUSED:
+		g_value_set_boolean (value, FALSE);
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -228,12 +230,20 @@ summer_download_class_init (SummerDownloadClass *klass)
 		G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
 	g_object_class_install_property (gobject_class, PROP_DOWNLOADABLE, pspec);
 
-	pspec = g_param_spec_boolean ("completed",
-		"Completed",
-		"Whether the download is complete",
+	pspec = g_param_spec_enum ("state",
+		"State",
+		"If the download is downloading, completed, paused, etc",
+		SUMMER_TYPE_DOWNLOAD_STATE,
+		SUMMER_DOWNLOAD_STATE_UNKNOWN,
+		G_PARAM_READABLE);
+	g_object_class_install_property (gobject_class, PROP_STATE, pspec);
+
+	pspec = g_param_spec_boolean ("paused",
+		"Paused",
+		"Whether the download is paused or not",
 		FALSE,
 		G_PARAM_READWRITE);
-	g_object_class_install_property (gobject_class, PROP_COMPLETED, pspec);
+	g_object_class_install_property (gobject_class, PROP_PAUSED, pspec);
 
 	/**
 	 * SummerDownload::download-complete:
@@ -251,6 +261,26 @@ summer_download_class_init (SummerDownloadClass *klass)
 			g_cclosure_marshal_VOID__VOID,
 			G_TYPE_NONE,
 			0);
+
+	/**
+	 * SummerDownload::download-done:
+	 * @obj: the #SummerDownload object that emitted the signal
+	 *
+	 * Signal that is emitted when summer is done with the file. In the HTTP
+	 * case, this is the same as #SummerDownload::download-complete. In the
+	 * bittorrent case, #SummerDownload::download-complete is emitted prior to
+	 * seeding, while #SummerDownload::download-done is emitted after.
+	 */
+	g_signal_new (
+			"download-done",
+			SUMMER_TYPE_DOWNLOAD,
+			G_SIGNAL_RUN_FIRST,
+			G_STRUCT_OFFSET (SummerDownloadClass, download_done),
+			NULL, NULL,
+			g_cclosure_marshal_VOID__VOID,
+			G_TYPE_NONE,
+			0);
+
 	/**
 	 * SummerDownload::download-update:
 	 * @obj: the #SummerDownload object that emitted the signal
@@ -323,17 +353,43 @@ print_update (SummerDownload *self, guint64 downloaded, guint64 length, gpointer
 }
 
 static void
-set_complete (SummerDownload *self, ...)
+set_started (SummerDownload *self, ...)
 {
-	summer_download_set_completed (self, TRUE);
+	g_return_if_fail (self->priv->state <= SUMMER_DOWNLOAD_STATE_DOWNLOADING);
+
+	self->priv->state = SUMMER_DOWNLOAD_STATE_DOWNLOADING;
 }
 
+static void
+set_complete (SummerDownload *self, ...)
+{
+	g_return_if_fail (self->priv->state <= SUMMER_DOWNLOAD_STATE_SEEDING);
+
+	self->priv->state = SUMMER_DOWNLOAD_STATE_SEEDING;
+}
+
+static void
+set_done (SummerDownload *self, ...)
+{
+	g_return_if_fail (self->priv->state <= SUMMER_DOWNLOAD_STATE_DONE);
+
+	self->priv->state = SUMMER_DOWNLOAD_STATE_DONE;
+}
+
+static void
+set_failed (SummerDownload *self, ...)
+{
+	self->priv->state = SUMMER_DOWNLOAD_STATE_FAILED;
+}
 static void
 summer_download_init (SummerDownload *self)
 {
 	self->priv = SUMMER_DOWNLOAD_GET_PRIVATE (self);
 	g_object_set (self, "save-dir", default_save_dir, "tmp-dir", default_tmp_dir, NULL);
+	g_signal_connect (self, "download-started", G_CALLBACK (set_started), NULL);
 	g_signal_connect (self, "download-complete", G_CALLBACK (set_complete), NULL);
+	g_signal_connect (self, "download-done", G_CALLBACK (set_done), NULL);
+	g_signal_connect (self, "download-error", G_CALLBACK (set_failed), NULL);
 	if (summer_debug (NULL)) {
 		g_signal_connect (self, "download-update", G_CALLBACK (print_update), NULL);
 	}
@@ -477,37 +533,6 @@ summer_download_get_tmp_dir (SummerDownload *self)
 }
 
 /**
- * summer_download_set_completed:
- * @self: a #SummerDownload instance
- * @completed: whether the download is completed or not
- *
- * Sets whether the download is completed or not.
- */
-void
-summer_download_set_completed (SummerDownload *self, gboolean completed)
-{
-	g_return_if_fail (SUMMER_IS_DOWNLOAD (self));
-	g_object_set (self, "completed", completed, NULL);
-}
-
-/**
- * summer_download_get_completed:
- * @self: a #SummerDownload instance
- *
- * Returns whether the download is completed.
- *
- * Returns: %TRUE if the download is complete, otherwise %FALSE
- */
-gboolean
-summer_download_get_completed (SummerDownload *self)
-{
-	g_return_val_if_fail (SUMMER_IS_DOWNLOAD (self), FALSE);
-	gboolean val;
-	g_object_get (self, "completed", &val, NULL);
-	return val;
-}
-
-/**
  * summer_download_set_filename:
  * @self: a #SummerDownload instance
  * @filename: the filename to set. May not be %NULL.
@@ -519,7 +544,7 @@ summer_download_set_filename (SummerDownload *self, gchar *filename)
 {
 	g_return_if_fail (SUMMER_IS_DOWNLOAD (self));
 	g_return_if_fail (filename == NULL);
-	if (summer_download_get_completed (self))
+	if (self->priv->state >= SUMMER_DOWNLOAD_STATE_SEEDING)
 		return;
 	g_object_set (self, "filename", filename, NULL);
 }
@@ -579,7 +604,7 @@ summer_download_delete (SummerDownload *self, GError **error)
 	g_return_val_if_fail (SUMMER_IS_DOWNLOAD (self), FALSE);
 	gchar *filename, *dir, *path;
 	filename = summer_download_get_filename (self);
-	if (summer_download_get_completed (self))
+	if (self->priv->state >= SUMMER_DOWNLOAD_STATE_SEEDING)
 		dir = summer_download_get_save_dir (self);
 	else
 		dir = summer_download_get_tmp_dir (self);
@@ -596,6 +621,72 @@ summer_download_delete (SummerDownload *self, GError **error)
 	}
 	return tmp_error == NULL;
 }
+
+/**
+ * SummerDownloadState:
+ * @SUMMER_DOWNLOAD_STATE_UNKNOWN: This is the default value, and usually means
+ * the download hasn't started yet
+ * @SUMMER_DOWNLOAD_STATE_DOWNLOADING: The download is being downloaded
+ * @SUMMER_DOWNLOAD_STATE_FAILED: The download could not be completed
+ * @SUMMER_DOWNLOAD_STATE_SEEDING: The download has been downloaded, and is now
+ * seeding. This only applies to bittorrent downloads
+ * @SUMMER_DOWNLOAD_STATE_DONE: Summer will no longer do anything to the
+ * download
+ *
+ * An enum of different download states. Not all downloads trigger all states,
+ * however, downloads should normally always move from lower value states to
+ * higher value states.
+ */
+
+/**
+ * summer_download_get_state:
+ * @self: a #SummerDownload object
+ *
+ * Retrieves the state of the download.
+ * Returns: the current state mask
+ */
+SummerDownloadState
+summer_download_get_state (SummerDownload *self)
+{
+	g_return_val_if_fail (SUMMER_IS_DOWNLOAD (self), 0);
+
+	SummerDownloadState state;
+	g_object_get (self, "state", &state, NULL);
+	return state;
+}
+
+/**
+ * summer_download_is_paused:
+ * @self: a #SummerDownload object
+ *
+ * Returns whether the download is paused or not.
+ * Returns: %TRUE if the download is paused, %FALSE otherwise.
+ */
+gboolean
+summer_download_is_paused (SummerDownload *self)
+{
+	g_return_val_if_fail (SUMMER_IS_DOWNLOAD (self), FALSE);
+
+	gboolean paused;
+	g_object_get (self, "paused", &paused, NULL);
+	return paused;
+}
+
+/**
+ * summer_download_set_paused:
+ * @self: a #SummerDownload object
+ * @pause: whether to pause or resume the download
+ *
+ * Pauses or resumes the download.
+ */
+void
+summer_download_set_paused (SummerDownload *self, gboolean pause)
+{
+	g_return_if_fail (SUMMER_IS_DOWNLOAD (self));
+
+	g_object_set (self, "paused", pause, NULL);
+}
+
 
 GQuark
 summer_download_error_quark (void)

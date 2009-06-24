@@ -1,4 +1,8 @@
-MARSHAL_GENERATED = $(srcdir)/libsummer/summer-marshal.c $(srcdir)/libsummer/summer-marshal.h
+BUILT_SOURCES = \
+	$(srcdir)/libsummer/summer-marshal.c \
+	$(srcdir)/libsummer/summer-marshal.h \
+	$(srcdir)/libsummer/summer-enum-types.c \
+	$(srcdir)/libsummer/summer-enum-types.h
 
 $(srcdir)/libsummer/summer-marshal.h: $(srcdir)/libsummer/summer-marshal.list
 	$(QUIET_GEN) ( $(GLIB_GENMARSHAL) --prefix=summer_marshal $(srcdir)/libsummer/summer-marshal.list --header > $(srcdir)/libsummer/summer-marshal.tmp \
@@ -10,7 +14,21 @@ $(srcdir)/libsummer/summer-marshal.c: $(srcdir)/libsummer/summer-marshal.h
 	&& mv $(srcdir)/libsummer/summer-marshal.tmp $(srcdir)/libsummer/summer-marshal.c ) \
 	|| ( rm -f $(srcdir)/libsummer/summer-marshal.tmp && exit 1 )
 
-BUILT_SOURCES = $(MARSHAL_GENERATED)
+$(srcdir)/libsummer/summer-enum-types.c: $(srcdir)/libsummer/summer-enum-types.c.template
+	$(QUIET_GEN) ($(GLIB_MKENUMS) \
+			--template $(srcdir)/libsummer/summer-enum-types.c.template \
+			$(INST_H_FILES) \
+			> $(srcdir)/libsummer/summer-enum-types.c.tmp) && \
+	mv $(srcdir)/libsummer/summer-enum-types.c.tmp \
+		$(srcdir)/libsummer/summer-enum-types.c
+
+$(srcdir)/libsummer/summer-enum-types.h: $(srcdir)/libsummer/summer-enum-types.h.template
+	$(QUIET_GEN) ($(GLIB_MKENUMS) \
+			--template $(srcdir)/libsummer/summer-enum-types.h.template \
+			$(INST_H_FILES) \
+			> $(srcdir)/libsummer/summer-enum-types.h.tmp) && \
+	mv $(srcdir)/libsummer/summer-enum-types.h.tmp \
+		$(srcdir)/libsummer/summer-enum-types.h
 
 lib_LTLIBRARIES = libsummer.la
 

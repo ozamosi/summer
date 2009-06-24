@@ -269,6 +269,39 @@
   (return-type "gchar*")
 )
 
+(define-method get_state
+  (of-object "SummerDownload")
+  (c-name "summer_download_get_state")
+  (return-type "SummerDownloadState")
+)
+
+(define-enum DownloadState
+  (in-module "Summer")
+  (c-name "SummerDownloadState")
+  (gtype-id "SUMMER_TYPE_DOWNLOAD_STATE")
+  (values
+    '("unknown" "SUMMER_DOWNLOAD_STATE_UNKNOWN")
+    '("downloading" "SUMMER_DOWNLOAD_STATE_DOWNLOADING")
+    '("failed" "SUMMER_DOWNLOAD_STATE_FAILED")
+    '("seeding" "SUMMER_DOWNLOAD_STATE_SEEDING")
+    '("done" "SUMMER_DOWNLOAD_STATE_DONE")
+  )
+)
+
+(define-method is_paused
+  (of-object "SummerDownload")
+  (c-name "summer_download_is_paused")
+  (return-type "gboolean")
+)
+
+(define-method set_paused
+  (of-object "SummerDownload")
+  (c-name "summer_download_set_paused")
+  (return-type "none")
+  (parameters
+    '("gboolean" "pause")
+  )
+)
 
 ;; From summer-download-web.h
 

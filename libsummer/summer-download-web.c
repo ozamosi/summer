@@ -144,6 +144,7 @@ on_download_complete (SummerWebBackend *web_backend, gchar *save_path, gchar *sa
 	g_object_unref (G_OBJECT (item));
 
 	g_signal_emit_by_name (self, "download-complete");
+	g_signal_emit_by_name (self, "download-done");
 	g_object_unref (self);
 }
 
