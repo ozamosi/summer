@@ -26,6 +26,7 @@ libsummer/tests/test_*
 *.la
 *.swp
 libsummer/summer-marshal.[c,h]
+libsummer/summer-enum-types.[c,h]
 .deps
 .libs
 *.pc

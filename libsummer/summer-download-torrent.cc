@@ -169,11 +169,12 @@ check_done_seeding (gpointer data)
 		(gfloat) (status.all_time_download > status.total_wanted_done ? 
 			status.all_time_download : status.total_wanted_done);
 	summer_debug ("%s: %" G_GINT64_FORMAT " uploaded, %" G_GINT64_FORMAT
-		" downloaded. Ratio: %f", 
+		" downloaded. Ratio: %f Paused: %s",
 		name, 
 		(gint64) status.all_time_upload, 
 		(gint64) status.all_time_download, 
-		ratio);
+		ratio,
+		self->priv->handle.is_paused () ? "Yes" : "No");
 	g_free (name);
 	
 	if ((status.state == libtorrent::torrent_status::seeding ||
@@ -365,9 +366,11 @@ set_property (GObject *object, guint prop_id, const GValue *value,
 		break;
 	case PROP_PAUSED:
 		if (g_value_get_boolean (value)) {
+			priv->handle.auto_managed (false);
 			priv->handle.pause ();
 		} else {
 			priv->handle.resume ();
+			priv->handle.auto_managed (true);
 		}
 		break;
 	default:
