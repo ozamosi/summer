@@ -113,6 +113,8 @@ set_property (GObject *object, guint prop_id, const GValue *value,
 			g_object_unref (priv->downloadable);
 		priv->downloadable = g_value_dup_object (value);
 		break;
+	case PROP_PAUSED:
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -149,6 +151,7 @@ get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 		break;
 	case PROP_PAUSED:
 		g_value_set_boolean (value, FALSE);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
