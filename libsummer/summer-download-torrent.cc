@@ -365,6 +365,8 @@ set_property (GObject *object, guint prop_id, const GValue *value,
 		priv->max_ratio = g_value_get_float (value);
 		break;
 	case PROP_PAUSED:
+		if (!priv->handle.is_valid ())
+			break;
 		if (g_value_get_boolean (value)) {
 			priv->handle.auto_managed (false);
 			priv->handle.pause ();
@@ -402,7 +404,10 @@ get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 		g_value_set_float (value, priv->max_ratio);
 		break;
 	case PROP_PAUSED:
-		g_value_set_boolean (value, priv->handle.is_paused ());
+		if (priv->handle.is_valid ())
+			g_value_set_boolean (value, priv->handle.is_paused ());
+		else
+			g_value_set_boolean (value, FALSE);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
