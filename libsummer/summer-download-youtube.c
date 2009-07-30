@@ -1,7 +1,7 @@
 /* summer-download-youtube.c */
 
 /* This file is part of libsummer.
- * Copyright © 2008 Robin Sonefors <ozamosi@flukkost.nu>
+ * Copyright © 2008-2009 Robin Sonefors <ozamosi@flukkost.nu>
  *
  * Inspiration taken from youtube-dl, 
  *     Copyright © 2006-2008 Ricardo Garcia Gonzalez

@@ -1,7 +1,7 @@
 /* summer-download.c */
 
 /* This file is part of libsummer.
- * Copyright © 2008 Robin Sonefors <ozamosi@flukkost.nu>
+ * Copyright © 2008-2009 Robin Sonefors <ozamosi@flukkost.nu>
  * 
  * Libsummer is free software: you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
