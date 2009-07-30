@@ -43,7 +43,7 @@ struct _SummerFeed {
 
 struct _SummerFeedClass {
 	GObjectClass parent_class;
-	void (*new_entries) (SummerFeed *obj, gpointer user_data);
+	void (*new_entries) (SummerFeed *obj);
 };
 
 GType        summer_feed_get_type    (void) G_GNUC_CONST;

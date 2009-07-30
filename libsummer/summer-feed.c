@@ -48,11 +48,13 @@
 static void summer_feed_class_init (SummerFeedClass *klass);
 static void summer_feed_init       (SummerFeed *obj);
 static void summer_feed_finalize   (GObject *obj);
+static gboolean download_timeout   (gpointer data);
 
 struct _SummerFeedPrivate {
 	gchar *url;
 	gchar *cache_dir;
 	gint frequency;
+	guint timeout;
 	SummerFeedData *feed_data;
 };
 #define SUMMER_FEED_GET_PRIVATE(o)      (G_TYPE_INSTANCE_GET_PRIVATE((o), \
@@ -93,6 +95,18 @@ set_property (GObject *object, guint prop_id, const GValue *value,
 		break;
 	case PROP_FREQUENCY:
 		priv->frequency = g_value_get_int (value);
+		if (priv->timeout > 0) { // Is there a timeout running?
+			GMainContext *context = g_main_context_default ();
+			GSource *source = g_main_context_find_source_by_id (
+				context,
+				priv->timeout);
+			g_source_destroy (source);
+			priv->timeout = g_timeout_add_seconds (
+				priv->frequency,
+				(GSourceFunc) download_timeout,
+				object);
+		}
+
 		break;
 	case PROP_URL:
 		if (priv->url)
@@ -339,7 +353,7 @@ summer_feed_start (SummerFeed *self, gchar *url) {
 	g_object_set (self, "url", url, NULL);
 	g_object_ref (self);
 	if (self->priv->frequency > 0) {
-		g_timeout_add_seconds (self->priv->frequency, 
+		self->priv->timeout = g_timeout_add_seconds (self->priv->frequency,
 			(GSourceFunc) download_timeout,
 			self);
 	}
