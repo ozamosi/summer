@@ -47,3 +47,4 @@ doltlibtool
 shave
 shave-libtool
 compile
+test_*
