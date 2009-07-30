@@ -2,6 +2,7 @@
 #include <glib/gstdio.h>
 #include <libsummer/summer.h>
 #include <libsummer/summer-download-web.h>
+#include <libsummer/summer-web-backend.h>
 #include <time.h>
 #include "server.h"
 
@@ -19,7 +20,7 @@ static void
 on_fail_noserver (SummerDownload *dl, GError *error, gconstpointer user_data)
 {
 #if GLIB_CHECK_VERSION(2, 20, 0)
-	g_assert_error (error, SUMMER_DOWNLOAD_ERROR, SUMMER_DOWNLOAD_ERROR_INPUT);
+	g_assert_error (error, SUMMER_WEB_BACKEND_ERROR, SUMMER_WEB_BACKEND_ERROR_REMOTE);
 #endif
 	g_main_loop_quit (loop);
 }
@@ -50,7 +51,11 @@ noserver (WebFixture *fix, gconstpointer data)
 	g_object_unref (feed);
 	g_signal_connect (dl, "download-complete", G_CALLBACK (on_complete_fail), NULL);
 	g_signal_connect (dl, "download-error", G_CALLBACK (on_fail_noserver), NULL);
-	summer_download_start (dl);
+	GError *error = NULL;
+	summer_download_start (dl, &error);
+#if GLIB_CHECK_VERSION(2, 20, 0)
+	g_assert_no_error (error);
+#endif
 	g_main_loop_run (loop);
 	g_main_loop_unref (loop);
 }
@@ -72,7 +77,11 @@ cannotwrite (WebFixture *fix, gconstpointer data)
 	g_object_unref (feed);
 	g_signal_connect (dl, "download-complete", G_CALLBACK (on_complete_fail), NULL);
 	g_signal_connect (dl, "download-error", G_CALLBACK (on_fail_cannotwrite), NULL);
-	summer_download_start (dl);
+	GError *error = NULL;
+	summer_download_start (dl, &error);
+#if GLIB_CHECK_VERSION(2, 20, 0)
+	g_assert_no_error (error);
+#endif
 	g_main_loop_run (loop);
 	g_main_loop_unref (loop);
 }
@@ -160,7 +169,11 @@ basic (WebFixture *fix, gconstpointer data)
 	g_signal_connect (dl, "download-complete", G_CALLBACK (complete_cb), NULL);
 	g_signal_connect (dl, "download-update", G_CALLBACK (update_cb), NULL);
 	g_signal_connect (dl, "download-error", G_CALLBACK (fail_cb_nofail), NULL);
-	summer_download_start (dl);
+	GError *error;
+	summer_download_start (dl, &error);
+#if GLIB_CHECK_VERSION(2, 20, 0)
+	g_assert_no_error (error);
+#endif
 	g_main_loop_run (loop);
 	g_main_loop_unref (loop);
 }
@@ -169,6 +182,7 @@ basic (WebFixture *fix, gconstpointer data)
 static void
 mimes ()
 {
+	summer_download_set_default (g_get_tmp_dir (), g_get_home_dir ());
 	SummerDownload *dl;
 	SummerFeedData *feed = summer_feed_data_new ();
 	SummerItemData *item = summer_feed_data_append_item (feed);

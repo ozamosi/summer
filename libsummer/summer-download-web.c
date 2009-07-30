@@ -20,6 +20,7 @@
 
 #include "summer-download-web.h"
 #include "summer-web-backend.h"
+#include "summer-web-backend-disk.h"
 #include "summer-feed-cache.h"
 #include "summer-debug.h"
 #include <string.h>
@@ -75,17 +76,13 @@ on_download_chunk (SummerWebBackend *web_backend, guint64 received, guint64 leng
 }
 
 static void
-on_download_complete (SummerWebBackend *web_backend, gchar *save_path, gchar *save_data, gpointer user_data)
+on_download_complete (SummerWebBackend *web_backend, gchar *save_path, gchar *save_data, GError *error, gpointer user_data)
 {
 	g_return_if_fail (SUMMER_IS_DOWNLOAD_WEB (user_data));
 	g_return_if_fail (save_data == NULL);
 
 	SummerDownload *self = SUMMER_DOWNLOAD (user_data);
-	if (save_path == NULL) {
-		GError *error = g_error_new (
-			SUMMER_DOWNLOAD_ERROR,
-			SUMMER_DOWNLOAD_ERROR_INPUT,
-			"Download Failed");
+	if (error != NULL) {
 		g_signal_emit_by_name (self, "download-error", error);
 		g_object_unref (self);
 		return;
@@ -104,11 +101,11 @@ on_download_complete (SummerWebBackend *web_backend, gchar *save_path, gchar *sa
 	save_dir = NULL;
 	if (!g_file_query_exists (destdir, NULL)) {
 		if (!g_file_make_directory_with_parents (destdir, NULL, &e)) {
-			GError *error = g_error_new (
+			GError *e2 = g_error_new (
 				SUMMER_DOWNLOAD_ERROR,
 				SUMMER_DOWNLOAD_ERROR_OUTPUT,
 				"Couldn't create output directory: %s", e->message);
-			g_signal_emit_by_name (self, "download-error", error);
+			g_signal_emit_by_name (self, "download-error", e2);
 			g_object_unref (self);
 			g_clear_error (&e);
 			g_object_unref (src);
@@ -119,12 +116,12 @@ on_download_complete (SummerWebBackend *web_backend, gchar *save_path, gchar *sa
 	g_object_unref (destdir);
 
 	if (!g_file_move (src, dest, G_FILE_COPY_OVERWRITE, NULL, NULL, NULL, &e)) {
-		GError *error = g_error_new (
+		GError *e2 = g_error_new (
 			SUMMER_DOWNLOAD_ERROR,
 			SUMMER_DOWNLOAD_ERROR_OUTPUT,
 			"Couldn't move download to it's final destination: %s",
 			e->message);
-		g_signal_emit_by_name (self, "download-error", error);
+		g_signal_emit_by_name (self, "download-error", e2);
 		g_object_unref (self);
 		g_clear_error (&e);
 		g_object_unref (src);
@@ -201,7 +198,7 @@ on_headers_parsed (SummerWebBackend *web, gpointer user_data)
 
 	gchar *filename, *save_dir;
 	guint64 length;
-	g_object_get (web, "filename", &filename, "length", &length, NULL);
+	g_object_get (web, "remote-filename", &filename, "length", &length, NULL);
 	g_object_set (self, "filename", filename, NULL);
 	g_object_get (self, "save-dir", &save_dir, NULL);
 	if (length) {
@@ -221,7 +218,14 @@ on_headers_parsed (SummerWebBackend *web, gpointer user_data)
 	if (is_downloaded (final_path, length)) {
 		g_signal_emit_by_name (self, "download-complete");
 	} else {
-		summer_web_backend_fetch (priv->web);
+		GError *error = NULL;
+		summer_web_backend_fetch (priv->web, &error);
+		if (error != NULL) {
+			g_signal_emit_by_name (self, "download-error", error);
+			g_object_unref (self);
+			g_free (save_dir);
+			g_free (final_path);
+		}
 	}
 
 	g_free (save_dir);
@@ -245,13 +249,18 @@ summer_download_web_abort (SummerDownload *self)
 }
 
 static void
-start (SummerDownload *self)
+start (SummerDownload *self, GError **error)
 {
 	g_return_if_fail (SUMMER_IS_DOWNLOAD_WEB (self));
 	SummerDownloadWebPrivate *priv = SUMMER_DOWNLOAD_WEB (self)->priv;
 	g_signal_connect (priv->web, "headers-parsed", G_CALLBACK (on_headers_parsed), self);
 	g_signal_connect (priv->web, "download-complete", G_CALLBACK (on_download_complete), self);
-	summer_web_backend_fetch_head (priv->web);
+	GError *e = NULL;
+	summer_web_backend_fetch_head (priv->web, &e);
+	if (e != NULL) {
+		g_propagate_error (&e, *error);
+		g_object_unref (self);
+	}
 }
 
 static GObject *
@@ -265,7 +274,7 @@ constructor (GType gtype, guint n_properties, GObjectConstructParam *properties)
 	gchar *url, *tmp_dir;
 	g_object_get (obj, "tmp-dir", &tmp_dir, "url", &url, NULL);
 	SummerDownloadWebPrivate *priv = SUMMER_DOWNLOAD_WEB (obj)->priv;
-	priv->web = summer_web_backend_new (tmp_dir, url);
+	priv->web = summer_web_backend_disk_new (url, tmp_dir);
 	g_free (tmp_dir);
 	g_free (url);
 

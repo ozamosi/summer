@@ -263,6 +263,7 @@
 				<return-type type="void"/>
 				<parameters>
 					<parameter name="obj" type="SummerDownload*"/>
+					<parameter name="error" type="GError**"/>
 				</parameters>
 			</method>
 			<property name="downloadable" type="SummerDownloadableData*" readable="1" writable="1" construct="0" construct-only="1"/>
@@ -316,6 +317,7 @@
 				<return-type type="void"/>
 				<parameters>
 					<parameter name="self" type="SummerDownload*"/>
+					<parameter name="error" type="GError**"/>
 				</parameters>
 			</vfunc>
 		</object>
@@ -689,28 +691,31 @@
 					<parameter name="self" type="SummerWebBackend*"/>
 				</parameters>
 			</method>
+			<method name="error_quark" symbol="summer_web_backend_error_quark">
+				<return-type type="GQuark"/>
+			</method>
 			<method name="fetch" symbol="summer_web_backend_fetch">
 				<return-type type="void"/>
 				<parameters>
 					<parameter name="self" type="SummerWebBackend*"/>
+					<parameter name="error" type="GError**"/>
 				</parameters>
 			</method>
 			<method name="fetch_head" symbol="summer_web_backend_fetch_head">
 				<return-type type="void"/>
 				<parameters>
 					<parameter name="self" type="SummerWebBackend*"/>
+					<parameter name="error" type="GError**"/>
 				</parameters>
 			</method>
-			<constructor name="new" symbol="summer_web_backend_new">
-				<return-type type="SummerWebBackend*"/>
+			<method name="get_remote_filename" symbol="summer_web_backend_get_remote_filename">
+				<return-type type="gchar*"/>
 				<parameters>
-					<parameter name="save_dir" type="gchar*"/>
-					<parameter name="url" type="gchar*"/>
+					<parameter name="self" type="SummerWebBackend*"/>
 				</parameters>
-			</constructor>
-			<property name="filename" type="char*" readable="1" writable="0" construct="0" construct-only="0"/>
+			</method>
 			<property name="length" type="guint64" readable="1" writable="0" construct="0" construct-only="0"/>
-			<property name="save-dir" type="char*" readable="1" writable="1" construct="0" construct-only="1"/>
+			<property name="remote-filename" type="char*" readable="1" writable="0" construct="0" construct-only="0"/>
 			<property name="url" type="char*" readable="1" writable="1" construct="1" construct-only="0"/>
 			<signal name="download-chunk" when="FIRST">
 				<return-type type="void"/>
@@ -726,6 +731,7 @@
 					<parameter name="obj" type="SummerWebBackend*"/>
 					<parameter name="save_path" type="char*"/>
 					<parameter name="save_data" type="char*"/>
+					<parameter name="user_data" type="gpointer"/>
 				</parameters>
 			</signal>
 			<signal name="headers-parsed" when="FIRST">
@@ -734,6 +740,53 @@
 					<parameter name="obj" type="SummerWebBackend*"/>
 				</parameters>
 			</signal>
+			<vfunc name="on_chunk">
+				<return-type type="gboolean"/>
+				<parameters>
+					<parameter name="obj" type="SummerWebBackend*"/>
+					<parameter name="chunk" type="SoupBuffer*"/>
+				</parameters>
+			</vfunc>
+			<vfunc name="on_downloaded">
+				<return-type type="void"/>
+				<parameters>
+					<parameter name="obj" type="SummerWebBackend*"/>
+					<parameter name="session" type="SoupSession*"/>
+					<parameter name="msg" type="SoupMessage*"/>
+				</parameters>
+			</vfunc>
+			<vfunc name="on_error">
+				<return-type type="void"/>
+				<parameters>
+					<parameter name="obj" type="SummerWebBackend*"/>
+				</parameters>
+			</vfunc>
+			<vfunc name="on_init">
+				<return-type type="void"/>
+				<parameters>
+					<parameter name="obj" type="SummerWebBackend*"/>
+					<parameter name="msg" type="SoupMessage*"/>
+					<parameter name="error" type="GError**"/>
+				</parameters>
+			</vfunc>
+		</object>
+		<object name="SummerWebBackendDisk" parent="SummerWebBackend" type-name="SummerWebBackendDisk" get-type="summer_web_backend_disk_get_type">
+			<constructor name="new" symbol="summer_web_backend_disk_new">
+				<return-type type="SummerWebBackend*"/>
+				<parameters>
+					<parameter name="url" type="gchar*"/>
+					<parameter name="save_dir" type="gchar*"/>
+				</parameters>
+			</constructor>
+			<property name="save-dir" type="char*" readable="1" writable="1" construct="0" construct-only="1"/>
+		</object>
+		<object name="SummerWebBackendRam" parent="SummerWebBackend" type-name="SummerWebBackendRam" get-type="summer_web_backend_ram_get_type">
+			<constructor name="new" symbol="summer_web_backend_ram_new">
+				<return-type type="SummerWebBackend*"/>
+				<parameters>
+					<parameter name="url" type="gchar*"/>
+				</parameters>
+			</constructor>
 		</object>
 	</namespace>
 </api>

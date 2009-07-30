@@ -203,34 +203,28 @@
   (return-type "GType")
 )
 
-(define-method start
-  (of-object "SummerDownload")
-  (c-name "summer_download_start")
-  (return-type "none")
-)
-
 (define-function download_set_default
   (c-name "summer_download_set_default")
   (return-type "none")
   (parameters
-    '("gchar*" "tmp_dir" (null-ok) (default "NULL"))
-    '("gchar*" "save_dir" (null-ok) (default "NULL"))
+    '("const-gchar*" "tmp_dir" (null-ok) (default "NULL"))
+    '("const-gchar*" "save_dir" (null-ok) (default "NULL"))
   )
 )
 
-(define-method set_tmp_dir
+(define-method start
   (of-object "SummerDownload")
-  (c-name "summer_download_set_tmp_dir")
+  (c-name "summer_download_start")
   (return-type "none")
   (parameters
-    '("gchar*" "tmp_dir")
+    '("GError**" "error")
   )
 )
 
-(define-method get_tmp_dir
+(define-method abort
   (of-object "SummerDownload")
-  (c-name "summer_download_get_tmp_dir")
-  (return-type "gchar*")
+  (c-name "summer_download_abort")
+  (return-type "none")
 )
 
 (define-method set_save_dir
@@ -245,6 +239,21 @@
 (define-method get_save_dir
   (of-object "SummerDownload")
   (c-name "summer_download_get_save_dir")
+  (return-type "gchar*")
+)
+
+(define-method set_tmp_dir
+  (of-object "SummerDownload")
+  (c-name "summer_download_set_tmp_dir")
+  (return-type "none")
+  (parameters
+    '("gchar*" "tmp_dir")
+  )
+)
+
+(define-method get_tmp_dir
+  (of-object "SummerDownload")
+  (c-name "summer_download_get_tmp_dir")
   (return-type "gchar*")
 )
 
@@ -267,6 +276,15 @@
   (of-object "SummerDownload")
   (c-name "summer_download_get_save_path")
   (return-type "gchar*")
+)
+
+(define-method delete
+  (of-object "SummerDownload")
+  (c-name "summer_download_delete")
+  (return-type "gboolean")
+  (parameters
+    '("GError**" "error")
+  )
 )
 
 (define-method get_state

@@ -64,7 +64,11 @@ invalid_torrent (WebFixture *fix, gconstpointer data)
 	g_object_unref (feed);
 	g_signal_connect (dl, "download-error", G_CALLBACK (on_fail), NULL);
 	g_signal_connect (dl, "download-complete", G_CALLBACK (on_completed_fail), NULL);
-	summer_download_start (dl);
+	GError *error = NULL;
+	summer_download_start (dl, &error);
+#if GLIB_CHECK_VERSION(2, 20, 0)
+	g_assert_no_error (error);
+#endif
 	g_main_loop_run (loop);
 	g_main_loop_unref (loop);
 }

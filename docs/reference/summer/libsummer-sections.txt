@@ -230,10 +230,10 @@ SUMMER_RSS2_PARSER_GET_CLASS
 <FILE>summer-web-backend</FILE>
 <TITLE>SummerWebBackend</TITLE>
 SummerWebBackend
-summer_web_backend_new
 summer_web_backend_fetch
 summer_web_backend_fetch_head
 summer_web_backend_abort
+summer_web_backend_get_remote_filename
 <SUBSECTION Standard>
 SummerWebBackendClass
 SummerWebBackendPrivate
@@ -244,6 +244,41 @@ summer_web_backend_get_type
 SUMMER_WEB_BACKEND_CLASS
 SUMMER_IS_WEB_BACKEND_CLASS
 SUMMER_WEB_BACKEND_GET_CLASS
+SUMMER_WEB_BACKEND_ERROR
+summer_web_backend_error_quark
+</SECTION>
+
+<SECTION>
+<FILE>summer-web-backend-disk</FILE>
+<TITLE>SummerWebBackendDisk</TITLE>
+SummerWebBackendDisk
+summer_web_backend_disk_new
+<SUBSECTION Standard>
+SummerWebBackendDiskClass
+SummerWebBackendDiskPrivate
+SUMMER_WEB_BACKEND_DISK
+SUMMER_IS_WEB_BACKEND_DISK
+SUMMER_TYPE_WEB_BACKEND_DISK
+summer_web_backend_disk_get_type
+SUMMER_WEB_BACKEND_DISK_CLASS
+SUMMER_IS_WEB_BACKEND_DISK_CLASS
+SUMMER_WEB_BACKEND_DISK_GET_CLASS
+</SECTION>
+
+<SECTION>
+<FILE>summer-web-backend-ram</FILE>
+<TITLE>SummerWebBackendRam</TITLE>
+SummerWebBackendRam
+summer_web_backend_ram_new
+<SUBSECTION Standard>
+SummerWebBackendRamClass
+SUMMER_WEB_BACKEND_RAM
+SUMMER_IS_WEB_BACKEND_RAM
+SUMMER_TYPE_WEB_BACKEND_RAM
+summer_web_backend_ram_get_type
+SUMMER_WEB_BACKEND_RAM_CLASS
+SUMMER_IS_WEB_BACKEND_RAM_CLASS
+SUMMER_WEB_BACKEND_RAM_GET_CLASS
 </SECTION>
 
 <SECTION>

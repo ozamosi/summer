@@ -5,6 +5,7 @@
 static void
 create (WebFixture *fix, gconstpointer data)
 {
+	summer_download_set_default (g_get_tmp_dir (), g_get_tmp_dir ());
 	SummerDownload *dl;
 	SummerFeedData *feed = summer_feed_data_new ();
 	SummerItemData *item = summer_feed_data_append_item (feed);

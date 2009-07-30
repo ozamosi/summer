@@ -2,6 +2,8 @@
 #include <glib-object.h>
 #include <glib/gstdio.h>
 #include <libsummer/summer-web-backend.h>
+#include <libsummer/summer-web-backend-disk.h>
+#include <libsummer/summer-web-backend-ram.h>
 #include "server.h"
 
 static GMainLoop *loop;
@@ -49,7 +51,7 @@ to_disk (WebFixture *fix, gconstpointer data)
 	gchar *path = g_strdup (g_get_tmp_dir ());
 	gchar *orig_path = g_strdup (path);
 	gchar *url =  g_strdup_printf ("http://127.0.0.1:%i/feeds/epicfu", PORT);
-	SummerWebBackend *web = summer_web_backend_new (path, url);
+	SummerWebBackend *web = summer_web_backend_disk_new (url, path);
 	g_free (url);
 	g_free (path);
 	g_object_get (G_OBJECT (web), "save-dir", &path, NULL);
@@ -59,16 +61,23 @@ to_disk (WebFixture *fix, gconstpointer data)
 
 	g_signal_connect (web, "download-chunk", G_CALLBACK (chunk_cb), NULL);
 	g_signal_connect (web, "download-complete", G_CALLBACK (disk_downloaded_cb), NULL);
-	summer_web_backend_fetch (g_object_ref (web));
+	GError *error;
+	summer_web_backend_fetch (g_object_ref (web), &error);
+#if GLIB_CHECK_VERSION(2, 20, 0)
+	g_assert_no_error (error);
+#endif
 	g_main_loop_run (loop);
 	g_main_loop_unref (loop);
 }
 
 static void
-ram_downloaded_cb (SummerWebBackend *web, gchar *save_path, gchar *save_data, gpointer user_data)
+ram_downloaded_cb (SummerWebBackend *web, gchar *save_path, gchar *save_data, GError* error, gpointer user_data)
 {
 	g_assert_cmpstr (save_path, ==, NULL);
 	g_assert_cmpstr (save_data, !=, NULL);
+#if GLIB_CHECK_VERSION(2, 20, 0)
+	g_assert_no_error (error);
+#endif
 	gchar *contents = NULL;
 	gsize length = 0;
 	g_file_get_contents (BASEFILEPATH "/epicfu", &contents, &length, NULL);
@@ -83,23 +92,27 @@ to_ram (WebFixture *fix, gconstpointer data)
 {
 	loop = g_main_loop_new (NULL, TRUE);
 	gchar *url =  g_strdup_printf ("http://127.0.0.1:%i/feeds/epicfu", PORT);
-	SummerWebBackend *web = summer_web_backend_new (NULL, url);
+	SummerWebBackend *web = summer_web_backend_ram_new (url);
 	g_free (url);
-	gchar *save_dir;
-	g_object_get (G_OBJECT (web), "save-dir", &save_dir, NULL);
-	g_assert_cmpstr (save_dir, ==, NULL);
 	g_signal_connect (web, "download-chunk", G_CALLBACK (chunk_cb), NULL);
 	g_signal_connect (web, "download-complete", G_CALLBACK (ram_downloaded_cb), NULL);
-	summer_web_backend_fetch (web);
+	GError *error = NULL;
+	summer_web_backend_fetch (web, &error);
+#if GLIB_CHECK_VERSION(2, 20, 0)
+	g_assert_no_error (error);
+#endif
 	g_main_loop_run (loop);
 	g_main_loop_unref (loop);
 }
 
 static void
-r404_response_cb (SummerWebBackend *web, gchar *save_path, gchar *save_data, gpointer user_data)
+r404_response_cb (SummerWebBackend *web, gchar *save_path, gchar *save_data, GError *error, gpointer user_data)
 {
 	g_assert_cmpstr (save_path, ==, NULL);
 	g_assert_cmpstr (save_data, ==, NULL);
+#if  GLIB_CHECK_VERSION(2, 20, 0)
+	g_assert_error (error, SUMMER_WEB_BACKEND_ERROR, SUMMER_WEB_BACKEND_ERROR_REMOTE);
+#endif
 	g_main_loop_quit (loop);
 	last_received = 0.0;
 }
@@ -109,18 +122,22 @@ response404_ram (WebFixture *fix, gconstpointer data)
 {
 	loop = g_main_loop_new (NULL, TRUE);
 	gchar *url =  g_strdup_printf ("http://127.0.0.1:%i/doesnotexist", PORT);
-	SummerWebBackend *web = summer_web_backend_new (NULL, url);
+	SummerWebBackend *web = summer_web_backend_ram_new (url);
 	g_free (url);
 	g_signal_connect (web, "download-chunk", G_CALLBACK (not_reached), NULL);
 	g_signal_connect (web, "download-complete", G_CALLBACK (r404_response_cb), NULL);
-	summer_web_backend_fetch (web);
+	GError *error = NULL;
+	summer_web_backend_fetch (web, &error);
+#if GLIB_CHECK_VERSION(2, 20, 0)
+	g_assert_no_error (error);
+#endif
 	g_main_loop_run (loop);
 	g_object_unref (web);
 	g_main_loop_unref (loop);
 }
 
 static void
-response404_disk_complete (SummerWebBackend *web, gchar *save_path, gchar *save_data, gpointer user_data) {
+response404_disk_complete (SummerWebBackend *web, gchar *save_path, gchar *save_data, GError *error, gpointer user_data) {
 	gchar *filename = g_build_filename (g_get_tmp_dir (), "doesnotexist", NULL);
 	g_assert (!g_file_test (filename, G_FILE_TEST_EXISTS));
 	g_free (filename);
@@ -132,12 +149,16 @@ response404_disk (WebFixture *fix, gconstpointer data)
 	loop = g_main_loop_new (NULL, TRUE);
 	gchar *path = g_strdup (g_get_tmp_dir ());
 	gchar *url =  g_strdup_printf ("http://127.0.0.1:%i/doesnotexist", PORT);
-	SummerWebBackend *web = summer_web_backend_new (path, url);
+	SummerWebBackend *web = summer_web_backend_disk_new (url, path);
 	g_free (url);
 	g_signal_connect (web, "download-chunk", G_CALLBACK (not_reached), NULL);
 	g_signal_connect (web, "download-complete", G_CALLBACK (r404_response_cb), NULL);
 	g_signal_connect (web, "download-complete", G_CALLBACK (response404_disk_complete), NULL);
-	summer_web_backend_fetch (web);
+	GError *error = NULL;
+	summer_web_backend_fetch (web, &error);
+#if GLIB_CHECK_VERSION(2, 20, 0)
+	g_assert_no_error (error);
+#endif
 	g_main_loop_run (loop);
 	g_object_unref (web);
 	g_remove (path);
@@ -150,13 +171,20 @@ serverdown ()
 {
 	loop = g_main_loop_new (NULL, TRUE);
 	gchar *url = g_strdup_printf ("http://127.0.0.1:%i", PORT+1);
-	SummerWebBackend *web = summer_web_backend_new (NULL, url);
+	SummerWebBackend *web = summer_web_backend_ram_new (url);
 	g_free (url);
 	g_signal_connect (web, "download-chunk", G_CALLBACK (chunk_cb), NULL);
 	g_signal_connect (web, "download-complete", G_CALLBACK (r404_response_cb), NULL);
-	summer_web_backend_fetch_head (g_object_ref (web));
+	GError *error = NULL;
+	summer_web_backend_fetch_head (g_object_ref (web), &error);
+#if GLIB_CHECK_VERSION(2, 20, 0)
+	g_assert_no_error (error);
+#endif
 	g_main_loop_run (loop);
-	summer_web_backend_fetch (g_object_ref (web));
+	summer_web_backend_fetch (g_object_ref (web), &error);
+#if GLIB_CHECK_VERSION(2, 20, 0)
+	g_assert_no_error (error);
+#endif
 	g_main_loop_run (loop);
 	g_object_unref (web);
 	g_main_loop_unref (loop);
@@ -182,10 +210,14 @@ redirect (WebFixture *fix, gconstpointer data)
 {
 	loop = g_main_loop_new (NULL, TRUE);
 	gchar *url = g_strdup_printf ("http://127.0.0.1:%i/redirect/302", PORT);
-	SummerWebBackend *web = summer_web_backend_new (g_get_tmp_dir (), url);
+	SummerWebBackend *web = summer_web_backend_disk_new (url, g_get_tmp_dir ());
 	g_free (url);
 	g_signal_connect (web, "download-complete", G_CALLBACK (redirect_response_cb), NULL);
-	summer_web_backend_fetch (web);
+	GError *error = NULL;
+	summer_web_backend_fetch (web, &error);
+#if GLIB_CHECK_VERSION(2, 20, 0)
+	g_assert_no_error (error);
+#endif
 	g_main_loop_run (loop);
 	g_main_loop_unref (loop);
 }
@@ -203,8 +235,11 @@ head_got_headers (SummerWebBackend *web, gpointer user_data)
 	g_signal_connect (web, "headers-parsed", G_CALLBACK (not_reached), NULL);
 	g_signal_handler_disconnect (web, head_complete_id);
 	g_signal_handler_disconnect (web, head_chunk_id);
-	summer_web_backend_fetch (web);
-
+	GError *error = NULL;
+	summer_web_backend_fetch (web, &error);
+#if GLIB_CHECK_VERSION(2, 20, 0)
+	g_assert_no_error (error);
+#endif
 }
 
 static void
@@ -212,12 +247,16 @@ head (WebFixture *fix, gconstpointer data)
 {
 	loop = g_main_loop_new (NULL, TRUE);
 	gchar *url = g_strdup_printf ("http://127.0.0.1:%i/feeds/epicfu", PORT);
-	SummerWebBackend *web = summer_web_backend_new (g_get_tmp_dir (), url);
+	SummerWebBackend *web = summer_web_backend_disk_new (url, g_get_tmp_dir ());
 	g_free (url);
 	head_complete_id = g_signal_connect_data (web, "download-complete", G_CALLBACK (not_reached), NULL, NULL, 0);
 	head_chunk_id = g_signal_connect (web, "download-chunk", G_CALLBACK (not_reached), NULL);
 	g_signal_connect (web, "headers-parsed", G_CALLBACK (head_got_headers), NULL);
-	summer_web_backend_fetch_head (web);
+	GError *error = NULL;
+	summer_web_backend_fetch_head (web, &error);
+#if GLIB_CHECK_VERSION(2, 20, 0)
+	g_assert_no_error (error);
+#endif
 	g_main_loop_run (loop);
 	g_main_loop_unref (loop);
 }
@@ -227,7 +266,7 @@ slash_complete (SummerWebBackend *web, gchar *path, gchar *data, gpointer *user_
 {
 	gchar *correct_name = "dir_file.vid";
 	gchar *reported_name;
-	g_object_get (web, "filename", &reported_name, NULL);
+	g_object_get (web, "remote-filename", &reported_name, NULL);
 	g_assert_cmpstr (correct_name, ==, reported_name);
 	g_remove (path);
 	g_free (reported_name);
@@ -240,10 +279,14 @@ slash (WebFixture *fix, gconstpointer data)
 	loop = g_main_loop_new (NULL, TRUE);
 	gchar *url = g_strdup_printf ("http://127.0.0.1:%i/video/file_with_slash",
 		PORT);
-	SummerWebBackend *web = summer_web_backend_new (g_get_tmp_dir (), url);
+	SummerWebBackend *web = summer_web_backend_disk_new (url, g_get_tmp_dir ());
 	g_free (url);
 	g_signal_connect (web, "download-complete", G_CALLBACK (slash_complete), NULL);
-	summer_web_backend_fetch (web);
+	GError *error = NULL;
+	summer_web_backend_fetch (web, &error);
+#if GLIB_CHECK_VERSION(2, 20, 0)
+	g_assert_no_error (error);
+#endif
 	g_main_loop_run (loop);
 	g_main_loop_unref (loop);
 }

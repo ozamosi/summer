@@ -23,7 +23,7 @@ namespace Summer {
 		public void set_paused (bool pause);
 		public void set_save_dir (string save_dir);
 		public void set_tmp_dir (string tmp_dir);
-		public virtual void start ();
+		public virtual void start () throws GLib.Error;
 		[NoAccessorMethod]
 		public Summer.DownloadableData downloadable { owned get; construct; }
 		public string filename { get; set; }
@@ -280,21 +280,38 @@ namespace Summer {
 	[CCode (cheader_filename = "libsummer/summer.h")]
 	public class WebBackend : GLib.Object {
 		public void abort ();
-		public void fetch ();
-		public void fetch_head ();
-		[CCode (has_construct_function = false)]
-		public WebBackend (string save_dir, string url);
-		[NoAccessorMethod]
-		public string filename { owned get; }
+		public static GLib.Quark error_quark ();
+		public void fetch () throws GLib.Error;
+		public void fetch_head () throws GLib.Error;
+		public unowned string get_remote_filename ();
+		[NoWrapper]
+		public virtual bool on_chunk (Soup.Buffer chunk);
+		[NoWrapper]
+		public virtual void on_downloaded (Soup.Session session, Soup.Message msg);
+		[NoWrapper]
+		public virtual void on_error ();
+		[NoWrapper]
+		public virtual void on_init (Soup.Message msg) throws GLib.Error;
 		[NoAccessorMethod]
 		public uint64 length { get; }
-		[NoAccessorMethod]
-		public string save_dir { owned get; construct; }
+		public string remote_filename { get; }
 		[NoAccessorMethod]
 		public string url { owned get; set construct; }
 		public virtual signal void download_chunk (uint64 received, uint64 length);
-		public virtual signal void download_complete (string save_path, string save_data);
+		public virtual signal void download_complete (string save_path, string save_data, void* user_data);
 		public virtual signal void headers_parsed ();
+	}
+	[CCode (cheader_filename = "libsummer/summer.h")]
+	public class WebBackendDisk : Summer.WebBackend {
+		[CCode (type = "SummerWebBackend*", has_construct_function = false)]
+		public WebBackendDisk (string url, string save_dir);
+		[NoAccessorMethod]
+		public string save_dir { owned get; construct; }
+	}
+	[CCode (cheader_filename = "libsummer/summer.h")]
+	public class WebBackendRam : Summer.WebBackend {
+		[CCode (type = "SummerWebBackend*", has_construct_function = false)]
+		public WebBackendRam (string url);
 	}
 	[Compact]
 	[CCode (cheader_filename = "libsummer/summer.h")]

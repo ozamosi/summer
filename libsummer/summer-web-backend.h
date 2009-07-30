@@ -22,6 +22,7 @@
 #define __SUMMER_WEB_BACKEND_H__
 
 #include <glib-object.h>
+#include <libsoup/soup.h>
 
 G_BEGIN_DECLS
 
@@ -46,15 +47,28 @@ struct _SummerWebBackendClass {
 	void (* download_complete) (SummerWebBackend *obj, gchar *save_path, gchar *save_data, gpointer user_data);
 	void (* download_chunk) (SummerWebBackend *obj, gint received, gint length, gpointer user_data);
 	void (* headers_parsed) (SummerWebBackend *obj, gpointer user_data);
+	void (* on_downloaded) (SummerWebBackend *obj, SoupSession *session, SoupMessage *msg);
+	gboolean (* on_chunk) (SummerWebBackend *obj, SoupBuffer *chunk);
+	void (* on_init) (SummerWebBackend *obj, SoupMessage *msg, GError **error);
+	void (* on_error) (SummerWebBackend *obj);
 };
 
 GType        summer_web_backend_get_type    (void) G_GNUC_CONST;
 
-SummerWebBackend*    summer_web_backend_new         (const gchar *save_dir, const gchar *url);
-
-void summer_web_backend_fetch (SummerWebBackend *self);
-void summer_web_backend_fetch_head (SummerWebBackend *self);
+void summer_web_backend_fetch (SummerWebBackend *self, GError **error);
+void summer_web_backend_fetch_head (SummerWebBackend *self, GError **error);
 void summer_web_backend_abort (SummerWebBackend *self);
+
+gchar* summer_web_backend_get_remote_filename (SummerWebBackend *self);
+
+#define SUMMER_WEB_BACKEND_ERROR summer_web_backend_error_quark ()
+GQuark summer_web_backend_error_quark (void);
+
+enum SummerWebBackendError {
+	SUMMER_WEB_BACKEND_ERROR_INPUT,  /* Data from user (url:s) */
+	SUMMER_WEB_BACKEND_ERROR_REMOTE, /* Data from remote server */
+	SUMMER_WEB_BACKEND_ERROR_LOCAL   /* Local file errors */
+};
 
 G_END_DECLS
 

@@ -43,7 +43,7 @@ struct _SummerDownload {
 
 struct _SummerDownloadClass {
 	GObjectClass parent_class;
-	void (* start) (SummerDownload *self);
+	void (* start) (SummerDownload *self, GError **error);
 	void (* abort) (SummerDownload *self);
 	void (* download_complete) (SummerDownload *obj);
 	void (* download_done) (SummerDownload *obj);
@@ -64,7 +64,7 @@ typedef enum {
 
 void summer_download_set_default (const gchar *tmp_dir, const gchar *save_dir);
 
-void summer_download_start (SummerDownload *obj);
+void summer_download_start (SummerDownload *obj, GError **error);
 void summer_download_abort (SummerDownload *obj);
 
 void summer_download_set_save_dir (SummerDownload *self, gchar *save_dir);

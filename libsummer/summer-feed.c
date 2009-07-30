@@ -28,6 +28,7 @@
 #include "summer-rss2-parser.h"
 #include "summer-data-types.h"
 #include "summer-web-backend.h"
+#include "summer-web-backend-ram.h"
 /**
  * SECTION:summer-feed
  * @short_description: Provides a way to download and parse web feeds
@@ -284,12 +285,12 @@ summer_feed_new ()
 }
 
 static void
-on_downloaded (SummerWebBackend *web, gchar *save_path, gchar *save_data, gpointer user_data)
+on_downloaded (SummerWebBackend *web, gchar *save_path, gchar *save_data, GError *error, gpointer user_data)
 {
 	g_return_if_fail (SUMMER_IS_FEED (user_data));
 	SummerFeed *self = SUMMER_FEED (user_data);
 	SummerFeedPrivate *priv = self->priv;
-	if (save_data) {
+	if (error == NULL) {
 		SummerFeedParser *parsers[] = {
 			SUMMER_FEED_PARSER (summer_atom_parser_new ()),
 			SUMMER_FEED_PARSER (summer_rss2_parser_new ())};
@@ -319,9 +320,9 @@ static gboolean
 download_timeout (gpointer data) {
 	g_return_val_if_fail (SUMMER_IS_FEED (data), FALSE);
 	SummerFeed *self = SUMMER_FEED (data);
-	SummerWebBackend *web = summer_web_backend_new (NULL, self->priv->url);
+	SummerWebBackend *web = summer_web_backend_ram_new (self->priv->url);
 	g_signal_connect (web, "download-complete", G_CALLBACK (on_downloaded), self);
-	summer_web_backend_fetch (web);
+	summer_web_backend_fetch (web, NULL);
 	return TRUE;
 }
 

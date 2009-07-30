@@ -45,7 +45,7 @@
  * #SummerDownload instances steal a reference when used - you should thus not
  * free any #SummerDownload-objects.
  *
- * Look at %summer_create_download if you want to create downloader instances.
+ * Look at #summer_create_download if you want to create downloader instances.
  */
 static void summer_download_class_init (SummerDownloadClass *klass);
 static void summer_download_init       (SummerDownload *obj);
@@ -447,14 +447,15 @@ summer_download_set_default (const gchar *tmp_dir, const gchar *save_dir)
 /**
  * summer_download_start:
  * @obj: a #SummerDownload instance
+ * @error: a #GError, or %NULL
  *
  * Start the file transfer
  */
 void
-summer_download_start (SummerDownload *obj)
+summer_download_start (SummerDownload *obj, GError **error)
 {
 	g_return_if_fail (SUMMER_IS_DOWNLOAD (obj));
-	SUMMER_DOWNLOAD_GET_CLASS (obj)->start (obj);
+	SUMMER_DOWNLOAD_GET_CLASS (obj)->start (obj, error);
 }
 
 /**

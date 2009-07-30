@@ -21,36 +21,29 @@
 #include "summer-web-backend.h"
 #include "summer-marshal.h"
 #include "summer-debug.h"
-#include <libsoup/soup.h>
 #include <string.h>
 
 /**
  * SECTION:summer-web-backend
- * @short_description: Provides a class for communicating with web servers
+ * @short_description: Provides a base class for communicating with web servers
  * @stability: Private
  * @include: libsummer/summer-web-backend.h
  *
  * This component is only meant to be used by the downloaders and the feed
- * fetchers. It contains #SummerWebBackend - a class for communicating with
+ * fetchers. It contains #SummerWebBackend - a base class for communicating with
  * web servers.
  *
- * <example>
- *  <title>Downloading a file with #SummerWebBackend</title>
- *  <programlisting>
- * gchar *directory = "/home/username/Desktop";
- * gchar *url = "http://video.boingboing.net/video/17138/bbtv_2008-07-16-195553.mp4"
- * SummerWebBackend *web = summer_web_backend_new (directory, url);
- * summer_web_backend_fetch (web);
- *  </programlisting>
- * </example>
+ * There are two subclasses, #SummerWebBackendDisk and #SummerWebBackendRam. The
+ * difference between them is that #SummerWebBackendDisk downloads a URL to a
+ * specified directory, while #SummerWebBackendRam downloads to RAM and is thus
+ * only suitable for small, temparary files.
  */
 
 /**
  * SummerWebBackend:
  *
- * This class implements an interface to communicate with web servers. All 
- * remote data is fetched asynchronously, but local I/O is currently written 
- * synchronously. In the future, all I/O should be asynchronous.
+ * An abstract class for web communication. All remote data is fetched
+ * asynchronously.
  */
 
 static void summer_web_backend_class_init (SummerWebBackendClass *klass);
@@ -58,15 +51,11 @@ static void summer_web_backend_init       (SummerWebBackend *obj);
 static void summer_web_backend_finalize   (GObject *obj);
 
 struct _SummerWebBackendPrivate {
-	gchar *save_dir;
 	gchar *url;
-	const gchar *filename;
-	gchar *pretty_filename;
+	gchar *remote_filename;
 	guint64 length;
 	guint64 received;
 	gboolean fetch;
-	GFileOutputStream *outfile;
-	GFile *filehandle;
 	SoupMessage *msg;
 	gboolean head_emitted;
 };
@@ -77,13 +66,12 @@ static SoupSession *session = NULL;
 
 enum {
 	PROP_0,
-	PROP_SAVE_DIR,
 	PROP_URL,
-	PROP_FILENAME,
+	PROP_REMOTE_FILENAME,
 	PROP_LENGTH
 };
 
-G_DEFINE_TYPE (SummerWebBackend, summer_web_backend, G_TYPE_OBJECT);
+G_DEFINE_ABSTRACT_TYPE (SummerWebBackend, summer_web_backend, G_TYPE_OBJECT);
 
 static void
 set_property (GObject *object, guint prop_id, const GValue *value,
@@ -92,11 +80,6 @@ set_property (GObject *object, guint prop_id, const GValue *value,
 	SummerWebBackendPrivate *priv = SUMMER_WEB_BACKEND (object)->priv;
 
 	switch (prop_id) {
-	case PROP_SAVE_DIR:
-		if (priv->save_dir)
-			g_free (priv->save_dir);
-		priv->save_dir = g_value_dup_string (value);
-		break;
 	case PROP_URL:
 		if (priv->url)
 			g_free (priv->url);
@@ -114,14 +97,11 @@ get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 	SummerWebBackendPrivate *priv = SUMMER_WEB_BACKEND (object)->priv;
 
 	switch (prop_id) {
-	case PROP_SAVE_DIR:
-		g_value_set_string (value, priv->save_dir);
-		break;
 	case PROP_URL:
 		g_value_set_string (value, priv->url);
 		break;
-	case PROP_FILENAME:
-		g_value_set_string (value, priv->pretty_filename);
+	case PROP_REMOTE_FILENAME:
+		g_value_set_string (value, priv->remote_filename);
 		break;
 	case PROP_LENGTH:
 		g_value_set_uint64 (value, priv->length);
@@ -139,22 +119,26 @@ constructor (GType gtype, guint n_properties, GObjectConstructParam *properties)
 	GObjectClass *parent_class;
 	parent_class = G_OBJECT_CLASS (summer_web_backend_parent_class);
 	obj = parent_class->constructor (gtype, n_properties, properties);
-	
-	/* Discover filename part of URL */
-	SummerWebBackendPrivate *priv = SUMMER_WEB_BACKEND (obj)->priv;
-	g_return_val_if_fail(
-		priv->url != NULL && g_utf8_strlen (priv->url, 1) != 0,
-		obj);
-	gchar** parts = g_strsplit (priv->url, "/", 0);
+
+	gchar *url = SUMMER_WEB_BACKEND (obj)->priv->url;
+	g_return_val_if_fail (url != NULL && g_utf8_strlen (url, 1) != 0, obj);
+	gchar** parts = g_strsplit (url, "/", 0);
 	gchar** filename;
 	for (filename = parts; *filename != NULL; filename++) {}
 	if (!g_strcmp0 (*(--filename), ""))
 		filename--;
-	priv->filename = g_strdup (*filename);
+	SUMMER_WEB_BACKEND (obj)->priv->remote_filename = g_strdup (*filename);
 	g_strfreev (parts);
 
 	return obj;
 }
+
+static gboolean
+dummy_on_chunk (SummerWebBackend *self, SoupBuffer *chunk) {return TRUE;}
+static void
+dummy_on_init (SummerWebBackend *self, SoupMessage *msg, GError **error) {}
+static void
+dummy_on_error (SummerWebBackend *self) {}
 
 static void
 summer_web_backend_class_init (SummerWebBackendClass *klass)
@@ -167,21 +151,13 @@ summer_web_backend_class_init (SummerWebBackendClass *klass)
 	gobject_class->get_property = get_property;
 	gobject_class->constructor = constructor;
 
+	klass->on_init = dummy_on_init;
+	klass->on_chunk = dummy_on_chunk;
+	klass->on_error = dummy_on_error;
+
 	g_type_class_add_private (gobject_class, sizeof(SummerWebBackendPrivate));
 
 	GParamSpec *pspec;
-	/**
-	 * SummerWebBackend:save-dir:
-	 *
-	 * Specifies a directory to save the file to. If it is %NULL, the file will
-	 * not be saved to disk, but only to RAM.
-	 */
-	pspec = g_param_spec_string ("save-dir",
-		"Save directory",
-		"The directory to save the file to. NULL to keep the file in memory",
-		NULL,
-		G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
-	g_object_class_install_property (gobject_class, PROP_SAVE_DIR, pspec);
 
 	pspec = g_param_spec_string ("url",
 		"URL",
@@ -190,18 +166,12 @@ summer_web_backend_class_init (SummerWebBackendClass *klass)
 		G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 	g_object_class_install_property (gobject_class, PROP_URL, pspec);
 
-	/**
-	 * SummerWebBackend:filename:
-	 *
-	 * The pretty name of the file. This may or may not be the same as the name
-	 * of the temp file.
-	 */
-	pspec = g_param_spec_string ("filename",
-		"Filename",
-		"The pretty name of the file",
+	pspec = g_param_spec_string ("remote-filename",
+		"Remote filename",
+		"The name of the file on the remote server",
 		NULL,
 		G_PARAM_READABLE);
-	g_object_class_install_property (gobject_class, PROP_FILENAME, pspec);
+	g_object_class_install_property (gobject_class, PROP_REMOTE_FILENAME, pspec);
 
 	pspec = g_param_spec_uint64 ("length",
 		"Length",
@@ -228,10 +198,10 @@ summer_web_backend_class_init (SummerWebBackendClass *klass)
 		G_SIGNAL_RUN_FIRST,
 		G_STRUCT_OFFSET (SummerWebBackendClass, download_complete),
 		NULL, NULL,
-		summer_marshal_VOID__STRING_STRING,
+		summer_marshal_VOID__STRING_STRING_POINTER,
 		G_TYPE_NONE,
-		2,
-		G_TYPE_STRING, G_TYPE_STRING);
+		3,
+		G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER);
 
 	/**
 	 * SummerWebBackend::download-chunk:
@@ -262,9 +232,9 @@ summer_web_backend_class_init (SummerWebBackendClass *klass)
 	 *
 	 * Emitted when the headers of a transfer has been downloaded and
 	 * transfered. Only emitted once per #SummerWebBackend instance, so if you
-	 * call %summer_web_backend_fetch_head(), it will not be emitted during
-	 * subsequent calls to %summer_web_backend_fetch_head() or 
-	 * %summer_web_backend_fetch()
+	 * call #summer_web_backend_fetch_head(), it will not be emitted during
+	 * subsequent calls to #summer_web_backend_fetch_head() or
+	 * #summer_web_backend_fetch()
 	 */
 	g_signal_new (
 		"headers-parsed",
@@ -300,33 +270,11 @@ summer_web_backend_finalize (GObject *self)
 {
 	g_object_unref (session);
 	SummerWebBackendPrivate *priv = SUMMER_WEB_BACKEND (self)->priv;
-	if (priv->save_dir != NULL)
-		g_free (priv->save_dir);
 	if (priv->url != NULL)
 		g_free (priv->url);
-	if (priv->filename != NULL)
-		g_free ((gchar *)priv->filename);
-	if (priv->pretty_filename != NULL)
-		g_free (priv->pretty_filename);
-	if (G_IS_OBJECT (priv->outfile))
-		g_object_unref (priv->outfile);
+	if (priv->remote_filename != NULL)
+		g_free (priv->remote_filename);
 	G_OBJECT_CLASS (summer_web_backend_parent_class)->finalize (self);
-}
-
-/**
- * summer_web_backend_new:
- * @save_dir: the directory to save downloaded files to.
- * @url: the url to download from.
- *
- * Creates a new #SummerWebBackend.
- *
- * Returns: a newly created #SummerWebBackend object
- */
-SummerWebBackend*
-summer_web_backend_new (const gchar *save_dir, const gchar *url)
-{
-	g_return_val_if_fail (url != NULL, NULL);
-	return SUMMER_WEB_BACKEND(g_object_new(SUMMER_TYPE_WEB_BACKEND, "save-dir", save_dir, "url", url, NULL));
 }
 
 static void
@@ -336,37 +284,20 @@ on_downloaded (SoupSession *session, SoupMessage *msg, gpointer user_data)
 	g_return_if_fail (SOUP_IS_SESSION (session));
 	g_return_if_fail (SOUP_IS_MESSAGE (msg));
 	SummerWebBackend *self = SUMMER_WEB_BACKEND (user_data);
-	SummerWebBackendPrivate *priv = self->priv;
-	GError *error = NULL;
-	
-	if (G_IS_OUTPUT_STREAM (priv->outfile) && !g_output_stream_is_closed (G_OUTPUT_STREAM (priv->outfile))) {
-		g_output_stream_close (G_OUTPUT_STREAM (priv->outfile), NULL, &error);
-		if (error) {
-			g_warning ("%s", error->message);
-			g_clear_error (&error);
-		}
-	}
-	if (G_IS_OUTPUT_STREAM (priv->outfile))
-		g_object_unref (priv->outfile);
-	
-	gchar *filepath = NULL;
-	if (priv->save_dir)
-		filepath = g_build_filename (priv->save_dir, priv->filename, NULL);
+	g_return_if_fail (SUMMER_WEB_BACKEND_GET_CLASS (self)->on_downloaded != NULL);
 
-	if (SOUP_STATUS_IS_SUCCESSFUL (msg->status_code)) {
-		g_signal_emit_by_name (self, "download-complete", filepath, msg->response_body->data);
-	} else {
-		if (filepath) {
-			g_file_delete (priv->filehandle, NULL, &error);
-			if (error) {
-				g_warning ("%s", error->message);
-				g_clear_error (&error);
-			}
-		}
-		g_signal_emit_by_name (self, "download-complete", NULL, NULL);
+
+	if (!SOUP_STATUS_IS_SUCCESSFUL (msg->status_code)) {
+		SUMMER_WEB_BACKEND_GET_CLASS (self)->on_error (self);
+		GError *error = g_error_new (
+			SUMMER_WEB_BACKEND_ERROR,
+			SUMMER_WEB_BACKEND_ERROR_REMOTE,
+			"Download failed: %s", msg->reason_phrase);
+		g_signal_emit_by_name (self, "download-complete", NULL, NULL, error);
+		return;
 	}
-	if (filepath)
-		g_free (filepath);
+
+	SUMMER_WEB_BACKEND_GET_CLASS (self)->on_downloaded (self, session, msg);
 }
 
 static void
@@ -375,22 +306,19 @@ on_got_chunk (SoupMessage *msg, SoupBuffer *chunk, gpointer user_data)
 	g_return_if_fail (SUMMER_IS_WEB_BACKEND (user_data));
 	g_return_if_fail (SOUP_IS_MESSAGE (msg));
 	SummerWebBackend *self = SUMMER_WEB_BACKEND (user_data);
-	SummerWebBackendPrivate *priv = self->priv;
+	g_return_if_fail (SUMMER_WEB_BACKEND_GET_CLASS (self)->on_chunk != NULL);
+	g_return_if_fail (SUMMER_WEB_BACKEND_GET_CLASS (self)->on_error != NULL);
 
-	if (!priv->fetch)
+	if (!self->priv->fetch)
 		return;
-	
-	if (priv->outfile) {
-		GError *error = NULL;
-		gsize written;
-		g_output_stream_write_all (G_OUTPUT_STREAM (priv->outfile), chunk->data, chunk->length, &written, NULL, &error);
-		if (error) {
-			g_warning ("%s", error->message);
-			g_clear_error (&error);
-		}
+
+	if (SUMMER_WEB_BACKEND_GET_CLASS (self)->on_chunk (self, chunk)) {
+		self->priv->received += chunk->length;
+		g_signal_emit_by_name (self, "download-chunk", self->priv->received, self->priv->length);
+	} else {
+		SUMMER_WEB_BACKEND_GET_CLASS (self)->on_error (self);
+		summer_web_backend_abort (self);
 	}
-	priv->received += chunk->length;
-	g_signal_emit_by_name (self, "download-chunk", priv->received, priv->length);
 }
 
 static gchar *
@@ -436,7 +364,7 @@ on_got_headers (SoupMessage *msg, gpointer user_data)
 	SummerWebBackend *self = SUMMER_WEB_BACKEND (user_data);
 	SummerWebBackendPrivate *priv = self->priv;
 	if (msg->status_code >= 400 || msg->status_code < 100) {
-		return;
+		return; //on_downloaded will send an error, so we shouldn't
 	}
 	else if (SOUP_STATUS_IS_REDIRECTION (msg->status_code))
 		return;
@@ -447,12 +375,14 @@ on_got_headers (SoupMessage *msg, gpointer user_data)
 	length = soup_message_headers_get_content_length (msg->response_headers);
 	if (length)
 		priv->length = length;
-	
-	if (priv->pretty_filename)
-		g_free (priv->pretty_filename);
-	priv->pretty_filename = get_filename (msg);
-	if (priv->pretty_filename == NULL)
-		priv->pretty_filename = g_strdup (priv->filename);
+
+	gchar *new_filename = get_filename (msg);
+	if (new_filename != NULL) {
+		if (priv->remote_filename) {
+			g_free (priv->remote_filename);
+		}
+		priv->remote_filename = new_filename;
+	}
 
 	if (!priv->head_emitted) {
 		priv->head_emitted = TRUE;
@@ -463,45 +393,33 @@ on_got_headers (SoupMessage *msg, gpointer user_data)
 /**
  * summer_web_backend_fetch:
  * @self: a #SummerWebBackend instance
+ * @error: a #GError, or %NULL
  *
  * Starts a file transfer from #SummerWebBackend:url. Since the transfer is asynchronous, the
  * function will not return anything - instead, connect to the 
  * #SummerWebBackend::download-complete signal.
  */
 void
-summer_web_backend_fetch (SummerWebBackend *self)
+summer_web_backend_fetch (SummerWebBackend *self, GError **error)
 {
 	g_return_if_fail (SUMMER_IS_WEB_BACKEND (self));
 	SummerWebBackendPrivate *priv = self->priv;
+	g_return_if_fail (SUMMER_WEB_BACKEND_GET_CLASS (self)->on_init != NULL);
 
 	priv->msg = soup_message_new ("GET", priv->url);
 	if (priv->msg == NULL) {
-		g_warning ("Could not parse URL: %s", priv->url);
+		g_set_error (error,
+			SUMMER_WEB_BACKEND_ERROR,
+			SUMMER_WEB_BACKEND_ERROR_INPUT,
+			"Could not parse URL: %s", priv->url);
 		return;
 	}
 
-	if (priv->save_dir != NULL) {
-		gchar *filepath = g_build_filename (priv->save_dir, priv->filename, NULL);
-		priv->filehandle = g_file_new_for_path (filepath);
-		g_free (filepath);
-		GError *error = NULL;
-		GFile *directory = g_file_get_parent (priv->filehandle);
-		if (!g_file_query_exists (directory, NULL)) {
-			if (!g_file_make_directory_with_parents (directory, NULL, &error)) {
-				g_warning ("Error creating directory for download: %s", error->message);
-				g_clear_error (&error);
-			}
-		}
-		g_object_unref (directory);
-
-		priv->outfile = g_file_replace (priv->filehandle, NULL, FALSE, G_FILE_CREATE_NONE, NULL, &error);
-		if (!priv->outfile) {
-			g_warning ("Error opening output stream: %s", error->message);
-			g_clear_error (&error);
-		}
-		priv->fetch = FALSE;
-
-		soup_message_body_set_accumulate (priv->msg->response_body, FALSE);
+	GError *e = NULL;
+	SUMMER_WEB_BACKEND_GET_CLASS (self)->on_init (self, priv->msg, &e);
+	if (e != NULL) {
+		g_propagate_error (&e, *error);
+		return;
 	}
 
 	g_signal_connect (priv->msg, "got-chunk", G_CALLBACK (on_got_chunk), self);
@@ -513,26 +431,43 @@ static void
 on_head_done (SoupSession *session, SoupMessage *msg, gpointer user_data)
 {
 	g_return_if_fail (SUMMER_IS_WEB_BACKEND (user_data));
+	g_return_if_fail (SUMMER_WEB_BACKEND_GET_CLASS (user_data)->on_error != NULL);
+
 	SummerWebBackend *self = SUMMER_WEB_BACKEND (user_data);
-	if (!SOUP_STATUS_IS_SUCCESSFUL (msg->status_code))
-		g_signal_emit_by_name (self, "download-complete", NULL, NULL);
+	if (!SOUP_STATUS_IS_SUCCESSFUL (msg->status_code)) {
+		SUMMER_WEB_BACKEND_GET_CLASS (self)->on_error (self);
+		GError *error = g_error_new (
+			SUMMER_WEB_BACKEND_ERROR,
+			SUMMER_WEB_BACKEND_ERROR_REMOTE,
+			"Download failed: %s", msg->reason_phrase);
+		g_signal_emit_by_name (self, "download-complete", NULL, NULL, error);
+		return;
+	}
 }
 
 /**
  * summer_web_backend_fetch_head:
  * @self: a #SummerWebBackend instance
+ * @error: a #GError instance, or %NULL
  *
  * Performs a HEAD request against #SummerWebBackend:url.
  * This function will not return anything - connect to the
  * #SummerWebBackend::headers-parsed signal to get the result.
  */
 void
-summer_web_backend_fetch_head (SummerWebBackend *self)
+summer_web_backend_fetch_head (SummerWebBackend *self, GError **error)
 {
 	g_return_if_fail (SUMMER_IS_WEB_BACKEND (self));
 	g_return_if_fail (!SOUP_IS_MESSAGE (self->priv->msg));
 
 	SoupMessage *msg = soup_message_new ("HEAD", self->priv->url);
+	if (msg == NULL) {
+		g_set_error (error,
+			SUMMER_WEB_BACKEND_ERROR,
+			SUMMER_WEB_BACKEND_ERROR_INPUT,
+			"Could not parse URL: %s", self->priv->url);
+		return;
+	}
 
 	g_signal_connect (msg, "got-headers", G_CALLBACK (on_got_headers), self);
 	soup_session_queue_message (session, msg, on_head_done, self);
@@ -553,4 +488,27 @@ summer_web_backend_abort (SummerWebBackend *self)
 			self->priv->msg,
 			SOUP_STATUS_CANCELLED);
 	}
+}
+
+/**
+ * summer_web_backend_get_remote_filename:
+ * @self: a #SummerWebBackend object
+ *
+ * Returns the download's filename on the remote server. This is taken either
+ * from the Content-Disposition header, or, if there is none, the URL itself.
+ *
+ * Returns: a filename
+ */
+gchar*
+summer_web_backend_get_remote_filename (SummerWebBackend *self)
+{
+	gchar* ret;
+	g_object_get (self, "remote-filename", &ret, NULL);
+	return ret;
+}
+
+GQuark
+summer_web_backend_error_quark (void)
+{
+	return g_quark_from_static_string ("summer-web-backend-error-quark");
 }

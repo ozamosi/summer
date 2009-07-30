@@ -317,7 +317,14 @@ summer_download_torrent_abort (SummerDownload *self)
 }
 
 static void
-start (SummerDownload *self)
+resend_errors (SummerDownload *web, GError *error, gpointer user_data) {
+	g_return_if_fail (SUMMER_IS_DOWNLOAD_TORRENT (user_data));
+	g_signal_emit_by_name (SUMMER_DOWNLOAD_TORRENT (user_data), "download-error", error);
+	g_object_unref (SUMMER_DOWNLOAD_TORRENT (user_data));
+}
+
+static void
+start (SummerDownload *self, GError **error)
 {
 	g_return_if_fail (SUMMER_IS_DOWNLOAD_TORRENT (self));
 	gchar *tmp_dir;
@@ -342,12 +349,22 @@ start (SummerDownload *self)
 	g_object_unref (item);
 	g_object_unref (downloadable);
 
-	g_signal_connect (web, 
-		"download-complete", 
-		G_CALLBACK (on_metafile_downloaded), 
+	g_signal_connect (web,
+		"download-complete",
+		G_CALLBACK (on_metafile_downloaded),
 		self);
 
-	summer_download_start (web);
+	g_signal_connect (web,
+		"download-error",
+		G_CALLBACK (resend_errors),
+		self);
+
+	GError *e = NULL;
+	summer_download_start (web, &e);
+	if (e != NULL) {
+		g_propagate_error (&e, *error);
+		g_object_unref (self);
+	}
 }
 
 static void

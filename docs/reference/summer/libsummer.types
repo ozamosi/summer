@@ -9,6 +9,8 @@ summer_feed_parser_get_type
 summer_atom_parser_get_type
 summer_rss2_parser_get_type
 summer_web_backend_get_type
+summer_web_backend_disk_get_type
+summer_web_backend_ram_get_type
 summer_feed_cache_get_type
 summer_feed_data_get_type
 summer_item_data_get_type
