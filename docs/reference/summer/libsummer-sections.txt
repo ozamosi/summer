@@ -286,16 +286,30 @@ SUMMER_WEB_BACKEND_RAM_GET_CLASS
 <TITLE>SummerFeedCache</TITLE>
 SummerFeedCache
 summer_feed_cache_get
-summer_feed_cache_filter_old_items
+summer_feed_cache_set
+summer_feed_cache_filter_items
 summer_feed_cache_add_new_item
 <SUBSECTION Standard>
-SummerFeedCacheClass
-SummerFeedCachePrivate
+SummerFeedCacheInterface
 SUMMER_FEED_CACHE
 SUMMER_IS_FEED_CACHE
 SUMMER_TYPE_FEED_CACHE
-SUMMER_FEED_CACHE_CLASS
-SUMMER_FEED_CACHE_GET_CLASS
-SUMMER_IS_FEED_CACHE_CLASS
+SUMMER_FEED_CACHE_GET_INTERFACE
 summer_feed_cache_get_type
+</SECTION>
+
+<SECTION>
+<FILE>summer-feed-cache-default</FILE>
+<TITLE>SummerFeedCacheDefault</TITLE>
+SummerFeedCacheDefault
+<SUBSECTION Standard>
+SummerFeedCacheDefaultClass
+SummerFeedCacheDefaultPrivate
+SUMMER_FEED_CACHE_DEFAULT
+SUMMER_IS_FEED_CACHE_DEFAULT
+SUMMER_TYPE_FEED_CACHE_DEFAULT
+SUMMER_FEED_CACHE_DEFAULT_CLASS
+SUMMER_FEED_CACHE_DEFAULT_GET_CLASS
+SUMMER_IS_FEED_CACHE_DEFAULT_CLASS
+summer_feed_cache_default_get_type
 </SECTION>

@@ -70,6 +70,7 @@ INST_H_FILES = \
 	$(srcdir)/libsummer/summer-download-web.h \
 	$(srcdir)/libsummer/summer-feed.h \
 	$(srcdir)/libsummer/summer-feed-cache.h \
+	$(srcdir)/libsummer/summer-feed-cache-default.h \
 	$(srcdir)/libsummer/summer-web-backend.h \
 	$(srcdir)/libsummer/summer-web-backend-disk.h \
 	$(srcdir)/libsummer/summer-web-backend-ram.h
@@ -80,6 +81,7 @@ header_DATA = $(INST_H_FILES)
 libsummer_la_SOURCES = \
 	$(BUILT_SOURCES) \
 	$(srcdir)/libsummer/summer.c \
+	$(srcdir)/libsummer/summer-atom-parser.c \
 	$(srcdir)/libsummer/summer-data-types.c \
 	$(srcdir)/libsummer/summer-debug.c \
 	$(srcdir)/libsummer/summer-download.c \
@@ -88,8 +90,8 @@ libsummer_la_SOURCES = \
 	$(srcdir)/libsummer/summer-download-web.c \
 	$(srcdir)/libsummer/summer-feed.c \
 	$(srcdir)/libsummer/summer-feed-cache.c \
+	$(srcdir)/libsummer/summer-feed-cache-default.c \
 	$(srcdir)/libsummer/summer-feed-parser.c \
-	$(srcdir)/libsummer/summer-atom-parser.c \
 	$(srcdir)/libsummer/summer-rss2-parser.c \
 	$(srcdir)/libsummer/summer-web-backend.c \
 	$(srcdir)/libsummer/summer-web-backend-disk.c \

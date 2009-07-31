@@ -608,7 +608,7 @@ GList *
 summer_feed_get_items (SummerFeed *self)
 {
 	SummerFeedCache *cache = summer_feed_cache_get ();
-	summer_feed_cache_filter_old_items (cache, &self->priv->feed_data->items);
+	summer_feed_cache_filter_items (cache, &self->priv->feed_data->items);
 	g_object_unref (cache);
 
 	return g_list_copy (self->priv->feed_data->items);

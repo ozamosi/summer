@@ -1,4 +1,5 @@
 #include <libsummer/summer.h>
+#include <libsummer/summer-feed-cache-default.h>
 
 summer_download_web_get_type
 summer_download_torrent_get_type
@@ -12,6 +13,7 @@ summer_web_backend_get_type
 summer_web_backend_disk_get_type
 summer_web_backend_ram_get_type
 summer_feed_cache_get_type
+summer_feed_cache_default_get_type
 summer_feed_data_get_type
 summer_item_data_get_type
 summer_downloadable_data_get_type
