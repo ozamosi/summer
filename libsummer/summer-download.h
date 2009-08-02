@@ -85,6 +85,8 @@ SummerDownloadState summer_download_get_state (SummerDownload *self);
 gboolean summer_download_is_paused (SummerDownload *self);
 void summer_download_set_paused (SummerDownload *self, gboolean pause);
 
+gfloat summer_download_get_transfer_speed (SummerDownload *self);
+
 #define SUMMER_DOWNLOAD_ERROR summer_download_error_quark ()
 GQuark summer_download_error_quark (void);
 

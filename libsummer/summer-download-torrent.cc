@@ -229,6 +229,9 @@ check_progress (gpointer data) {
 		}
 		return FALSE;
 	}
+
+	g_object_set (self, "transfer-speed", status.download_rate, NULL);
+
 	return TRUE;
 }
 

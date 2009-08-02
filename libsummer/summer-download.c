@@ -58,6 +58,7 @@ struct _SummerDownloadPrivate {
 	SummerItemData *item;
 	SummerDownloadableData *downloadable;
 	SummerDownloadState state;
+	gfloat transfer_speed;
 };
 
 #define SUMMER_DOWNLOAD_GET_PRIVATE(o)   (G_TYPE_INSTANCE_GET_PRIVATE((o), \
@@ -76,7 +77,8 @@ enum {
 	PROP_ITEM,
 	PROP_DOWNLOADABLE,
 	PROP_STATE,
-	PROP_PAUSED
+	PROP_PAUSED,
+	PROP_SPEED
 };
 
 G_DEFINE_ABSTRACT_TYPE (SummerDownload, summer_download, G_TYPE_OBJECT);
@@ -113,7 +115,8 @@ set_property (GObject *object, guint prop_id, const GValue *value,
 			g_object_unref (priv->downloadable);
 		priv->downloadable = g_value_dup_object (value);
 		break;
-	case PROP_PAUSED:
+	case PROP_SPEED:
+		priv->transfer_speed = g_value_get_float (value);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -151,6 +154,9 @@ get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 		break;
 	case PROP_PAUSED:
 		g_value_set_boolean (value, FALSE);
+		break;
+	case PROP_SPEED:
+		g_value_set_float (value, priv->transfer_speed);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -247,6 +253,17 @@ summer_download_class_init (SummerDownloadClass *klass)
 		FALSE,
 		G_PARAM_READWRITE);
 	g_object_class_install_property (gobject_class, PROP_PAUSED, pspec);
+
+	pspec = g_param_spec_float ("transfer-speed",
+		"Transfer speed",
+		"The transfer speed, in bytes per second",
+		0.0,
+		G_MAXFLOAT,
+		0.0,
+		G_PARAM_READWRITE);
+	g_object_class_install_property (gobject_class, PROP_SPEED, pspec);
+
+
 
 	/**
 	 * SummerDownload::download-complete:
@@ -691,6 +708,22 @@ summer_download_set_paused (SummerDownload *self, gboolean pause)
 	g_object_set (self, "paused", pause, NULL);
 }
 
+/**
+ * summer_download_get_transfer_speed:
+ * @self: a #SummerDownload object
+ *
+ * Returns the current download speed.
+ * Returns: The current download speed
+ */
+gfloat
+summer_download_get_transfer_speed (SummerDownload *self)
+{
+	g_return_val_if_fail (SUMMER_IS_DOWNLOAD (self), -1.0);
+
+	gfloat ret;
+	g_object_get (self, "transfer-speed", &ret, NULL);
+	return ret;
+}
 
 GQuark
 summer_download_error_quark (void)

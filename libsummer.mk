@@ -58,7 +58,8 @@ libsummer_la_LIBADD = \
 NOINST_H_FILES = \
 	$(srcdir)/libsummer/summer-feed-parser.h \
 	$(srcdir)/libsummer/summer-atom-parser.h \
-	$(srcdir)/libsummer/summer-rss2-parser.h
+	$(srcdir)/libsummer/summer-rss2-parser.h \
+	$(srcdir)/libsummer/summer-transfer-speed.h
 
 INST_H_FILES = \
 	$(srcdir)/libsummer/summer.h \
@@ -93,6 +94,7 @@ libsummer_la_SOURCES = \
 	$(srcdir)/libsummer/summer-feed-cache-default.c \
 	$(srcdir)/libsummer/summer-feed-parser.c \
 	$(srcdir)/libsummer/summer-rss2-parser.c \
+	$(srcdir)/libsummer/summer-transfer-speed.c \
 	$(srcdir)/libsummer/summer-web-backend.c \
 	$(srcdir)/libsummer/summer-web-backend-disk.c \
 	$(srcdir)/libsummer/summer-web-backend-ram.c \

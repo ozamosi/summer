@@ -17,6 +17,7 @@ namespace Summer {
 		public unowned string get_save_path ();
 		public Summer.DownloadState get_state ();
 		public unowned string get_tmp_dir ();
+		public float get_transfer_speed ();
 		public bool is_paused ();
 		public static void set_default (string? tmp_dir, string? save_dir);
 		public void set_filename (string filename);
@@ -34,6 +35,8 @@ namespace Summer {
 		public string save_dir { get; set; }
 		public Summer.DownloadState state { get; }
 		public string tmp_dir { get; set; }
+		[NoAccessorMethod]
+		public float transfer_speed { get; set; }
 		[NoAccessorMethod]
 		public string url { owned get; }
 		public virtual signal void download_complete ();
@@ -109,10 +112,7 @@ namespace Summer {
 		public virtual signal void new_entries ();
 	}
 	[CCode (cheader_filename = "libsummer/summer.h")]
-	public class FeedCache : GLib.Object {
-		public void add_new_item (Summer.ItemData item);
-		public void filter_old_items (GLib.List items);
-		public static unowned Summer.FeedCache get ();
+	public class FeedCacheDefault : GLib.Object, Summer.FeedCache {
 		[NoAccessorMethod]
 		public string cache_file { owned get; set; }
 	}
@@ -324,6 +324,13 @@ namespace Summer {
 	[CCode (cheader_filename = "libsummer/summer.h")]
 	public class XmlBackendClass {
 		public weak GLib.ObjectClass parent_class;
+	}
+	[CCode (cheader_filename = "libsummer/summer.h")]
+	public interface FeedCache {
+		public abstract void add_new_item (Summer.ItemData item);
+		public abstract void filter_items (GLib.List items);
+		public static unowned Summer.FeedCache get ();
+		public void set ();
 	}
 	[CCode (cprefix = "SUMMER_DOWNLOAD_STATE_", has_type_id = "0", cheader_filename = "libsummer/summer.h")]
 	public enum DownloadState {

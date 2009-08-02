@@ -218,6 +218,12 @@
 					<parameter name="self" type="SummerDownload*"/>
 				</parameters>
 			</method>
+			<method name="get_transfer_speed" symbol="summer_download_get_transfer_speed">
+				<return-type type="gfloat"/>
+				<parameters>
+					<parameter name="self" type="SummerDownload*"/>
+				</parameters>
+			</method>
 			<method name="is_paused" symbol="summer_download_is_paused">
 				<return-type type="gboolean"/>
 				<parameters>
@@ -273,6 +279,7 @@
 			<property name="save-dir" type="char*" readable="1" writable="1" construct="0" construct-only="0"/>
 			<property name="state" type="SummerDownloadState" readable="1" writable="0" construct="0" construct-only="0"/>
 			<property name="tmp-dir" type="char*" readable="1" writable="1" construct="0" construct-only="0"/>
+			<property name="transfer-speed" type="gfloat" readable="1" writable="1" construct="0" construct-only="0"/>
 			<property name="url" type="char*" readable="1" writable="0" construct="0" construct-only="0"/>
 			<signal name="download-complete" when="FIRST">
 				<return-type type="void"/>
@@ -509,24 +516,10 @@
 				</parameters>
 			</signal>
 		</object>
-		<object name="SummerFeedCache" parent="GObject" type-name="SummerFeedCache" get-type="summer_feed_cache_get_type">
-			<method name="add_new_item" symbol="summer_feed_cache_add_new_item">
-				<return-type type="void"/>
-				<parameters>
-					<parameter name="self" type="SummerFeedCache*"/>
-					<parameter name="item" type="SummerItemData*"/>
-				</parameters>
-			</method>
-			<method name="filter_old_items" symbol="summer_feed_cache_filter_old_items">
-				<return-type type="void"/>
-				<parameters>
-					<parameter name="self" type="SummerFeedCache*"/>
-					<parameter name="items" type="GList**"/>
-				</parameters>
-			</method>
-			<method name="get" symbol="summer_feed_cache_get">
-				<return-type type="SummerFeedCache*"/>
-			</method>
+		<object name="SummerFeedCacheDefault" parent="GObject" type-name="SummerFeedCacheDefault" get-type="summer_feed_cache_default_get_type">
+			<implements>
+				<interface name="SummerFeedCache"/>
+			</implements>
 			<property name="cache-file" type="char*" readable="1" writable="1" construct="0" construct-only="0"/>
 		</object>
 		<object name="SummerFeedData" parent="GObject" type-name="SummerFeedData" get-type="summer_feed_data_get_type">
@@ -788,5 +781,44 @@
 				</parameters>
 			</constructor>
 		</object>
+		<interface name="SummerFeedCache" type-name="SummerFeedCache" get-type="summer_feed_cache_get_type">
+			<method name="add_new_item" symbol="summer_feed_cache_add_new_item">
+				<return-type type="void"/>
+				<parameters>
+					<parameter name="self" type="SummerFeedCache*"/>
+					<parameter name="item" type="SummerItemData*"/>
+				</parameters>
+			</method>
+			<method name="filter_items" symbol="summer_feed_cache_filter_items">
+				<return-type type="void"/>
+				<parameters>
+					<parameter name="self" type="SummerFeedCache*"/>
+					<parameter name="items" type="GList**"/>
+				</parameters>
+			</method>
+			<method name="get" symbol="summer_feed_cache_get">
+				<return-type type="SummerFeedCache*"/>
+			</method>
+			<method name="set" symbol="summer_feed_cache_set">
+				<return-type type="void"/>
+				<parameters>
+					<parameter name="obj" type="SummerFeedCache*"/>
+				</parameters>
+			</method>
+			<vfunc name="add_new_item">
+				<return-type type="void"/>
+				<parameters>
+					<parameter name="self" type="SummerFeedCache*"/>
+					<parameter name="item" type="SummerItemData*"/>
+				</parameters>
+			</vfunc>
+			<vfunc name="filter_items">
+				<return-type type="void"/>
+				<parameters>
+					<parameter name="self" type="SummerFeedCache*"/>
+					<parameter name="items" type="GList**"/>
+				</parameters>
+			</vfunc>
+		</interface>
 	</namespace>
 </api>

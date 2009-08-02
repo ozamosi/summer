@@ -1,4 +1,4 @@
-/* summer-download-torrent.hh */
+/* summer-download-torrent.h */
 
 /* This file is part of libsummer.
  * Copyright © 2008-2009 Robin Sonefors <ozamosi@flukkost.nu>

@@ -80,6 +80,7 @@ SummerDownloadState
 summer_download_get_state
 summer_download_is_paused
 summer_download_set_paused
+summer_download_get_transfer_speed
 <SUBSECTION Standard>
 SummerDownloadClass
 SummerDownloadPrivate
@@ -312,4 +313,14 @@ SUMMER_FEED_CACHE_DEFAULT_CLASS
 SUMMER_FEED_CACHE_DEFAULT_GET_CLASS
 SUMMER_IS_FEED_CACHE_DEFAULT_CLASS
 summer_feed_cache_default_get_type
+</SECTION>
+
+<SECTION>
+<FILE>summer-transfer-speed</FILE>
+<TITLE>SummerTransferSpeed</TITLE>
+SummerTransferSpeed
+summer_transfer_speed_new
+summer_transfer_speed_add_datapoint
+summer_transfer_speed_get
+summer_transfer_speed_destroy
 </SECTION>

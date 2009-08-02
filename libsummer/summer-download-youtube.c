@@ -26,6 +26,7 @@
 #include "summer-web-backend-disk.h"
 #include "summer-web-backend-ram.h"
 #include "summer-feed-cache.h"
+#include "summer-transfer-speed.h"
 #include <glib.h>
 #include <string.h>
 #include <gio/gio.h>
@@ -62,6 +63,7 @@ struct _SummerDownloadYoutubePrivate {
 	gint quality;
 	SummerWebBackend *web;
 	time_t last_update;
+	SummerTransferSpeed *speed;
 };
 #define SUMMER_DOWNLOAD_YOUTUBE_GET_PRIVATE(o)      (G_TYPE_INSTANCE_GET_PRIVATE((o), \
                                                      SUMMER_TYPE_DOWNLOAD_YOUTUBE, \
@@ -86,6 +88,10 @@ on_download_chunk (SummerWebBackend *web_backend, guint64 received, guint64 leng
 	time_t curr_time = time (NULL);
 	if (priv->last_update == 0 || priv->last_update < curr_time) {
 		priv->last_update = curr_time;
+		summer_transfer_speed_add_datapoint (priv->speed, received);
+		g_object_set (self,
+			"transfer-speed", summer_transfer_speed_get (priv->speed),
+			NULL);
 		g_signal_emit_by_name (self, "download-update", received, length);
 	}
 }
@@ -336,11 +342,13 @@ static void
 summer_download_youtube_init (SummerDownloadYoutube *self)
 {
 	self->priv = SUMMER_DOWNLOAD_YOUTUBE_GET_PRIVATE(self);
+	self->priv->speed = summer_transfer_speed_new ();
 }
 
 static void
 summer_download_youtube_finalize (GObject *obj)
 {
+	summer_transfer_speed_destroy (&SUMMER_DOWNLOAD_YOUTUBE (obj)->priv->speed);
 	G_OBJECT_CLASS(summer_download_youtube_parent_class)->finalize (obj);
 }
 

@@ -321,6 +321,12 @@
   )
 )
 
+(define-method get_transfer_speed
+  (of-object "SummerDownload")
+  (c-name "summer_download_get_transfer_speed")
+  (return-type "gfloat")
+)
+
 ;; From summer-download-web.h
 
 (define-function summer_download_web_get_type

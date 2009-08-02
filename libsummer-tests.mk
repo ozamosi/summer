@@ -22,7 +22,8 @@ TEST_PROGS += \
 	test_atom_feed \
 	test_rss2_feed \
 	test_feed \
-	test_feed_cache
+	test_feed_cache \
+	test_transfer_speed
 
 test_web_backend_SOURCES = libsummer/tests/test-web-backend.c $(SERVER_FILES)
 test_web_backend_LDADD = $(TESTSLDADD)
@@ -73,6 +74,11 @@ test_feed_cache_SOURCES = libsummer/tests/test-feed-cache.c
 test_feed_cache_LDADD = $(TESTSLDADD)
 test_feed_cache_CFLAGS = $(TESTS_INCLUDES)
 test_feed_cache_DEPENDENCIES = $(DEPENDENCIES)
+
+test_transfer_speed_SOURCES = libsummer/tests/test-transfer-speed.c
+test_transfer_speed_LDADD = $(TESTSLDADD)
+test_transfer_speed_CFLAGS = $(TESTS_INCLUDES)
+test_transfer_speed_DEPENDENCIES = $(DEPENDENCIES)
 
 EXTRA_DIST += \
 	libsummer/tests/atom_feed \

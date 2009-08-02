@@ -23,6 +23,7 @@
 #include "summer-web-backend-disk.h"
 #include "summer-feed-cache.h"
 #include "summer-debug.h"
+#include "summer-transfer-speed.h"
 #include <string.h>
 #include <time.h>
 #include <gio/gio.h>
@@ -55,6 +56,7 @@ static void summer_download_web_finalize   (GObject *obj);
 struct _SummerDownloadWebPrivate {
 	SummerWebBackend *web;
 	time_t last_update;
+	SummerTransferSpeed *speed;
 };
 #define SUMMER_DOWNLOAD_WEB_GET_PRIVATE(o)      (G_TYPE_INSTANCE_GET_PRIVATE((o), \
                                                  SUMMER_TYPE_DOWNLOAD_WEB, \
@@ -71,6 +73,10 @@ on_download_chunk (SummerWebBackend *web_backend, guint64 received, guint64 leng
 	time_t curr_time = time (NULL);
 	if (priv->last_update == 0 || priv->last_update < curr_time) {
 		priv->last_update = curr_time;
+		summer_transfer_speed_add_datapoint (priv->speed, received);
+		g_object_set (self,
+			"transfer-speed", summer_transfer_speed_get (priv->speed),
+			NULL);
 		g_signal_emit_by_name (self, "download-update", received, length);
 	}
 }
@@ -302,6 +308,7 @@ static void
 summer_download_web_init (SummerDownloadWeb *self)
 {
 	self->priv = SUMMER_DOWNLOAD_WEB_GET_PRIVATE (self);
+	self->priv->speed = summer_transfer_speed_new ();
 }
 
 static void
@@ -309,6 +316,7 @@ summer_download_web_finalize (GObject *obj)
 {
 	if (G_IS_OBJECT (SUMMER_DOWNLOAD_WEB (obj)->priv->web))
 		g_object_unref (SUMMER_DOWNLOAD_WEB (obj)->priv->web);
+	summer_transfer_speed_destroy (&SUMMER_DOWNLOAD_WEB (obj)->priv->speed);
 	G_OBJECT_CLASS(summer_download_web_parent_class)->finalize (obj);
 }
 
