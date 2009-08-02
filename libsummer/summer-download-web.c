@@ -223,6 +223,13 @@ on_headers_parsed (SummerWebBackend *web, gpointer user_data)
 
 	if (is_downloaded (final_path, length)) {
 		g_signal_emit_by_name (self, "download-complete");
+
+		SummerItemData *item;
+		g_object_get (self, "item", &item, NULL);
+		SummerFeedCache *cache = summer_feed_cache_get ();
+		summer_feed_cache_add_new_item (cache, item);
+		g_object_unref (G_OBJECT (cache));
+		g_object_unref (G_OBJECT (item));
 	} else {
 		GError *error = NULL;
 		summer_web_backend_fetch (priv->web, &error);
