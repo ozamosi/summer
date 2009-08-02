@@ -31,7 +31,8 @@
  *
  * This component is only meant to be used by the downloaders and the feed
  * fetchers. It contains #SummerWebBackend - a base class for communicating with
- * web servers.
+ * web servers. The interface exported is in no way generic or reusable, but
+ * closely tied to the needs of the existing subclasses.
  *
  * There are two subclasses, #SummerWebBackendDisk and #SummerWebBackendRam. The
  * difference between them is that #SummerWebBackendDisk downloads a URL to a
@@ -58,7 +59,12 @@ struct _SummerWebBackendPrivate {
 	gboolean fetch;
 	SoupMessage *msg;
 	gboolean head_emitted;
+	gshort tries;
 };
+
+#define MAX_RETRIES 3
+#define SECONDS_BETWEEN_TRIES 3600
+
 #define SUMMER_WEB_BACKEND_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE((o), \
                                            SUMMER_TYPE_WEB_BACKEND, \
                                            SummerWebBackendPrivate))
@@ -300,6 +306,24 @@ on_downloaded (SoupSession *session, SoupMessage *msg, gpointer user_data)
 	SUMMER_WEB_BACKEND_GET_CLASS (self)->on_downloaded (self, session, msg);
 }
 
+static gboolean
+retry (gpointer user_data)
+{
+	g_return_val_if_fail (SUMMER_IS_WEB_BACKEND (user_data), FALSE);
+	SummerWebBackend *self = SUMMER_WEB_BACKEND (user_data);
+	g_return_val_if_fail (SOUP_IS_MESSAGE (self->priv->msg), FALSE);
+
+	self->priv->tries++;
+
+	if (self->priv->tries > MAX_RETRIES) {
+		return FALSE;
+	}
+	soup_session_queue_message (session, self->priv->msg, on_downloaded, self);
+	/* We don't want to run the timeout again if this try succeeds, so we must
+	 * re-add it if we fail again */
+	return FALSE;
+}
+
 static void
 on_got_chunk (SoupMessage *msg, SoupBuffer *chunk, gpointer user_data)
 {
@@ -363,6 +387,17 @@ on_got_headers (SoupMessage *msg, gpointer user_data)
 	g_return_if_fail (SOUP_IS_MESSAGE (msg));
 	SummerWebBackend *self = SUMMER_WEB_BACKEND (user_data);
 	SummerWebBackendPrivate *priv = self->priv;
+
+	/* Errors that may be temporary */
+	if (SOUP_STATUS_IS_TRANSPORT_ERROR (msg->status_code) || (
+			SOUP_STATUS_IS_CLIENT_ERROR (msg->status_code) &&
+			msg->status_code != SOUP_STATUS_CANCELLED &&
+			msg->status_code != SOUP_STATUS_MALFORMED)) {
+		g_timeout_add_seconds (SECONDS_BETWEEN_TRIES,
+			(GSourceFunc) retry,
+			self);
+		return;
+	}
 	if (msg->status_code >= 400 || msg->status_code < 100) {
 		return; //on_downloaded will send an error, so we shouldn't
 	}
@@ -497,7 +532,7 @@ summer_web_backend_abort (SummerWebBackend *self)
  * Returns the download's filename on the remote server. This is taken either
  * from the Content-Disposition header, or, if there is none, the URL itself.
  *
- * Returns: a filename
+ * Returns: A filename
  */
 gchar*
 summer_web_backend_get_remote_filename (SummerWebBackend *self)
