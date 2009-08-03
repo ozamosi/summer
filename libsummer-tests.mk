@@ -6,7 +6,8 @@ TESTS_INCLUDES =  \
 	-I$(srcdir)
 
 TESTSLDADD = \
-	$(top_builddir)/libsummer.la
+	$(top_builddir)/libsummer.la \
+	$(SUMMER_LIBS)
 
 SERVER_FILES = libsummer/tests/server.c libsummer/tests/server.h
 
