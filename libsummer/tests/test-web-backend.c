@@ -61,7 +61,7 @@ to_disk (WebFixture *fix, gconstpointer data)
 
 	g_signal_connect (web, "download-chunk", G_CALLBACK (chunk_cb), NULL);
 	g_signal_connect (web, "download-complete", G_CALLBACK (disk_downloaded_cb), NULL);
-	GError *error;
+	GError *error = NULL;
 	summer_web_backend_fetch (g_object_ref (web), &error);
 #if GLIB_CHECK_VERSION(2, 20, 0)
 	g_assert_no_error (error);

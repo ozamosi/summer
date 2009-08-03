@@ -169,7 +169,7 @@ basic (WebFixture *fix, gconstpointer data)
 	g_signal_connect (dl, "download-complete", G_CALLBACK (complete_cb), NULL);
 	g_signal_connect (dl, "download-update", G_CALLBACK (update_cb), NULL);
 	g_signal_connect (dl, "download-error", G_CALLBACK (fail_cb_nofail), NULL);
-	GError *error;
+	GError *error = NULL;
 	summer_download_start (dl, &error);
 #if GLIB_CHECK_VERSION(2, 20, 0)
 	g_assert_no_error (error);
