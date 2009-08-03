@@ -152,7 +152,7 @@ on_download_complete (SummerWebBackend *web_backend, gchar *save_path, gchar *sa
 }
 
 static gboolean
-is_downloaded (gchar *filename, gsize reported_size)
+is_downloaded (gchar *filename, guint64 reported_size)
 {
 	if (!filename)
 		return FALSE;
@@ -179,7 +179,7 @@ is_downloaded (gchar *filename, gsize reported_size)
 			g_object_unref (file);
 			return TRUE;
 		} else {
-			summer_debug ("Removing old copy of %s since it doesn't has the right size (is %i, should be %i)", filename, current_size, reported_size);
+			summer_debug ("Removing old copy of %s since it doesn't has the right size (is %" G_GUINT64_FORMAT ", should be %" G_GUINT64_FORMAT ")", filename, current_size, reported_size);
 			g_file_delete (file, NULL, &e);
 			if (e) {
 				g_warning ("Error when deleting file: %s", e->message);

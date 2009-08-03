@@ -20,8 +20,13 @@
 
 #include <glib.h>
 
+#ifndef __GNUC__
+#  define __attribute__(x)  /*NOTHING*/
+#endif
+
 G_BEGIN_DECLS
 
-gboolean summer_debug (const gchar *string, ...);
+gboolean summer_debug (const gchar *string, ...)
+	__attribute__((format(printf,1,2)));
 
 G_END_DECLS
