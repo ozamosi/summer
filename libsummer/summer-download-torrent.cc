@@ -322,7 +322,8 @@ summer_download_torrent_abort (SummerDownload *self)
 static void
 resend_errors (SummerDownload *web, GError *error, gpointer user_data) {
 	g_return_if_fail (SUMMER_IS_DOWNLOAD_TORRENT (user_data));
-	g_signal_emit_by_name (SUMMER_DOWNLOAD_TORRENT (user_data), "download-error", error);
+	GError *e = g_error_copy (error);
+	g_signal_emit_by_name (SUMMER_DOWNLOAD_TORRENT (user_data), "download-error", e);
 	g_object_unref (SUMMER_DOWNLOAD_TORRENT (user_data));
 }
 
