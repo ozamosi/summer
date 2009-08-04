@@ -283,29 +283,6 @@ summer_web_backend_finalize (GObject *self)
 	G_OBJECT_CLASS (summer_web_backend_parent_class)->finalize (self);
 }
 
-static void
-on_downloaded (SoupSession *session, SoupMessage *msg, gpointer user_data)
-{
-	g_return_if_fail (SUMMER_IS_WEB_BACKEND (user_data));
-	g_return_if_fail (SOUP_IS_SESSION (session));
-	g_return_if_fail (SOUP_IS_MESSAGE (msg));
-	SummerWebBackend *self = SUMMER_WEB_BACKEND (user_data);
-	g_return_if_fail (SUMMER_WEB_BACKEND_GET_CLASS (self)->on_downloaded != NULL);
-
-
-	if (!SOUP_STATUS_IS_SUCCESSFUL (msg->status_code)) {
-		SUMMER_WEB_BACKEND_GET_CLASS (self)->on_error (self);
-		GError *error = g_error_new (
-			SUMMER_WEB_BACKEND_ERROR,
-			SUMMER_WEB_BACKEND_ERROR_REMOTE,
-			"Download failed: %s", msg->reason_phrase);
-		g_signal_emit_by_name (self, "download-complete", NULL, NULL, error);
-		return;
-	}
-
-	SUMMER_WEB_BACKEND_GET_CLASS (self)->on_downloaded (self, session, msg);
-}
-
 static gboolean
 retry (gpointer user_data)
 {
@@ -318,10 +295,47 @@ retry (gpointer user_data)
 	if (self->priv->tries > MAX_RETRIES) {
 		return FALSE;
 	}
-	soup_session_queue_message (session, self->priv->msg, on_downloaded, self);
+
+	self->priv->fetch = FALSE;
+
+	soup_session_requeue_message (session, self->priv->msg);
 	/* We don't want to run the timeout again if this try succeeds, so we must
 	 * re-add it if we fail again */
 	return FALSE;
+}
+
+static void
+on_downloaded (SoupSession *arg_session, SoupMessage *msg, gpointer user_data)
+{
+	g_return_if_fail (SUMMER_IS_WEB_BACKEND (user_data));
+	g_return_if_fail (SOUP_IS_SESSION (arg_session));
+	g_return_if_fail (SOUP_IS_MESSAGE (msg));
+	SummerWebBackend *self = SUMMER_WEB_BACKEND (user_data);
+	g_return_if_fail (SUMMER_WEB_BACKEND_GET_CLASS (self)->on_downloaded != NULL);
+	/* Errors that may be temporary */
+	if (SOUP_STATUS_IS_TRANSPORT_ERROR (msg->status_code) || (
+			SOUP_STATUS_IS_SERVER_ERROR (msg->status_code) &&
+			msg->status_code != SOUP_STATUS_CANCELLED &&
+			msg->status_code != SOUP_STATUS_MALFORMED)) {
+		summer_debug ("There was an error retrieving the file: %i. Retrying.",
+			msg->status_code);
+		g_timeout_add_seconds (SECONDS_BETWEEN_TRIES,
+			(GSourceFunc) retry,
+			self);
+		return;
+	}
+
+	if (!SOUP_STATUS_IS_SUCCESSFUL (self->priv->msg->status_code)) {
+		SUMMER_WEB_BACKEND_GET_CLASS (self)->on_error (self);
+		GError *error = g_error_new (
+			SUMMER_WEB_BACKEND_ERROR,
+			SUMMER_WEB_BACKEND_ERROR_REMOTE,
+			"Download failed: %s", self->priv->msg->reason_phrase);
+		g_signal_emit_by_name (self, "download-complete", NULL, NULL, error);
+		return;
+	}
+
+	SUMMER_WEB_BACKEND_GET_CLASS (self)->on_downloaded (self, session, self->priv->msg);
 }
 
 static void
@@ -388,21 +402,9 @@ on_got_headers (SoupMessage *msg, gpointer user_data)
 	SummerWebBackend *self = SUMMER_WEB_BACKEND (user_data);
 	SummerWebBackendPrivate *priv = self->priv;
 
-	/* Errors that may be temporary */
-	if (SOUP_STATUS_IS_TRANSPORT_ERROR (msg->status_code) || (
-			SOUP_STATUS_IS_CLIENT_ERROR (msg->status_code) &&
-			msg->status_code != SOUP_STATUS_CANCELLED &&
-			msg->status_code != SOUP_STATUS_MALFORMED)) {
-		g_timeout_add_seconds (SECONDS_BETWEEN_TRIES,
-			(GSourceFunc) retry,
-			self);
-		return;
-	}
-	if (msg->status_code >= 400 || msg->status_code < 100) {
+	if (!(SOUP_STATUS_IS_SUCCESSFUL (msg->status_code) || SOUP_STATUS_IS_INFORMATIONAL (msg->status_code))) {
 		return; //on_downloaded will send an error, so we shouldn't
 	}
-	else if (SOUP_STATUS_IS_REDIRECTION (msg->status_code))
-		return;
 	
 	priv->fetch = TRUE;
 
