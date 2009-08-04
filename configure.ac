@@ -154,6 +154,8 @@ if test "x$have_python" != "xno"; then
 	BASE=$(pkg-config --variable=libdir gobject-2.0);
 	if test -f $BASE/libpyglib-2.0-python$PYTHON_VERSION.so; then
 		PYGLIB_LIBS="-L$BASE -lpyglib-2.0-python$PYTHON_VERSION";
+	else if test -f $BASE/libpyglib-2.0-python.so; then
+		PYGLIB_LIBS="-L$BASE -lpyglib-2.0-python";
 	else
 		PYGLIB_LIBS="-L$BASE -lpyglib-2.0";
 	fi
